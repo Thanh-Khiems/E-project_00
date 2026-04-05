@@ -15,7 +15,7 @@
 
             <div class="remember-row">
                 <input type="checkbox" id="remember">
-                <label for="remember">remember password</label>
+                <label for="remember">remember password ?</label>
             </div>
 
             <button type="submit" class="login-btn">LOG IN NOW</button>
