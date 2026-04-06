@@ -1979,3 +1979,83 @@ input {
         grid-template-columns: 1fr;
     }
 }
+
+.form-group {
+    margin-bottom: 16px;
+}
+
+.form-error {
+    display: block;
+    margin-top: 6px;
+    font-size: 13px;
+    color: #d93025;
+}
+
+.remember-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.remember-label span {
+    color: #7a8db1;
+    font-size: 14px;
+}
+
+.login-divider {
+    position: relative;
+    text-align: center;
+    margin: 22px 0 18px;
+}
+
+.login-divider::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: #dcdcdc;
+    transform: translateY(-50%);
+}
+
+.login-divider span {
+    position: relative;
+    background: #fff;
+    padding: 0 12px;
+    font-size: 14px;
+    color: #666;
+}
+
+.login-socials {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+
+.login-social-btn {
+    height: 40px;
+    border: 1px solid #cfdcff;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: #fff;
+    color: #1668e8;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.login-social-btn svg {
+    width: 16px;
+    height: 16px;
+    display: block;
+}
+
+@media (max-width: 768px) {
+    .login-socials {
+        grid-template-columns: 1fr;
+    }
+}
