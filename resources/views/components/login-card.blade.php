@@ -22,7 +22,7 @@
         </form>
 
         <div class="login-links">
-            <a href="#">Create new account</a>
+            <a href="/register">Create new account</a>
             <a href="#">Forgot password?</a>
         </div>
     </div>
