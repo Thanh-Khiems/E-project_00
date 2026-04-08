@@ -1,5 +1,9 @@
 <?php
-
+use App\Http\Controllers\Admin\DoctorController;
+use App\Http\Controllers\Admin\SpecialtyController;
+use App\Http\Controllers\Admin\PatientController;
+use App\Http\Controllers\Admin\StaffController;
+use App\Http\Controllers\Admin\AppointmentController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 
@@ -25,8 +29,14 @@ Route::get('/doctor/dashboard', function () {
 });
 
 //Admin Dashboard
-Route::get('/admin/dashboard', function () {
-    return 'Admin dashboard';
+Route::redirect('/admin', '/admin/doctors');
+
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::get('/doctors', [DoctorController::class, 'index'])->name('doctors.index');
+    Route::get('/specialties', [SpecialtyController::class, 'index'])->name('specialties.index');
+    Route::get('/patients', [PatientController::class, 'index'])->name('patients.index');
+    Route::get('/staffs', [StaffController::class, 'index'])->name('staffs.index');
+    Route::get('/appointments', [AppointmentController::class, 'index'])->name('appointments.index');
 });
 //User Dashboard
 Route::get('/user/dashboard', function () {
