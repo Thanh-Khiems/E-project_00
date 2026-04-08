@@ -6,7 +6,7 @@
 
         <h2>Log In</h2>
 
-        <form class="login-form" method="POST" action="#">
+        <form class="login-form" method="POST" action="{{ route('login.submit') }}">
             @csrf
 
             <div class="form-group">
@@ -49,7 +49,7 @@
         </form>
 
         <div class="login-links">
-            <a href="/register">Create new account</a>
+            <a href="{{ route('register') }}">Create new account</a>
             <a href="#">Forgot password?</a>
         </div>
 
