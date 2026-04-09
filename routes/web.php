@@ -70,12 +70,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
 */
 Route::get('/user/dashboard', function () {
     return view('pages.user.dashboard');
-<<<<<<< HEAD
-})->middleware('auth')->name('user.dashboard');
-=======
 })->middleware('auth')->name('user.dashboard');
 
 Route::get('/doctor', function () {
     return view('pages.user.doctor');
 });
->>>>>>> 38a0084b1cb3dab481ab048f2ecfac282df6017a
