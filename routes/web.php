@@ -32,3 +32,7 @@ Route::get('/admin/dashboard', function () {
 Route::get('/user/dashboard', function () {
     return view('pages.user.dashboard');
 })->middleware('auth')->name('user.dashboard');
+
+Route::get('/doctor', function () {
+    return view('pages.user.doctor');
+});
