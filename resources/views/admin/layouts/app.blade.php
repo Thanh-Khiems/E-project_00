@@ -35,10 +35,6 @@
             </a>
         </nav>
 
-        <div class="sidebar-card mt-auto">
-            <h6>Hệ thống ổn định</h6>
-            <p>Theo dõi vận hành toàn bộ phòng khám trên từng trang quản lý riêng chắc vậy.</p>
-        </div>
     </aside>
 
     <main class="content-wrapper">

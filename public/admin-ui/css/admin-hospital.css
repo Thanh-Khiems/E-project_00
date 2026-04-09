@@ -1,7 +1,7 @@
 :root {
     --sidebar-bg: #111827;
     --sidebar-hover: #1f2937;
-    --primary: #624bff;
+    --primary: #378af7;
     --primary-soft: rgba(98, 75, 255, 0.12);
     --border: #e5e7eb;
     --text: #111827;
@@ -24,8 +24,9 @@ body {
 .admin-shell { display: flex; min-height: 100vh; }
 .sidebar {
     width: 280px;
-    background: var(--sidebar-bg);
-    color: #fff;
+    min-width: 240px;
+    background: #ffffff !important;
+    color: #0d6efd;
     padding: 24px 18px;
     display: flex;
     flex-direction: column;
@@ -34,6 +35,41 @@ body {
     top: 0;
     height: 100vh;
 }
+/* SIDEBAR nền trắng */
+.content-wrapper {
+    margin-left: 240px; /* 👈 phải bằng width sidebar */
+}
+/* TEXT menu */
+.sidebar .nav-link {
+    color: #0d6efd !important;
+    font-weight: 400;
+}
+
+/* ICON */
+.sidebar .nav-link i {
+    color: #0d6efd !important;
+}
+
+/* LABEL (Quản trị hệ thống) */
+.menu-label {
+    color: #1e3a8a !important;
+}
+
+/* ACTIVE */
+.sidebar .nav-link.active {
+    background: #e7f1ff !important;
+    color: #0d6efd !important;
+    border-radius: 12px;
+}
+
+/* HOVER */
+.sidebar .nav-link:hover {
+    background: #f1f5ff;
+    color: #0d6efd;
+    border-radius: 12px;
+}
+
+
 .brand-box {
     display: flex;
     align-items: center;
@@ -43,7 +79,7 @@ body {
 }
 .brand-icon {
     width: 48px; height: 48px; border-radius: 16px; display: grid; place-items: center;
-    background: linear-gradient(135deg, #624bff, #8b5cf6); font-size: 22px;
+    background: linear-gradient(135deg, #2326eb, #2b52ff); font-size: 22px;
 }
 .brand-box h1 { font-size: 20px; margin: 0; }
 .brand-box p { margin: 2px 0 0; color: rgba(255,255,255,.65); font-size: 13px; }
@@ -57,7 +93,7 @@ body {
 .sidebar-nav .nav-link:hover, .sidebar-nav .nav-link.active {
     background: var(--primary);
     color: #fff;
-    box-shadow: 0 10px 25px rgba(98, 75, 255, 0.25);
+    box-shadow: 0 10px 25px rgba(51, 22, 243, 0.25);
 }
 .sidebar-card {
     background: rgba(255,255,255,.08);
@@ -90,7 +126,7 @@ body {
 }
 .stat-icon, .icon-soft {
     width: 54px; height: 54px; border-radius: 18px; display: grid; place-items: center;
-    background: var(--primary-soft); color: var(--primary); font-size: 22px;
+    background: var(--primary-soft); color: rgba(31, 184, 255, 0.815); font-size: 22px;
 }
 .stat-card p, .info-card p { margin: 0; color: var(--muted); }
 .stat-card h3 { margin: 4px 0 0; font-size: 30px; font-weight: 800; }
