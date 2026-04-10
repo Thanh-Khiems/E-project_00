@@ -1,0 +1,104 @@
+
+body {
+  margin: 0;
+  font-family: Arial;
+  background: #f5f7fb;
+}
+
+.container {
+  display: flex;
+}
+
+/* SIDEBAR */
+.sidebar {
+  width: 220px;
+  background: white;
+  height: 100vh;
+  padding: 20px;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+}
+
+.sidebar li {
+  padding: 10px;
+  margin-bottom: 10px;
+  cursor: pointer;
+}
+
+.sidebar .active {
+  background: #e6f0ff;
+  color: #2563eb;
+}
+
+/* MAIN */
+.main {
+  flex: 1;
+  padding: 20px;
+}
+
+.card {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+
+/* ROW */
+.row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.days span {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.days .active {
+  background: #2563eb;
+  color: white;
+}
+
+/* BUTTON */
+button {
+  padding: 10px;
+  border: none;
+  cursor: pointer;
+}
+
+button.active {
+  background: #2563eb;
+  color: white;
+}
+
+.save {
+  background: #2563eb;
+  color: white;
+}
+
+.cancel {
+  background: #ddd;
+}
+
+/* TABLE */
+table {
+  width: 100%;
+}
+
+th, td {
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+.green {
+  color: green;
+}
+
+.red {
+  color: red;
+}

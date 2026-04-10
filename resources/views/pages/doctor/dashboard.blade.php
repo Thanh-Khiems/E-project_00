@@ -33,7 +33,7 @@
             <h2>Morning, Dr. Vance</h2>
             <p>You have 8 appointments today</p>
         </div>
-        <button class="btn">+ New Appointment</button>
+        <a href="{{ url('/schedule') }}">Schedule</a>
     </div>
 
     <div class="content">
@@ -47,14 +47,7 @@
 
             <div class="row">
                 <div class="card small">
-                    <h4>Patient Volume</h4>
-                    <div class="bars">
-                        <div class="bar"></div>
-                        <div class="bar"></div>
-                        <div class="bar"></div>
-                        <div class="bar active"></div>
-                        <div class="bar"></div>
-                    </div>
+                   
                 </div>
 
                 <div class="card blue">

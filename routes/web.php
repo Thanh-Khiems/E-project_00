@@ -72,6 +72,9 @@ Route::get('/user/dashboard', function () {
     return view('pages.user.dashboard');
 })->middleware('auth')->name('user.dashboard');
 
-Route::get('/doctor', function () {
-    return view('pages.user.doctor');
+Route::get('/doctor', [DashboardController::class, 'doctor'])->name('doctor.dashboard');
+
+// Doctor Schedule
+Route::get('/schedule', function () {
+    return view('pages.doctor.schedule');
 });
