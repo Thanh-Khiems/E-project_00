@@ -1,0 +1,110 @@
+/* RESET */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Segoe UI", Arial, sans-serif;
+}
+
+body {
+    background: #f4f7fb;
+}
+
+/* CONTAINER */
+.container {
+    max-width: 700px;
+    margin: 50px auto;
+    background: #fff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+}
+
+/* TITLE */
+h2 {
+    margin-bottom: 20px;
+    color: #1e293b;
+}
+
+/* INPUT */
+input {
+    padding: 10px;
+    border: 1px solid #dcdcdc;
+    border-radius: 8px;
+    outline: none;
+    width: 65%;
+    margin-right: 10px;
+    transition: 0.2s;
+}
+
+input:focus {
+    border-color: #3b82f6;
+}
+
+/* BUTTON */
+button {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+/* ADD BUTTON */
+button:first-of-type {
+    background: #3b82f6;
+    color: white;
+}
+
+button:first-of-type:hover {
+    background: #2563eb;
+}
+
+/* CARD */
+.card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #f9fafb;
+    padding: 12px;
+    border-radius: 10px;
+    margin-top: 12px;
+    transition: 0.2s;
+}
+
+.card:hover {
+    background: #eef4ff;
+}
+
+/* INPUT INSIDE CARD */
+.card input {
+    width: 50%;
+    border: none;
+    background: transparent;
+    font-weight: 500;
+}
+
+/* ACTION BUTTONS */
+.card button {
+    margin-left: 5px;
+}
+
+/* UPDATE */
+.card button:nth-child(2) {
+    background: #22c55e;
+    color: white;
+}
+
+.card button:nth-child(2):hover {
+    background: #16a34a;
+}
+
+/* DELETE */
+.card button:nth-child(3) {
+    background: #ef4444;
+    color: white;
+}
+
+.card button:nth-child(3):hover {
+    background: #dc2626;
+}

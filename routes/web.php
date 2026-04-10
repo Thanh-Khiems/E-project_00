@@ -1,18 +1,17 @@
 <?php
-
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
-
+use App\Http\Controllers\ScheduleController;
 // Admin Controllers
 use App\Http\Controllers\Admin\DoctorController;
 use App\Http\Controllers\Admin\SpecialtyController;
 use App\Http\Controllers\Admin\PatientController;
 use App\Http\Controllers\Admin\StaffController;
 use App\Http\Controllers\Admin\AppointmentController as AdminAppointmentController;
-
 use App\Http\Controllers\AppointmentController;
-
+use App\Http\Controllers\MedicationController;
 /*
 |--------------------------------------------------------------------------
 | Public Pages
@@ -78,3 +77,46 @@ Route::get('/doctor', [DashboardController::class, 'doctor'])->name('doctor.dash
 Route::get('/schedule', function () {
     return view('pages.doctor.schedule');
 });
+//should be replaced by controller route
+
+
+Route::get('/schedule', [ScheduleController::class, 'index']);
+Route::post('/schedule', [ScheduleController::class, 'store'])->name('schedule.store');
+
+Route::get('/medications-page', function () {
+    return view('medications');
+});
+
+
+
+
+
+
+
+/*
+| Doctor
+*/
+Route::get('/doctor', [DashboardController::class, 'doctor'])->name('doctor.dashboard');
+
+Route::get('/appointments', [AppointmentController::class, 'index']);
+
+/*
+| Schedule
+*/
+Route::get('/schedule', [ScheduleController::class, 'index']);
+Route::post('/schedule', [ScheduleController::class, 'store'])->name('schedule.store');
+
+/*
+| Medication Page (UI)
+*/
+Route::get('/medications-page', function () {
+    return view('pages.doctor.medications'); // ✅ sửa đúng path
+});
+
+
+Route::put('/medications/{id}', [MedicationController::class, 'update']);
+Route::get('/medications', [MedicationController::class, 'index']);
+Route::post('/medications', [MedicationController::class, 'store']);
+Route::delete('/medications/{id}', [MedicationController::class, 'destroy']);
+
+

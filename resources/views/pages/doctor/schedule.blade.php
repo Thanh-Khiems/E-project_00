@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
-<title>Schedule Management</title>
+<title>Schedule</title>
 
 <link rel="stylesheet" href="{{ asset('css/schedule.css') }}">
 </head>
@@ -11,106 +11,86 @@
 
 <div class="container">
 
-    <!-- SIDEBAR -->
-    <div class="sidebar">
-        <h2>Clinical Sanctuary</h2>
+<!-- SIDEBAR -->
+<div class="sidebar">
+    <h2>Clinical Sanctuary</h2>
+    <ul>
+        <li><a href="/doctor">Dashboard</a></li>
+        <li><a href="/appointments">Appointments</a></li>
+        <li class="active">Schedule</li>
+    </ul>
+</div>
 
-        <ul>
-            <li><a href="{{ url('/doctor') }}">Dashboard</a></li>
-            <li><a href="{{ url('/appointments') }}">Appointments</a></li>
-            <li class="active">Schedule</li>
-            <li>Patients</li>
-            <li>Profile</li>
-        </ul>
-    </div>
+<!-- MAIN -->
+<div class="main">
 
-    <!-- MAIN -->
-    <div class="main">
+<h1>Schedule Management</h1>
 
-        <h1>Schedule Management</h1>
+@if(session('success'))
+<p style="color:green;">{{ session('success') }}</p>
+@endif
 
-        <div class="card">
+<form method="POST" action="{{ route('schedule.store') }}">
+@csrf
 
-            <h2>Create Working Schedule</h2>
+<div class="card">
 
-            <!-- DATE -->
-            <div class="row">
-                <input type="date">
-                <input type="date">
-            </div>
+<h3>Create Working Schedule</h3>
 
-            <!-- TYPE -->
-            <div class="row">
-                <button class="active">Online</button>
-                <button>In-person</button>
-            </div>
+<input type="date" name="start_date" required>
+<input type="date" name="end_date" required>
 
-            <!-- DAYS -->
-            <div class="row days">
-                <span>Mon</span>
-                <span class="active">Tue</span>
-                <span class="active">Wed</span>
-                <span>Thu</span>
-                <span class="active">Fri</span>
-                <span>Sat</span>
-                <span>Sun</span>
-            </div>
+<select name="type">
+    <option value="online">Online</option>
+    <option value="in-person">In-person</option>
+</select>
 
-            <!-- TIME -->
-            <div class="row">
-                <input type="time"> to <input type="time">
-            </div>
+<div class="days">
+@foreach(['Mon','Tue','Wed','Thu','Fri','Sat','Sun'] as $day)
+    <label>
+        <input type="checkbox" name="days[]" value="{{ $day }}">
+        {{ $day }}
+    </label>
+@endforeach
+</div>
 
-            <!-- MAX -->
-            <div class="row">
-                <input type="number" placeholder="Max Patients">
-            </div>
+<input type="time" name="start_time">
+<input type="time" name="end_time">
 
-            <!-- LOCATION -->
-            <div class="row">
-                <input type="text" placeholder="Clinic Name">
-            </div>
+<input type="number" name="max_patients" placeholder="Max Patients">
 
-            <!-- NOTES -->
-            <textarea placeholder="Notes..."></textarea>
+<input type="text" name="location" placeholder="Clinic Location">
 
-            <div class="actions">
-                <button class="cancel">Cancel</button>
-                <button class="save">Save</button>
-            </div>
+<textarea name="notes" placeholder="Notes..."></textarea>
 
-        </div>
+<button type="submit">Save Schedule</button>
 
-        <!-- TABLE -->
-        <div class="card">
-            <h2>Existing Schedules</h2>
+</div>
 
-            <table>
-                <tr>
-                    <th>Date</th>
-                    <th>Time</th>
-                    <th>Type</th>
-                    <th>Status</th>
-                </tr>
+</form>
 
-                <tr>
-                    <td>Oct 24</td>
-                    <td>09:00</td>
-                    <td>Online</td>
-                    <td class="green">Available</td>
-                </tr>
+<div class="card">
+<h3>Upcoming Schedules</h3>
 
-                <tr>
-                    <td>Oct 25</td>
-                    <td>14:00</td>
-                    <td>In-person</td>
-                    <td class="red">Booked</td>
-                </tr>
+<table>
+<tr>
+<th>Date</th>
+<th>Time</th>
+<th>Type</th>
+</tr>
 
-            </table>
-        </div>
+@foreach($schedules as $s)
+<tr>
+<td>{{ $s->start_date }}</td>
+<td>{{ $s->start_time }} - {{ $s->end_time }}</td>
+<td>{{ $s->type }}</td>
+</tr>
+@endforeach
 
-    </div>
+</table>
+</div>
+
+</div>
 </div>
 
 </body>
