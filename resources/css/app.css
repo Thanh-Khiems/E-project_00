@@ -2346,3 +2346,120 @@ input {
         font-size: 18px;
     }
 }
+
+/* Container layout 2 cột */
+.doctor-list-page {
+    display: flex;
+    gap: 20px;
+    padding: 20px;
+}
+
+/* Sidebar filter */
+.filter-sidebar {
+    flex: 1;
+    background: #fff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+.filter-sidebar h3 {
+    margin-bottom: 15px;
+}
+
+.filter-sidebar .form-group {
+    margin-bottom: 15px;
+}
+
+.filter-sidebar input,
+.filter-sidebar select {
+    width: 100%;
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+}
+
+.btn-filter {
+    background: #1d4ed8;
+    color: #fff;
+    padding: 10px;
+    border-radius: 6px;
+    width: 100%;
+    border: none;
+    cursor: pointer;
+}
+
+/* Doctor Cards */
+.doctor-cards {
+    flex: 3;
+    display: grid;
+    grid-template-columns: repeat(auto-fill,minmax(250px,1fr));
+    gap: 20px;
+}
+
+.doctor-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 15px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.doctor-avatar img {
+    width: 100%;
+    border-radius: 12px;
+    object-fit: cover;
+}
+
+.doctor-info h4 {
+    margin: 5px 0;
+    font-size: 1.2rem;
+}
+
+.doctor-info .specialty {
+    color: #1d4ed8;
+    font-weight: 600;
+}
+
+.doctor-info .rating,
+.doctor-info .city,
+.doctor-info .working-hours span {
+    font-size: 0.9rem;
+    color: #555;
+}
+
+.doctor-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+}
+
+.doctor-actions a {
+    padding: 8px 12px;
+    border-radius: 6px;
+    text-align: center;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.btn-detail {
+    background: #f3f4f6;
+    color: #111827;
+}
+
+.btn-book {
+    background: #1d4ed8;
+    color: #fff;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .doctor-list-page {
+        flex-direction: column;
+    }
+    .doctor-cards {
+        grid-template-columns: 1fr;
+    }
+}

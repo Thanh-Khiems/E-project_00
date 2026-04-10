@@ -5,7 +5,7 @@
         </a>
 
         <nav class="nav-menu">
-            <a href="/">Home</a>
+            <a href="{{ route('user.doctor-list') }}">Home</a>
             <a href="/about">About</a>
             <a href="/services">Services</a>
             <a href="/doctor">Doctor</a>

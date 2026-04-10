@@ -12,8 +12,8 @@
             <div class="col-lg-8 col-md-10">
                 <h1 class="display-5 fw-bold text-dark mb-3">Doctors</h1>
                 <p class="text-muted fs-6 lh-lg mx-auto" style="max-width: 750px;">
-                    Medical research continues to evolve, providing new insights into patient care and innovative 
-                    treatment methods. Our team of dedicated doctors is committed to delivering the highest quality 
+                    Medical research continues to evolve, providing new insights into patient care and innovative
+                    treatment methods. Our team of dedicated doctors is committed to delivering the highest quality
                     healthcare services to ensure your well-being.
                 </p>
             </div>
@@ -30,11 +30,6 @@
 </section>
 
 <style>
-    /* Chỉnh một chút để giống hệt hình mẫu */
-    /* .breadcrumb-item + .breadcrumb-item::before {
-        content: "/";
-        color: #6c757d;
-    } */
     .doctors-hero h1 {
         letter-spacing: -0.5px;
     }

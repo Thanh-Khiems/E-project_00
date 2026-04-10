@@ -61,7 +61,7 @@
                 </div>
 
                 <div class="user-hero-actions">
-                    <a href="#" class="user-btn-primary">Book Appointment</a>
+                    <a href="{{ route('user.doctor-list') }}" class="user-btn-primary">Book Appointment</a>
                     <a href="#" class="user-btn-outline">
                         <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                             <path d="M12 2a10 10 0 1 0 10 10A10.01 10.01 0 0 0 12 2Zm-2 14.5v-9l7 4.5Z"/>

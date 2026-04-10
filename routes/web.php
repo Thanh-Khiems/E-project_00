@@ -10,8 +10,9 @@ use App\Http\Controllers\Admin\SpecialtyController;
 use App\Http\Controllers\Admin\PatientController;
 use App\Http\Controllers\Admin\StaffController;
 use App\Http\Controllers\Admin\AppointmentController as AdminAppointmentController;
-
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\AppointmentController;
+use App\Http\Controllers\User\ProfileController;
 
 /*
 |--------------------------------------------------------------------------
@@ -78,3 +79,32 @@ Route::get('/doctor', [DashboardController::class, 'doctor'])->name('doctor.dash
 Route::get('/schedule', function () {
     return view('pages.doctor.schedule');
 });
+
+/*
+|--------------------------------------------------------------------------
+| User (Frontend)
+|--------------------------------------------------------------------------
+*/
+
+
+
+Route::middleware(['auth'])->prefix('user')->name('user.')->group(function () {
+    Route::get('/doctor-list', function () {
+        return view('pages.user.doctor-list');
+    })->name('doctor-list');
+
+    Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
+    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::post('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
+    Route::post('/profile/avatar', [ProfileController::class, 'updateAvatar'])->name('profile.avatar');
+});
+
+
+
+Route::get('/', [HomeController::class, 'index'])->name('home');
+
+
+Route::get('/', function () {
+    return view('pages.home');
+})->name('home');
+
