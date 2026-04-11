@@ -7,12 +7,15 @@
     <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('images/logo/logo64.png') }}">
     <link rel="apple-touch-icon" href="{{ asset('images/logo/logo64.png') }}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"> ``` -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body>
     @if(Auth::check())
-        @include('partials.user-topbar')
+        @if(Auth::user()->role === 'doctor')
+            @include('partials.doctor-topbar')
+        @else
+            @include('partials.user-topbar')
+        @endif
     @else
         @include('partials.topbar')
     @endif

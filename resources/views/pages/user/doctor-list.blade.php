@@ -59,7 +59,7 @@
     border-radius: 16px;
     padding: 20px;
     box-shadow: 0 8px 20px rgba(0,0,0,0.08);
-    flex: 0 0 calc(50% - 10px); /* luôn chiếm 50% container trừ gap */
+    flex: 0 0 calc(50% - 10px);
     display: flex;
     flex-direction: column;
     transition: transform 0.3s;
@@ -99,6 +99,51 @@
     min-width: 18px;
 }
 
+/* Working schedule */
+.doctor-schedule {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #eee;
+}
+.doctor-schedule h6 {
+    font-size: 15px;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.schedule-day {
+    margin-bottom: 12px;
+}
+.schedule-day-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: #007bff;
+    margin-bottom: 8px;
+}
+.schedule-slots {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+.schedule-slot {
+    display: inline-block;
+    padding: 6px 12px;
+    background: #eaf4ff;
+    color: #007bff;
+    border: 1px solid #b9dcff;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+}
+.schedule-empty {
+    font-size: 13px;
+    color: #999;
+    font-style: italic;
+}
+
 /* Buttons */
 .doctor-card-actions {
     display: flex;
@@ -108,15 +153,12 @@
 .doctor-card-actions .btn-detail {
     flex: 1;
     padding: 10px 0;
-    border: none;
+    border: solid 1px #007bff;
     border-radius: 10px;
-    background: #6c757d;
-    color: #fff;
+    background: #fff;
+    color: #007bff;
     font-weight: 600;
     cursor: pointer;
-}
-.doctor-card-actions .btn-detail:hover {
-    background: #5a6268;
 }
 .doctor-card-actions .btn-book {
     flex: 1;
@@ -127,9 +169,6 @@
     color: #fff;
     font-weight: 600;
     cursor: pointer;
-}
-.doctor-card-actions .btn-book:hover {
-    background: #0056b3;
 }
 
 @media (max-width: 992px) {
@@ -154,17 +193,22 @@
             <h4>Filter Bác sĩ</h4>
             <form id="doctorFilterForm">
                 <input type="text" name="name" placeholder="Họ và tên">
+
                 <select name="specialty">
                     <option value="">Chuyên khoa</option>
                     <option value="Tim mạch">Tim mạch</option>
                     <option value="Da liễu">Da liễu</option>
                     <option value="Nhi">Nhi</option>
+                    <option value="Ngoại chấn thương chỉnh hình">Ngoại chấn thương chỉnh hình</option>
+                    <option value="Gây mê - điều trị đau">Gây mê - điều trị đau</option>
                 </select>
+
                 <select name="city">
                     <option value="">Thành phố</option>
                     <option value="Hà Nội">Hà Nội</option>
                     <option value="Hồ Chí Minh">Hồ Chí Minh</option>
                 </select>
+
                 <button type="submit">Tìm kiếm</button>
             </form>
         </div>
@@ -173,10 +217,94 @@
         <div class="doctors-list">
             @php
             $doctors = [
-                ['name'=>'Đỗ Tất Cường','title'=>'Giáo sư, Tiến sĩ, Bác sĩ','specialty'=>'Tim mạch','center'=>'Trung tâm hồi sức và cấp cứu - Bệnh viện Vinmec','avatar'=>'https://i.pravatar.cc/100?img=14'],
-                ['name'=>'Nguyễn Thanh Liêm','title'=>'Giáo sư, Tiến sĩ, Bác sĩ','specialty'=>'Nhi','center'=>'Trung tâm Y học tái tạo & Trị liệu tế bào','avatar'=>'https://i.pravatar.cc/100?img=10'],
-                ['name'=>'Trần Trung Dũng','title'=>'Giáo sư, Tiến sĩ, Bác sĩ','specialty'=>'Ngoại chấn thương chỉnh hình','center'=>'Trung tâm Cơ xương khớp & Chấn thương - Bệnh viện Vinmec Times City','avatar'=>'https://i.pravatar.cc/100?img=11'],
-                ['name'=>'Philippe Macaire','title'=>'Giáo sư, Tiến sĩ, Bác sĩ','specialty'=>'Gây mê - điều trị đau','center'=>'Khoa Gây mê giảm đau - Bệnh viện Vinmec Times City','avatar'=>'https://i.pravatar.cc/100?img=12'],
+                [
+                    'name' => 'Đỗ Tất Cường',
+                    'title' => 'Giáo sư, Tiến sĩ, Bác sĩ',
+                    'specialty' => 'Tim mạch',
+                    'center' => 'Trung tâm hồi sức và cấp cứu - Bệnh viện Vinmec',
+                    'city' => 'Hà Nội',
+                    'avatar' => 'https://i.pravatar.cc/100?img=14',
+                    'working_hours' => [
+                        [
+                            'day' => 'Thứ 2',
+                            'slots' => ['08:00 - 10:00', '14:00 - 16:00', '19:00 - 20:30']
+                        ],
+                        [
+                            'day' => 'Thứ 4',
+                            'slots' => ['08:30 - 11:00', '13:30 - 15:30']
+                        ],
+                        [
+                            'day' => 'Thứ 6',
+                            'slots' => ['09:00 - 11:30']
+                        ],
+                    ]
+                ],
+                [
+                    'name' => 'Nguyễn Thanh Liêm',
+                    'title' => 'Giáo sư, Tiến sĩ, Bác sĩ',
+                    'specialty' => 'Nhi',
+                    'center' => 'Trung tâm Y học tái tạo & Trị liệu tế bào',
+                    'city' => 'Hồ Chí Minh',
+                    'avatar' => 'https://i.pravatar.cc/100?img=10',
+                    'working_hours' => [
+                        [
+                            'day' => 'Thứ 3',
+                            'slots' => ['07:30 - 09:30', '10:00 - 11:30']
+                        ],
+                        [
+                            'day' => 'Thứ 5',
+                            'slots' => ['13:00 - 15:00', '15:30 - 17:00']
+                        ],
+                        [
+                            'day' => 'Thứ 7',
+                            'slots' => ['08:00 - 10:30']
+                        ],
+                    ]
+                ],
+                [
+                    'name' => 'Trần Trung Dũng',
+                    'title' => 'Giáo sư, Tiến sĩ, Bác sĩ',
+                    'specialty' => 'Ngoại chấn thương chỉnh hình',
+                    'center' => 'Trung tâm Cơ xương khớp & Chấn thương - Bệnh viện Vinmec Times City',
+                    'city' => 'Hà Nội',
+                    'avatar' => 'https://i.pravatar.cc/100?img=11',
+                    'working_hours' => [
+                        [
+                            'day' => 'Thứ 2',
+                            'slots' => ['08:00 - 09:30', '10:00 - 11:30']
+                        ],
+                        [
+                            'day' => 'Thứ 4',
+                            'slots' => ['14:00 - 16:00']
+                        ],
+                        [
+                            'day' => 'Chủ nhật',
+                            'slots' => ['08:00 - 10:00', '10:30 - 12:00']
+                        ],
+                    ]
+                ],
+                [
+                    'name' => 'Philippe Macaire',
+                    'title' => 'Giáo sư, Tiến sĩ, Bác sĩ',
+                    'specialty' => 'Gây mê - điều trị đau',
+                    'center' => 'Khoa Gây mê giảm đau - Bệnh viện Vinmec Times City',
+                    'city' => 'Hồ Chí Minh',
+                    'avatar' => 'https://i.pravatar.cc/100?img=12',
+                    'working_hours' => [
+                        [
+                            'day' => 'Thứ 3',
+                            'slots' => ['08:00 - 10:00']
+                        ],
+                        [
+                            'day' => 'Thứ 5',
+                            'slots' => ['09:00 - 11:00', '14:00 - 16:30']
+                        ],
+                        [
+                            'day' => 'Thứ 7',
+                            'slots' => ['13:30 - 15:30', '16:00 - 18:00']
+                        ],
+                    ]
+                ],
             ];
             @endphp
 
@@ -186,13 +314,40 @@
                     <div class="doctor-avatar">
                         <img src="{{ $doctor['avatar'] }}" alt="{{ $doctor['name'] }}">
                     </div>
+
                     <div class="doctor-info">
                         <h5>{{ $doctor['name'] }}</h5>
                         <p><i class="fas fa-user-graduate"></i> {{ $doctor['title'] }}</p>
                         <p><i class="fas fa-stethoscope"></i> {{ $doctor['specialty'] }}</p>
                         <p><i class="fas fa-hospital"></i> {{ $doctor['center'] }}</p>
+                        <p><i class="fas fa-map-marker-alt"></i> {{ $doctor['city'] }}</p>
                     </div>
                 </div>
+
+                <div class="doctor-schedule">
+                    <h6><i class="fas fa-clock"></i> Khung giờ làm việc</h6>
+
+                    @if(!empty($doctor['working_hours']))
+                        @foreach($doctor['working_hours'] as $schedule)
+                            <div class="schedule-day">
+                                <div class="schedule-day-name">{{ $schedule['day'] }}</div>
+
+                                @if(!empty($schedule['slots']))
+                                    <div class="schedule-slots">
+                                        @foreach($schedule['slots'] as $slot)
+                                            <span class="schedule-slot">{{ $slot }}</span>
+                                        @endforeach
+                                    </div>
+                                @else
+                                    <div class="schedule-empty">Chưa có khung giờ</div>
+                                @endif
+                            </div>
+                        @endforeach
+                    @else
+                        <div class="schedule-empty">Bác sĩ chưa cập nhật lịch làm việc</div>
+                    @endif
+                </div>
+
                 <div class="doctor-card-actions">
                     <button class="btn-detail">Xem chi tiết</button>
                     <button class="btn-book">Đặt hẹn</button>

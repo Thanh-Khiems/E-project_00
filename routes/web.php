@@ -45,8 +45,15 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 | Doctor
 |--------------------------------------------------------------------------
 */
-Route::get('/doctor', [DashboardController::class, 'doctor'])->name('doctor.dashboard');
 Route::get('/appointments', [AppointmentController::class, 'index']);
+
+Route::get('/doctor-main', [DashboardController::class, 'doctor'])
+    ->middleware('auth')
+    ->name('doctor.dashboard');
+
+Route::get('/doctor-manage', [DashboardController::class, 'manageAppointments'])
+    ->middleware('auth')
+    ->name('doctor.manage');
 
 /*
 |--------------------------------------------------------------------------
@@ -95,7 +102,7 @@ Route::middleware(['auth'])->prefix('user')->name('user.')->group(function () {
 | Admin (Temporary Disabled)
 |--------------------------------------------------------------------------
 */
-/*
+
 Route::redirect('/admin', '/admin/doctors');
 
 Route::prefix('admin')->name('admin.')->group(function () {
@@ -105,5 +112,5 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/staffs', [StaffController::class, 'index'])->name('staffs.index');
     Route::get('/appointments', [AdminAppointmentController::class, 'index'])->name('appointments.index');
 });
-*/
+
 
