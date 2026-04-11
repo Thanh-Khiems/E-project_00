@@ -45,15 +45,20 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 | Doctor
 |--------------------------------------------------------------------------
 */
-Route::get('/appointments', [AppointmentController::class, 'index']);
-
+/*  Trang chính */
 Route::get('/doctor-main', [DashboardController::class, 'doctor'])
     ->middleware('auth')
     ->name('doctor.dashboard');
 
+/* Trang quản lí */
 Route::get('/doctor-manage', [DashboardController::class, 'manageAppointments'])
     ->middleware('auth')
     ->name('doctor.manage');
+
+/* Trang lịch hẹn */
+Route::get('/doctor-appointments', [DashboardController::class, 'appointments'])
+    ->middleware('auth')
+    ->name('doctor.appointments');
 
 /*
 |--------------------------------------------------------------------------

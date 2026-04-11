@@ -9,10 +9,13 @@ class DashboardController extends Controller
         return view('pages.doctor.doctor-main');
     }
 
-    /* Lịch hẹn */
-
     public function manageAppointments()
     {
         return view('pages.doctor.dashboard');
+    }
+
+    public function appointments()
+    {
+        return view('pages.doctor.appointments');
     }
 }
