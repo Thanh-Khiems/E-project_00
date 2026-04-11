@@ -87,7 +87,7 @@
                                 @if($doctor->approval_status === 'pending')
                                     <a href="{{ route('admin.doctors.approvals', ['keyword' => $doctor->name, 'approval_status' => 'pending']) }}">Xét duyệt</a>
                                 @else
-                                    <a href="{{ route('admin.doctors.approvals', ['keyword' => $doctor->name, 'approval_status' => 'all']) }}">Xem hồ sơ</a>
+                                    <a href="{{ route('admin.doctors.show', $doctor) }}">Xem hồ sơ</a>
                                 @endif
                             </td>
                         </tr>

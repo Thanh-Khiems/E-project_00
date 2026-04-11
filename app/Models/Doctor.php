@@ -10,22 +10,41 @@ class Doctor extends Model
     use HasFactory;
 
     protected $fillable = [
+        'user_id',
         'specialty_id',
         'name',
         'email',
         'phone',
+        'degree',
+        'doctor_dob',
+        'citizen_id',
+        'citizen_id_front',
+        'citizen_id_back',
+        'degree_image',
+        'license_number',
         'experience_years',
+        'hospital',
+        'clinic_address',
+        'city',
+        'bio',
+        'consultation_fee',
         'schedule_text',
         'status',
         'is_featured',
         'approval_status',
         'approval_note',
+        'verification_status',
+        'submitted_at',
         'approved_at',
+        'rejected_at',
     ];
 
     protected $casts = [
         'is_featured' => 'boolean',
+        'doctor_dob' => 'date',
+        'submitted_at' => 'datetime',
         'approved_at' => 'datetime',
+        'rejected_at' => 'datetime',
     ];
 
     public function specialty()
@@ -36,5 +55,10 @@ class Doctor extends Model
     public function appointments()
     {
         return $this->hasMany(Appointment::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }

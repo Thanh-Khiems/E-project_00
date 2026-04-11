@@ -10,17 +10,19 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body>
+
     @if(Auth::check())
         @if(Auth::user()->role === 'doctor')
             @include('partials.doctor-topbar')
+            @include('partials.navbar-doctor')
         @else
             @include('partials.user-topbar')
+            @include('partials.navbar')
         @endif
     @else
         @include('partials.topbar')
+        @include('partials.navbar')
     @endif
-
-    @include('partials.navbar')
 
     <main>
         @yield('content')

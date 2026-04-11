@@ -100,6 +100,7 @@ Route::middleware(['auth'])->prefix('user')->name('user.')->group(function () {
     Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::post('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
     Route::post('/profile/avatar', [ProfileController::class, 'updateAvatar'])->name('profile.avatar');
+    Route::post('/profile/verify-doctor', [ProfileController::class, 'verifyDoctor'])->name('profile.verifyDoctor');
 });
 
 /*
@@ -115,6 +116,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/doctor-approvals', [DoctorController::class, 'approvals'])->name('doctors.approvals');
     Route::post('/doctors/{doctor}/approve', [DoctorController::class, 'approve'])->name('doctors.approve');
     Route::post('/doctors/{doctor}/reject', [DoctorController::class, 'reject'])->name('doctors.reject');
+
+    Route::get('/doctors/{doctor}', [DoctorController::class, 'show'])->name('doctors.show');
+    Route::post('/doctors/{doctor}/toggle-status', [DoctorController::class, 'toggleStatus'])->name('doctors.toggleStatus');
+    Route::delete('/doctors/{doctor}', [DoctorController::class, 'destroy'])->name('doctors.destroy');
+
     Route::get('/specialties', [SpecialtyController::class, 'index'])->name('specialties.index');
     Route::get('/patients', [PatientController::class, 'index'])->name('patients.index');
     Route::get('/staffs', [StaffController::class, 'index'])->name('staffs.index');

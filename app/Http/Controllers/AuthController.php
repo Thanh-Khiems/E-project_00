@@ -71,7 +71,7 @@ class AuthController extends Controller
             $user = Auth::user();
 
             if ($user->role === 'admin') {
-                return redirect('/admin/dashboard')->with('success', 'Login successful');
+                return redirect('/admin')->with('success', 'Login successful');
             }
 
             if ($user->role === 'doctor') {

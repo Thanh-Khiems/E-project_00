@@ -19,7 +19,11 @@ class User extends Authenticatable
         'ward',
         'address_detail',
         'dob',
+        'avatar',
         'role',
+        'doctor_verification_status',
+        'doctor_verified_at',
+        'doctor_rejection_reason',
         'password',
     ];
 
@@ -27,4 +31,9 @@ class User extends Authenticatable
         'password',
         'remember_token',
     ];
+
+        public function doctorProfile()
+    {
+        return $this->hasOne(Doctor::class);
+    }
 }

@@ -221,7 +221,7 @@
         color: #1d4ed8;
     }
 
-    .schedule-info flex: 1; }
+    .schedule-info { flex: 1; }
     .schedule-info strong { display: block; color: #111827; margin-bottom: 4px; }
     .schedule-info span { font-size: 13px; color: #6b7280; }
 
