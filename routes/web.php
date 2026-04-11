@@ -1,8 +1,14 @@
 <?php
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ScheduleController;
+use App\Http\Controllers\AppointmentController;
+use App\Http\Controllers\MedicationController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\User\ProfileController;
 
 // Admin Controllers
 use App\Http\Controllers\Admin\DoctorController;
@@ -10,16 +16,13 @@ use App\Http\Controllers\Admin\SpecialtyController;
 use App\Http\Controllers\Admin\PatientController;
 use App\Http\Controllers\Admin\StaffController;
 use App\Http\Controllers\Admin\AppointmentController as AdminAppointmentController;
-use App\Http\Controllers\HomeController;
-use App\Http\Controllers\AppointmentController;
-use App\Http\Controllers\User\ProfileController;
 
 /*
 |--------------------------------------------------------------------------
 | Public Pages
 |--------------------------------------------------------------------------
 */
-Route::view('/', 'pages.home')->name('home');
+Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::view('/about', 'pages.about');
 Route::view('/services', 'pages.services');
 Route::view('/contact', 'pages.contact');
@@ -39,30 +42,33 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 /*
 |--------------------------------------------------------------------------
-| Doctor (Frontend)
+| Doctor
 |--------------------------------------------------------------------------
 */
 Route::get('/doctor', [DashboardController::class, 'doctor'])->name('doctor.dashboard');
-
 Route::get('/appointments', [AppointmentController::class, 'index']);
 
 /*
 |--------------------------------------------------------------------------
-| Admin (TẠM TẮT để tránh lỗi SQL)
+| Schedule
 |--------------------------------------------------------------------------
 */
-// ❌ COMMENT lại để không bị lỗi DB khi chỉ làm frontend
-/*
-Route::redirect('/admin', '/admin/doctors');
+Route::get('/schedule', [ScheduleController::class, 'index']);
+Route::post('/schedule', [ScheduleController::class, 'store'])->name('schedule.store');
 
-Route::prefix('admin')->name('admin.')->group(function () {
-    Route::get('/doctors', [DoctorController::class, 'index'])->name('doctors.index');
-    Route::get('/specialties', [SpecialtyController::class, 'index'])->name('specialties.index');
-    Route::get('/patients', [PatientController::class, 'index'])->name('patients.index');
-    Route::get('/staffs', [StaffController::class, 'index'])->name('staffs.index');
-    Route::get('/appointments', [AdminAppointmentController::class, 'index'])->name('appointments.index');
-});
+/*
+|--------------------------------------------------------------------------
+| Medication
+|--------------------------------------------------------------------------
 */
+Route::get('/medications-page', function () {
+    return view('pages.doctor.medications');
+});
+
+Route::get('/medications', [MedicationController::class, 'index']);
+Route::post('/medications', [MedicationController::class, 'store']);
+Route::put('/medications/{id}', [MedicationController::class, 'update']);
+Route::delete('/medications/{id}', [MedicationController::class, 'destroy']);
 
 /*
 |--------------------------------------------------------------------------
@@ -72,21 +78,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
 Route::get('/user/dashboard', function () {
     return view('pages.user.dashboard');
 })->middleware('auth')->name('user.dashboard');
-
-Route::get('/doctor', [DashboardController::class, 'doctor'])->name('doctor.dashboard');
-
-// Doctor Schedule
-Route::get('/schedule', function () {
-    return view('pages.doctor.schedule');
-});
-
-/*
-|--------------------------------------------------------------------------
-| User (Frontend)
-|--------------------------------------------------------------------------
-*/
-
-
 
 Route::middleware(['auth'])->prefix('user')->name('user.')->group(function () {
     Route::get('/doctor-list', function () {
@@ -99,12 +90,19 @@ Route::middleware(['auth'])->prefix('user')->name('user.')->group(function () {
     Route::post('/profile/avatar', [ProfileController::class, 'updateAvatar'])->name('profile.avatar');
 });
 
+/*
+|--------------------------------------------------------------------------
+| Admin (Temporary Disabled)
+|--------------------------------------------------------------------------
+*/
+/*
+Route::redirect('/admin', '/admin/doctors');
 
-
-Route::get('/', [HomeController::class, 'index'])->name('home');
-
-
-Route::get('/', function () {
-    return view('pages.home');
-})->name('home');
-
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::get('/doctors', [DoctorController::class, 'index'])->name('doctors.index');
+    Route::get('/specialties', [SpecialtyController::class, 'index'])->name('specialties.index');
+    Route::get('/patients', [PatientController::class, 'index'])->name('patients.index');
+    Route::get('/staffs', [StaffController::class, 'index'])->name('staffs.index');
+    Route::get('/appointments', [AdminAppointmentController::class, 'index'])->name('appointments.index');
+});
+*/
