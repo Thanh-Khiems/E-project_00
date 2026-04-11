@@ -73,14 +73,9 @@ Route::post('/schedule', [ScheduleController::class, 'store'])->name('schedule.s
 | Medication
 |--------------------------------------------------------------------------
 */
-Route::get('/medications-page', function () {
-    return view('pages.doctor.medications');
-});
 
-Route::get('/medications', [MedicationController::class, 'index']);
-Route::post('/medications', [MedicationController::class, 'store']);
-Route::put('/medications/{id}', [MedicationController::class, 'update']);
-Route::delete('/medications/{id}', [MedicationController::class, 'destroy']);
+
+
 
 /*
 |--------------------------------------------------------------------------
@@ -126,3 +121,12 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/staffs', [StaffController::class, 'index'])->name('staffs.index');
     Route::get('/appointments', [AdminAppointmentController::class, 'index'])->name('appointments.index');
 });
+
+
+
+use App\Http\Controllers\MedicineTypeController;
+
+Route::get('/medications', [MedicationController::class, 'index']);
+Route::post('/medications', [MedicationController::class, 'store']);
+Route::delete('/medications/{id}', [MedicationController::class, 'destroy']);
+Route::post('/medicine-types', [MedicineTypeController::class, 'store']);

@@ -3,55 +3,58 @@
 namespace App\Http\Controllers;
 
 use App\Models\Medication;
+use App\Models\MedicineType;
 use Illuminate\Http\Request;
 
 class MedicationController extends Controller
 {
-    // 📌 Lấy danh sách thuốc
+    // 📌 Hiển thị
     public function index()
     {
-        return response()->json(Medication::all());
+        $medications = Medication::with('type')->get();
+        $types = MedicineType::all();
+
+        return view('pages.doctor.medications', compact('medications', 'types'));
     }
 
     // 📌 Thêm thuốc
     public function store(Request $request)
     {
-        $data = $request->validate([
-            'name' => 'required|string|max:255',
+        $request->validate([
+            'name' => 'required',
+            'dosage' => 'required',
+            'medicine_type_id' => 'required',
+            'category' => 'required',
         ]);
 
-        $med = Medication::create($data);
+        Medication::create($request->all());
 
-        return response()->json($med);
+        return redirect('/medications')->with('success', 'Thêm thành công');
     }
 
-    // ✏️ Update thuốc
+    // 📌 Update
     public function update(Request $request, $id)
     {
-        $med = Medication::find($id);
+        $med = Medication::findOrFail($id);
 
-        if (!$med) {
-            return response()->json(['message' => 'Not found'], 404);
-        }
-
-        $med->update([
-            'name' => $request->name
+        $request->validate([
+            'name' => 'required',
+            'dosage' => 'required',
+            'medicine_type_id' => 'required',
+            'category' => 'required',
         ]);
 
-        return response()->json($med);
+        $med->update($request->all());
+
+        return redirect('/medications')->with('success', 'Cập nhật thành công');
     }
 
-    // ❌ Xoá thuốc
+    // 📌 Xóa
     public function destroy($id)
     {
-        $med = Medication::find($id);
-
-        if (!$med) {
-            return response()->json(['message' => 'Not found'], 404);
-        }
-
+        $med = Medication::findOrFail($id);
         $med->delete();
 
-        return response()->json(['message' => 'Deleted']);
+        return redirect('/medications')->with('success', 'Xóa thành công');
     }
 }
