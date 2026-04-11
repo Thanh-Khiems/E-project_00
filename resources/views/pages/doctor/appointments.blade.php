@@ -65,19 +65,7 @@
           <th>Duration</th>
         </tr>
 
-        <tr>
-          <td>Metformin</td>
-          <td>500mg</td>
-          <td>Once Daily</td>
-          <td>90 Days</td>
-        </tr>
-
-        <tr>
-          <td>Lisinopril</td>
-          <td>10mg</td>
-          <td>Once Daily</td>
-          <td>30 Days</td>
-        </tr>
+       
       </table>
 
       <button class="add-btn" onclick="addRow()">+ Add Medication</button>

@@ -46,12 +46,40 @@
 </select>
 
 <div class="days">
-@foreach(['Mon','Tue','Wed','Thu','Fri','Sat','Sun'] as $day)
-    <label>
-        <input type="checkbox" name="days[]" value="{{ $day }}">
-        {{ $day }}
-    </label>
-@endforeach
+<label class="day-btn">
+    <input type="checkbox" name="days[]" value="Mon">
+    <span>Mon</span>
+</label>
+
+<label class="day-btn">
+    <input type="checkbox" name="days[]" value="Tue">
+    <span>Tue</span>
+</label>
+
+<label class="day-btn">
+    <input type="checkbox" name="days[]" value="Wed">
+    <span>Wed</span>
+</label>
+
+<label class="day-btn">
+    <input type="checkbox" name="days[]" value="Thu">
+    <span>Thu</span>
+</label>
+
+<label class="day-btn">
+    <input type="checkbox" name="days[]" value="Fri">
+    <span>Fri</span>
+</label>
+
+<label class="day-btn">
+    <input type="checkbox" name="days[]" value="Sat">
+    <span>Sat</span>
+</label>
+
+<label class="day-btn">
+    <input type="checkbox" name="days[]" value="Sun">
+    <span>Sun</span>
+</label>
 </div>
 
 <input type="time" name="start_time">
@@ -85,7 +113,7 @@
 <td>{{ $s->start_time }} - {{ $s->end_time }}</td>
 <td>{{ $s->type }}</td>
 </tr>
-@endforeach
+@endforeach 
 
 </table>
 </div>
