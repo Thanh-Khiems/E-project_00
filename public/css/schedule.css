@@ -57,4 +57,203 @@ table {
 td, th {
   padding:10px;
   border-bottom:1px solid #eee;
+}A/* RESET */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background: #f5f7fb;
+    color: #1e293b;
+}
+
+/* LAYOUT */
+.container {
+    display: flex;
+}
+
+/* SIDEBAR */
+.sidebar {
+    width: 240px;
+    height: 100vh;
+    background: #eef2ff;
+    padding: 20px;
+}
+
+.sidebar h2 {
+    font-size: 18px;
+    font-weight: bold;
+    color: #2563eb;
+    margin-bottom: 30px;
+}
+
+.sidebar ul {
+    list-style: none;
+}
+
+.sidebar li {
+    margin-bottom: 10px;
+}
+
+.sidebar a,
+.sidebar li {
+    display: block;
+    padding: 12px;
+    border-radius: 10px;
+    text-decoration: none;
+    color: #475569;
+    font-weight: 500;
+}
+
+.sidebar li.active,
+.sidebar a:hover {
+    background: #dbeafe;
+    color: #1d4ed8;
+}
+
+/* MAIN */
+.main {
+    flex: 1;
+    padding: 30px;
+}
+
+/* TITLE */
+.main h1 {
+    font-size: 28px;
+    font-weight: 800;
+    margin-bottom: 20px;
+    color: #1e3a8a;
+}
+
+/* CARD */
+.card {
+    background: #ffffff;
+    padding: 25px;
+    border-radius: 16px;
+    margin-bottom: 25px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+}
+
+/* FORM TITLE */
+.card h3 {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 15px;
+    border-left: 4px solid #2563eb;
+    padding-left: 10px;
+}
+
+/* INPUT */
+input,
+select,
+textarea {
+    width: 100%;
+    padding: 10px 12px;
+    margin-bottom: 12px;
+    border-radius: 10px;
+    border: none;
+    background: #f1f5f9;
+    outline: none;
+    font-size: 14px;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    border: 1px solid #2563eb;
+}
+
+/* DAYS BUTTON */
+.days {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 15px;
+}
+
+.days label {
+    background: #f1f5f9;
+    padding: 8px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 13px;
+}
+
+.days input {
+    display: none;
+}
+
+.days input:checked + span,
+.days label:hover {
+    background: #dbeafe;
+    color: #2563eb;
+}
+
+/* BUTTON */
+button {
+    background: linear-gradient(to right, #2563eb, #3b82f6);
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+button:hover {
+    transform: scale(1.03);
+}
+
+/* TABLE */
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th {
+    text-align: left;
+    font-size: 12px;
+    text-transform: uppercase;
+    color: #64748b;
+    padding: 12px;
+    background: #f1f5f9;
+}
+
+td {
+    padding: 14px 12px;
+    font-size: 14px;
+}
+
+tr {
+    border-bottom: 1px solid #f1f5f9;
+}
+
+tr:hover {
+    background: #f8fafc;
+}
+
+/* STATUS BADGE */
+.badge {
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: bold;
+}
+
+.badge.online {
+    background: #dbeafe;
+    color: #2563eb;
+}
+
+.badge.offline {
+    background: #e2e8f0;
+    color: #475569;
+}
+
+/* SUCCESS MESSAGE */
+p {
+    margin-bottom: 15px;
 }
