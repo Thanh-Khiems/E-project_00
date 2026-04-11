@@ -53,7 +53,7 @@ class AuthController extends Controller
 
     public function showLogin()
     {
-        return view('pages.login');
+        return view('pages.home');
     }
 
     public function login(Request $request)
@@ -63,7 +63,7 @@ class AuthController extends Controller
             'password' => 'required',
         ]);
 
-        $remember = $request->has('remember');
+        $remember = $request->boolean('remember');
 
         if (Auth::attempt($credentials, $remember)) {
             $request->session()->regenerate();
@@ -75,7 +75,7 @@ class AuthController extends Controller
             }
 
             if ($user->role === 'doctor') {
-                return redirect('/doctor/dashboard')->with('success', 'Login successful');
+                return redirect()->route('doctor.dashboard')->with('success', 'Login successful');
             }
 
             return redirect()->route('user.dashboard')->with('success', 'Login successful');
@@ -94,5 +94,10 @@ class AuthController extends Controller
         $request->session()->regenerateToken();
 
         return redirect('/');
+    }
+
+    public function doctor()
+    {
+        return view('pages.doctor.doctor-main');
     }
 }

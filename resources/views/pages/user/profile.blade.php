@@ -11,22 +11,21 @@
 .sidebar { flex: 1 1 250px; background: #fff; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); padding: 20px; min-width: 200px; height: fit-content; }
 .profile-preview {
     display: flex;
-    flex-direction: column; /* ảnh + tên + email xếp dọc */
-    align-items: center;    /* căn giữa theo chiều ngang */
-    justify-content: center; /* căn giữa theo chiều dọc nếu muốn */
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     margin-bottom: 20px;
 }
 .profile-preview h3 {
     color: #1d4ed8;
 }
-
 .profile-preview img {
     width: 120px;
     height: 120px;
     border-radius: 50%;
     object-fit: cover;
     margin-bottom: 10px;
-    display: block; /* đảm bảo ảnh là block */
+    display: block;
 }
 .sidebar ul { list-style: none; padding: 0; }
 .sidebar ul li { margin-bottom: 10px; }
@@ -41,13 +40,17 @@
 .btn-primary { background-color: #1d4ed8; color: #fff; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: 600; transition: 0.2s; }
 .btn-primary:hover { background-color: #2563eb; }
 .alert-success { background-color: #d1fae5; color: #065f46; border: 1px solid #10b981; padding: 12px 20px; border-radius: 8px; margin-bottom: 15px; font-weight: 500; }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+.form-group input[type="file"] {
+    background: #fff;
+    padding: 8px;
+}
 @media (max-width: 768px) { .dashboard-container { flex-direction: column; } }
-
 </style>
 
 <div class="dashboard-container">
 
-    <!-- Sidebar + Profile Preview -->
     <div class="sidebar">
         <div class="profile-preview">
             <img src="{{ $user->avatar ? asset('storage/avatars/'.$user->avatar) : asset('images/default-avatar.png') }}" alt="Avatar">
@@ -61,13 +64,12 @@
             <li><a href="#medical-history" class="tab-link">Lịch sử khám bệnh</a></li>
             <li><a href="#appointments" class="tab-link">Lịch hẹn</a></li>
             <li><a href="#doctor-reviews" class="tab-link">Đánh giá bác sĩ</a></li>
+            <li><a href="#doctor-verification" class="tab-link">Xác thực bác sĩ</a></li>
         </ul>
     </div>
 
-    <!-- Content Area -->
     <div class="content-area">
 
-        <!-- Profile Info -->
         <div id="account-settings" class="content-card tab-content active">
             <h2>Cài đặt tài khoản</h2>
             @if(session('success'))
@@ -92,7 +94,6 @@
                     <input type="text" name="phone" value="{{ $user->phone ?? '' }}">
                 </div>
 
-                <!-- Address -->
                 <div class="form-group">
                     <label>Tỉnh / Thành phố</label>
                     <select id="province" name="province">
@@ -126,7 +127,6 @@
             </form>
         </div>
 
-        <!-- Avatar Upload -->
         <div class="content-card">
             <h2>Đổi Avatar</h2>
             @if(session('success'))
@@ -142,7 +142,6 @@
             </form>
         </div>
 
-        <!-- Password Change -->
         <div id="password-change" class="content-card tab-content">
             <h2>Đổi mật khẩu</h2>
             @if(session('password_success'))
@@ -169,11 +168,95 @@
             </form>
         </div>
 
+        <div id="doctor-verification" class="content-card tab-content">
+            <h2>Xác thực bác sĩ</h2>
+            <p style="margin-bottom: 20px; color: #666;">
+                Vui lòng điền đầy đủ thông tin để gửi yêu cầu xác thực tài khoản bác sĩ.
+            </p>
+
+            <form action="#" method="POST" enctype="multipart/form-data">
+    @csrf
+
+    <div class="form-group">
+        <label>Họ và tên</label>
+        <input type="text" name="doctor_full_name" required>
+    </div>
+
+    <div class="form-group">
+        <label>Ngày sinh</label>
+        <input type="date" name="doctor_dob" required>
+    </div>
+
+    <div class="form-group">
+        <label>Số CCCD</label>
+        <input type="text" name="citizen_id" required>
+    </div>
+
+    <div class="form-group">
+        <label>Ảnh mặt trước CCCD</label>
+        <input type="file" name="citizen_id_front" accept="image/*" required>
+    </div>
+
+    <div class="form-group">
+        <label>Ảnh mặt sau CCCD</label>
+        <input type="file" name="citizen_id_back" accept="image/*" required>
+    </div>
+
+    <div class="form-group">
+        <label>Số điện thoại</label>
+        <input type="text" name="doctor_phone" required>
+    </div>
+
+    <div class="form-group">
+        <label>Bằng cấp</label>
+        <select name="degree" required>
+            <option value="">-- Chọn bằng cấp --</option>
+            <option value="Thạc sĩ">Thạc sĩ</option>
+            <option value="Tiến sĩ">Tiến sĩ</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>Ảnh bằng cấp bác sĩ</label>
+        <input type="file" name="degree_image" accept="image/*" required>
+    </div>
+
+    <div class="form-group">
+        <label>Chuyên khoa</label>
+        <select name="specialty" required>
+            <option value="">-- Chọn chuyên khoa --</option>
+            <option value="Tim mạch">Tim mạch</option>
+            <option value="Nhi">Nhi</option>
+            <option value="Da liễu">Da liễu</option>
+            <option value="Ngoại tổng quát">Ngoại tổng quát</option>
+            <option value="Chấn thương chỉnh hình">Chấn thương chỉnh hình</option>
+            <option value="Tai mũi họng">Tai mũi họng</option>
+            <option value="Sản phụ khoa">Sản phụ khoa</option>
+            <option value="Thần kinh">Thần kinh</option>
+            <option value="Hô hấp">Hô hấp</option>
+            <option value="Tiêu hóa">Tiêu hóa</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>Số năm kinh nghiệm</label>
+        <input type="number" name="experience_years" min="0" required>
+    </div>
+
+    <div class="form-group">
+        <label>Thành phố</label>
+        <input type="text" value="{{ $user->province ?? '' }}" readonly>
+        <input type="hidden" name="doctor_city" value="{{ $user->province ?? '' }}">
+    </div>
+
+    <button type="submit" class="btn-primary">Yêu Cầu Xác Thực</button>
+</form>
+        </div>
+
     </div>
 </div>
 
 <script>
-    // Tabs dynamic
     const tabs = document.querySelectorAll('.tab-link');
     const contents = document.querySelectorAll('.tab-content');
 
@@ -183,11 +266,14 @@
             tabs.forEach(t => t.classList.remove('active'));
             contents.forEach(c => c.classList.remove('active'));
             tab.classList.add('active');
-            document.querySelector(tab.getAttribute('href')).classList.add('active');
+
+            const target = document.querySelector(tab.getAttribute('href'));
+            if (target) {
+                target.classList.add('active');
+            }
         });
     });
 
-    // Address dropdown dynamic
     const locations = @json($locations);
     const provinceSelect = document.getElementById('province');
     const districtSelect = document.getElementById('district');
@@ -233,7 +319,6 @@
         if (provinceSelect.value) populateDistricts(provinceSelect.value, selectedDistrict);
     });
 
-    // Flash messages auto-hide
     setTimeout(() => {
         const successAlerts = document.querySelectorAll('.alert-success');
         successAlerts.forEach(alert => alert.style.display = 'none');

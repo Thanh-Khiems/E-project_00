@@ -45,8 +45,15 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 | Doctor
 |--------------------------------------------------------------------------
 */
-Route::get('/doctor', [DashboardController::class, 'doctor'])->name('doctor.dashboard');
 Route::get('/appointments', [AppointmentController::class, 'index']);
+
+Route::get('/doctor-main', [DashboardController::class, 'doctor'])
+    ->middleware('auth')
+    ->name('doctor.dashboard');
+
+Route::get('/doctor-manage', [DashboardController::class, 'manageAppointments'])
+    ->middleware('auth')
+    ->name('doctor.manage');
 
 /*
 |--------------------------------------------------------------------------
