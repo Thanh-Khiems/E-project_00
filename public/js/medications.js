@@ -1,69 +1,40 @@
-function loadMedications() {
-    fetch('/medications')
-    .then(res => res.json())
-    .then(data => {
-        let html = '';
+const tabButtons = document.querySelectorAll(".tab-btn");
+const panels = document.querySelectorAll(".panel");
 
-        data.forEach(m => {
-            html += `
-            <div class="card">
-                <input value="${m.name}" id="name-${m.id}">
+tabButtons.forEach(button => {
+    button.addEventListener("click", () => {
+        tabButtons.forEach(btn => btn.classList.remove("active"));
+        panels.forEach(panel => panel.classList.remove("active"));
 
-                <button onclick="updateMedication(${m.id})">Update</button>
-                <button onclick="deleteMedication(${m.id})">Delete</button>
-            </div>
-            `;
-        });
+        button.classList.add("active");
+        const target = document.getElementById(button.dataset.tab);
+        if (target) target.classList.add("active");
+    });
+});
 
-        document.getElementById('list').innerHTML = html;
+const medicineSearch = document.getElementById("medicineSearch");
+const typeFilter = document.getElementById("typeFilter");
+const rows = document.querySelectorAll("#medicineTable tr");
+
+function filterMedicines() {
+    const keyword = medicineSearch.value.toLowerCase().trim();
+    const type = typeFilter.value.toLowerCase().trim();
+
+    rows.forEach(row => {
+        const name = row.querySelector(".medicine-cell span").textContent.toLowerCase();
+        const rowType = row.dataset.type.toLowerCase();
+
+        const matchKeyword = name.includes(keyword);
+        const matchType = !type || rowType === type;
+
+        row.style.display = (matchKeyword && matchType) ? "" : "none";
     });
 }
 
-// ➕ ADD
-function addMedication() {
-    const name = document.getElementById('name').value;
-
-    fetch('/medications', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': csrf
-        },
-        body: JSON.stringify({ name })
-    })
-    .then(() => {
-        document.getElementById('name').value = '';
-        loadMedications();
-    });
+if (medicineSearch) {
+    medicineSearch.addEventListener("input", filterMedicines);
 }
 
-// ✏️ UPDATE
-function updateMedication(id) {
-    const name = document.getElementById(`name-${id}`).value;
-
-    fetch('/medications/' + id, {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': csrf
-        },
-        body: JSON.stringify({ name })
-    })
-    .then(() => loadMedications());
+if (typeFilter) {
+    typeFilter.addEventListener("change", filterMedicines);
 }
-
-// ❌ DELETE
-function deleteMedication(id) {
-    if (!confirm("Delete this medicine?")) return;
-
-    fetch('/medications/' + id, {
-        method: 'DELETE',
-        headers: {
-            'X-CSRF-TOKEN': csrf
-        }
-    })
-    .then(() => loadMedications());
-}
-
-// LOAD
-loadMedications();
