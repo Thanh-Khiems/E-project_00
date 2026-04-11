@@ -112,10 +112,11 @@ Route::redirect('/admin', '/admin/doctors');
 
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/doctors', [DoctorController::class, 'index'])->name('doctors.index');
+    Route::get('/doctor-approvals', [DoctorController::class, 'approvals'])->name('doctors.approvals');
+    Route::post('/doctors/{doctor}/approve', [DoctorController::class, 'approve'])->name('doctors.approve');
+    Route::post('/doctors/{doctor}/reject', [DoctorController::class, 'reject'])->name('doctors.reject');
     Route::get('/specialties', [SpecialtyController::class, 'index'])->name('specialties.index');
     Route::get('/patients', [PatientController::class, 'index'])->name('patients.index');
     Route::get('/staffs', [StaffController::class, 'index'])->name('staffs.index');
     Route::get('/appointments', [AdminAppointmentController::class, 'index'])->name('appointments.index');
 });
-
-

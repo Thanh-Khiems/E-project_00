@@ -7,19 +7,37 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     <link href="{{ asset('admin-ui/css/admin-hospital.css') }}" rel="stylesheet">
+    <style>
+        .logout-form { margin: 0; }
+        .logout-btn {
+            border: none;
+            background: #fff;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 25px rgba(15, 23, 42, .08);
+            color: #0f172a;
+        }
+        .logout-btn:hover { background: #f8fafc; }
+    </style>
 </head>
 <body>
 <div class="admin-shell">
     <aside class="sidebar">
         <div class="brand-box">
             <img src="{{ asset('admin-ui/images/logo.png') }}" alt="logo" style="width:200px;">
-        
         </div>
 
         <div class="menu-label">Quản trị hệ thống</div>
         <nav class="nav flex-column sidebar-nav">
-            <a class="nav-link {{ request()->routeIs('admin.doctors.*') ? 'active' : '' }}" href="{{ route('admin.doctors.index') }}">
+            <a class="nav-link {{ request()->routeIs('admin.doctors.index') ? 'active' : '' }}" href="{{ route('admin.doctors.index') }}">
                 <i class="bi bi-person-badge"></i><span>Bác sĩ</span>
+            </a>
+            <a class="nav-link {{ request()->routeIs('admin.doctors.approvals') ? 'active' : '' }}" href="{{ route('admin.doctors.approvals') }}">
+                <i class="bi bi-patch-check"></i><span>Duyệt bác sĩ</span>
             </a>
             <a class="nav-link {{ request()->routeIs('admin.specialties.*') ? 'active' : '' }}" href="{{ route('admin.specialties.index') }}">
                 <i class="bi bi-grid"></i><span>Chuyên khoa</span>
@@ -34,7 +52,6 @@
                 <i class="bi bi-calendar-check"></i><span>Lịch hẹn</span>
             </a>
         </nav>
-
     </aside>
 
     <main class="content-wrapper">
@@ -47,9 +64,19 @@
                 <div class="search-pill">
                     <i class="bi bi-search"></i>
                 </div>
+                <form method="POST" action="{{ route('logout') }}" class="logout-form" title="Đăng xuất">
+                    @csrf
+                    <button type="submit" class="logout-btn" aria-label="Đăng xuất">
+                        <i class="bi bi-box-arrow-right"></i>
+                    </button>
+                </form>
                 <div class="avatar-pill">AD</div>
             </div>
         </header>
+
+        @if(session('success'))
+            <div class="alert alert-success mt-3">{{ session('success') }}</div>
+        @endif
 
         @yield('content')
     </main>
