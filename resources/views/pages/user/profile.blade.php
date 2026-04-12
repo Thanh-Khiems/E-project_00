@@ -72,6 +72,15 @@
 
         <div id="account-settings" class="content-card tab-content active">
             <h2>Cài đặt tài khoản</h2>
+            @if($errors->any())
+                <div class="alert-success" style="background-color: #fee2e2; color: #991b1b; border: 1px solid #ef4444;">
+                    <ul style="margin: 0; padding-left: 18px;">
+                        @foreach($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
             @if(session('success'))
                 <div class="alert-success">{{ session('success') }}</div>
             @endif

@@ -9,23 +9,24 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Doctor;
 use App\Models\Specialty;
+use App\Services\LocationService;
 
 class ProfileController extends Controller
 {
     // Hiển thị trang profile
-    public function index()
+    public function index(LocationService $locationService)
     {
         $user = Auth::user();
-        $locations = config('locations');
+        $locations = $locationService->getStructuredLocations();
         $provinces = array_keys($locations);
 
         return view('pages.user.profile', compact('user', 'locations', 'provinces'));
     }
 
     // Cập nhật thông tin cá nhân
-    public function update(Request $request)
+    public function update(Request $request, LocationService $locationService)
     {
-        $request->validate([
+        $validated = $request->validate([
             'full_name' => 'required|string|max:255',
             'email' => 'required|email|max:255',
             'phone' => 'nullable|string|max:20',
@@ -35,16 +36,30 @@ class ProfileController extends Controller
             'address_detail' => 'nullable|string|max:255',
         ]);
 
+        if ($validated['province'] || $validated['district'] || $validated['ward']) {
+            if (! $validated['province'] || ! $validated['district'] || ! $validated['ward']) {
+                return redirect()->back()->withErrors([
+                    'province' => 'Vui lòng chọn đầy đủ tỉnh/thành phố, quận/huyện và phường/xã.',
+                ])->withInput();
+            }
+
+            if (! $locationService->isValidSelection($validated['province'], $validated['district'], $validated['ward'])) {
+                return redirect()->back()->withErrors([
+                    'province' => 'Khu vực đã chọn không hợp lệ hoặc đã thay đổi. Vui lòng chọn lại.',
+                ])->withInput();
+            }
+        }
+
         $user = Auth::user();
 
         $user->update([
-            'full_name' => $request->full_name,
-            'email' => $request->email,
-            'phone' => $request->phone,
-            'province' => $request->province,
-            'district' => $request->district,
-            'ward' => $request->ward,
-            'address_detail' => $request->address_detail,
+            'full_name' => $validated['full_name'],
+            'email' => $validated['email'],
+            'phone' => $validated['phone'],
+            'province' => $validated['province'],
+            'district' => $validated['district'],
+            'ward' => $validated['ward'],
+            'address_detail' => $validated['address_detail'],
         ]);
 
         return redirect()->back()->with('success', 'Thông tin cá nhân đã được cập nhật!');

@@ -51,6 +51,9 @@
             <a class="nav-link {{ request()->routeIs('admin.appointments.*') ? 'active' : '' }}" href="{{ route('admin.appointments.index') }}">
                 <i class="bi bi-calendar-check"></i><span>Lịch hẹn</span>
             </a>
+            <a class="nav-link {{ request()->routeIs('admin.locations.*') ? 'active' : '' }}" href="{{ route('admin.locations.index') }}">
+                <i class="bi bi-geo-alt"></i><span>Khu vực</span>
+            </a>
         </nav>
     </aside>
 
@@ -76,6 +79,10 @@
 
         @if(session('success'))
             <div class="alert alert-success mt-3">{{ session('success') }}</div>
+        @endif
+
+        @if(session('error'))
+            <div class="alert alert-danger mt-3">{{ session('error') }}</div>
         @endif
 
         @yield('content')

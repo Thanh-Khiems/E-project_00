@@ -16,6 +16,8 @@ use App\Http\Controllers\Admin\SpecialtyController;
 use App\Http\Controllers\Admin\PatientController;
 use App\Http\Controllers\Admin\StaffController;
 use App\Http\Controllers\Admin\AppointmentController as AdminAppointmentController;
+use App\Http\Controllers\Admin\LocationController;
+use App\Http\Controllers\MedicineTypeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -120,11 +122,13 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/patients', [PatientController::class, 'index'])->name('patients.index');
     Route::get('/staffs', [StaffController::class, 'index'])->name('staffs.index');
     Route::get('/appointments', [AdminAppointmentController::class, 'index'])->name('appointments.index');
+
+    Route::get('/locations', [LocationController::class, 'index'])->name('locations.index');
+    Route::post('/locations', [LocationController::class, 'store'])->name('locations.store');
+    Route::put('/locations/{location}', [LocationController::class, 'update'])->name('locations.update');
+    Route::delete('/locations/{location}', [LocationController::class, 'destroy'])->name('locations.destroy');
 });
 
-
-
-use App\Http\Controllers\MedicineTypeController;
 
 Route::get('/medications', [MedicationController::class, 'index']);
 Route::post('/medications', [MedicationController::class, 'store']);

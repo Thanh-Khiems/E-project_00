@@ -6,18 +6,19 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use App\Services\LocationService;
 
 class AuthController extends Controller
 {
-    public function showRegister()
+    public function showRegister(LocationService $locationService)
     {
-        $locations = config('locations');
+        $locations = $locationService->getStructuredLocations();
         $provinces = array_keys($locations);
 
         return view('pages.register', compact('locations', 'provinces'));
     }
 
-    public function register(Request $request)
+    public function register(Request $request, LocationService $locationService)
     {
         $validated = $request->validate([
             'full_name' => 'required|string|max:255',
@@ -31,6 +32,12 @@ class AuthController extends Controller
             'dob' => 'nullable|date',
             'password' => 'required|string|min:8|confirmed',
         ]);
+
+        if (! $locationService->isValidSelection($validated['province'], $validated['district'], $validated['ward'])) {
+            return back()->withErrors([
+                'province' => 'Khu vực đã chọn không hợp lệ hoặc đã thay đổi. Vui lòng chọn lại.',
+            ])->withInput();
+        }
 
         $user = User::create([
             'full_name' => $validated['full_name'],
