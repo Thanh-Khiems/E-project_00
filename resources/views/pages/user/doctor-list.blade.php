@@ -3,7 +3,6 @@
 @section('content')
 
 <style>
-/* Section */
 .doctors-section {
     padding: 40px 20px;
     background: #f9f9f9;
@@ -16,25 +15,32 @@
     margin: 0 auto;
 }
 
-/* Filter menu */
+/* Filter */
 .filter-card {
     background: #fff;
     padding: 25px;
     border-radius: 16px;
     box-shadow: 0 8px 24px rgba(0,0,0,0.08);
     flex: 0 0 280px;
+    height: fit-content;
 }
 .filter-card h4 {
-    font-weight: 600;
+    font-weight: 700;
     margin-bottom: 20px;
     color: #007bff;
 }
-.filter-card input, .filter-card select {
+.filter-card input,
+.filter-card select {
     width: 100%;
-    padding: 10px;
-    border-radius: 8px;
+    padding: 10px 12px;
+    border-radius: 10px;
     border: 1px solid #ddd;
     margin-bottom: 15px;
+    outline: none;
+}
+.filter-card input:focus,
+.filter-card select:focus {
+    border-color: #007bff;
 }
 .filter-card button {
     width: 100%;
@@ -45,9 +51,13 @@
     color: #fff;
     font-weight: 600;
     cursor: pointer;
+    transition: 0.2s ease;
+}
+.filter-card button:hover {
+    opacity: 0.92;
 }
 
-/* Doctor Cards */
+/* Doctor list */
 .doctors-list {
     display: flex;
     flex-wrap: wrap;
@@ -56,42 +66,48 @@
 }
 .doctor-card {
     background: #fff;
-    border-radius: 16px;
+    border-radius: 18px;
     padding: 20px;
     box-shadow: 0 8px 20px rgba(0,0,0,0.08);
     flex: 0 0 calc(50% - 10px);
     display: flex;
     flex-direction: column;
-    transition: transform 0.3s;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 .doctor-card:hover {
-    transform: translateY(-5px);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 28px rgba(0,0,0,0.10);
 }
 
 .doctor-card-top {
     display: flex;
-    gap: 20px;
+    gap: 18px;
     align-items: flex-start;
     margin-bottom: 15px;
 }
 .doctor-avatar img {
-    width: 100px;
-    height: 100px;
-    border-radius: 12px;
+    width: 96px;
+    height: 96px;
+    border-radius: 14px;
     object-fit: cover;
+    display: block;
+    background: #f2f2f2;
+}
+.doctor-info {
+    flex: 1;
 }
 .doctor-info h5 {
     font-size: 18px;
     font-weight: 700;
     color: #007bff;
-    margin-bottom: 6px;
+    margin-bottom: 8px;
 }
 .doctor-info p {
     font-size: 14px;
     color: #555;
     display: flex;
     align-items: center;
-    margin-bottom: 6px;
+    margin-bottom: 7px;
 }
 .doctor-info p i {
     margin-right: 8px;
@@ -99,9 +115,9 @@
     min-width: 18px;
 }
 
-/* Working schedule */
+/* Schedule */
 .doctor-schedule {
-    margin-top: 15px;
+    margin-top: 12px;
     padding-top: 15px;
     border-top: 1px solid #eee;
 }
@@ -109,34 +125,55 @@
     font-size: 15px;
     font-weight: 700;
     color: #333;
-    margin-bottom: 10px;
+    margin-bottom: 14px;
     display: flex;
     align-items: center;
     gap: 8px;
 }
-.schedule-day {
+.schedule-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
     margin-bottom: 12px;
+    padding: 10px 0;
+    border-bottom: 1px dashed #eee;
 }
-.schedule-day-name {
+.schedule-row:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+.schedule-row-day {
+    min-width: 75px;
     font-size: 14px;
-    font-weight: 600;
+    font-weight: 700;
     color: #007bff;
-    margin-bottom: 8px;
+    padding-top: 4px;
 }
-.schedule-slots {
+.schedule-row-slots {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
+    flex: 1;
 }
-.schedule-slot {
-    display: inline-block;
-    padding: 6px 12px;
+.time-slot-btn {
+    border: 1px solid #b9dcff;
     background: #eaf4ff;
     color: #007bff;
-    border: 1px solid #b9dcff;
     border-radius: 999px;
+    padding: 7px 14px;
     font-size: 13px;
     font-weight: 600;
+    cursor: default;
+    transition: all 0.2s ease;
+}
+.time-slot-btn:hover {
+    background: #007bff;
+    color: #fff;
+}
+.schedule-note {
+    margin-top: 10px;
+    font-size: 12px;
+    color: #777;
 }
 .schedule-empty {
     font-size: 13px;
@@ -144,16 +181,16 @@
     font-style: italic;
 }
 
-/* Buttons */
+/* Actions */
 .doctor-card-actions {
     display: flex;
     gap: 10px;
-    margin-top: auto;
+    margin-top: 18px;
 }
 .doctor-card-actions .btn-detail {
     flex: 1;
     padding: 10px 0;
-    border: solid 1px #007bff;
+    border: 1px solid #007bff;
     border-radius: 10px;
     background: #fff;
     color: #007bff;
@@ -188,172 +225,182 @@
 <section class="doctors-section">
     <div class="doctors-container">
 
-        <!-- Filter -->
         <div class="filter-card">
             <h4>Filter Bác sĩ</h4>
-            <form id="doctorFilterForm">
-                <input type="text" name="name" placeholder="Họ và tên">
+
+            <form method="GET" action="{{ route('doctor-list') }}" id="doctorFilterForm">
+                <input
+                    type="text"
+                    name="keyword"
+                    placeholder="Họ tên / học vị / chuyên khoa"
+                    value="{{ request('keyword') }}"
+                >
 
                 <select name="specialty">
                     <option value="">Chuyên khoa</option>
-                    <option value="Tim mạch">Tim mạch</option>
-                    <option value="Da liễu">Da liễu</option>
-                    <option value="Nhi">Nhi</option>
-                    <option value="Ngoại chấn thương chỉnh hình">Ngoại chấn thương chỉnh hình</option>
-                    <option value="Gây mê - điều trị đau">Gây mê - điều trị đau</option>
+                    @php
+                        $specialties = $doctors->pluck('specialty.name')
+                            ->filter()
+                            ->unique()
+                            ->sort()
+                            ->values();
+                    @endphp
+
+                    @foreach($specialties as $specialty)
+                        <option value="{{ $specialty }}" {{ request('specialty') == $specialty ? 'selected' : '' }}>
+                            {{ $specialty }}
+                        </option>
+                    @endforeach
                 </select>
 
                 <select name="city">
                     <option value="">Thành phố</option>
-                    <option value="Hà Nội">Hà Nội</option>
-                    <option value="Hồ Chí Minh">Hồ Chí Minh</option>
+                    @php
+                        $cities = $doctors->pluck('city')
+                            ->filter()
+                            ->unique()
+                            ->sort()
+                            ->values();
+                    @endphp
+
+                    @foreach($cities as $city)
+                        <option value="{{ $city }}" {{ request('city') == $city ? 'selected' : '' }}>
+                            {{ $city }}
+                        </option>
+                    @endforeach
                 </select>
 
                 <button type="submit">Tìm kiếm</button>
             </form>
         </div>
 
-        <!-- Doctor List -->
         <div class="doctors-list">
-            @php
-            $doctors = [
-                [
-                    'name' => 'Đỗ Tất Cường',
-                    'title' => 'Giáo sư, Tiến sĩ, Bác sĩ',
-                    'specialty' => 'Tim mạch',
-                    'center' => 'Trung tâm hồi sức và cấp cứu - Bệnh viện Vinmec',
-                    'city' => 'Hà Nội',
-                    'avatar' => 'https://i.pravatar.cc/100?img=14',
-                    'working_hours' => [
-                        [
-                            'day' => 'Thứ 2',
-                            'slots' => ['08:00 - 10:00', '14:00 - 16:00', '19:00 - 20:30']
-                        ],
-                        [
-                            'day' => 'Thứ 4',
-                            'slots' => ['08:30 - 11:00', '13:30 - 15:30']
-                        ],
-                        [
-                            'day' => 'Thứ 6',
-                            'slots' => ['09:00 - 11:30']
-                        ],
-                    ]
-                ],
-                [
-                    'name' => 'Nguyễn Thanh Liêm',
-                    'title' => 'Giáo sư, Tiến sĩ, Bác sĩ',
-                    'specialty' => 'Nhi',
-                    'center' => 'Trung tâm Y học tái tạo & Trị liệu tế bào',
-                    'city' => 'Hồ Chí Minh',
-                    'avatar' => 'https://i.pravatar.cc/100?img=10',
-                    'working_hours' => [
-                        [
-                            'day' => 'Thứ 3',
-                            'slots' => ['07:30 - 09:30', '10:00 - 11:30']
-                        ],
-                        [
-                            'day' => 'Thứ 5',
-                            'slots' => ['13:00 - 15:00', '15:30 - 17:00']
-                        ],
-                        [
-                            'day' => 'Thứ 7',
-                            'slots' => ['08:00 - 10:30']
-                        ],
-                    ]
-                ],
-                [
-                    'name' => 'Trần Trung Dũng',
-                    'title' => 'Giáo sư, Tiến sĩ, Bác sĩ',
-                    'specialty' => 'Ngoại chấn thương chỉnh hình',
-                    'center' => 'Trung tâm Cơ xương khớp & Chấn thương - Bệnh viện Vinmec Times City',
-                    'city' => 'Hà Nội',
-                    'avatar' => 'https://i.pravatar.cc/100?img=11',
-                    'working_hours' => [
-                        [
-                            'day' => 'Thứ 2',
-                            'slots' => ['08:00 - 09:30', '10:00 - 11:30']
-                        ],
-                        [
-                            'day' => 'Thứ 4',
-                            'slots' => ['14:00 - 16:00']
-                        ],
-                        [
-                            'day' => 'Chủ nhật',
-                            'slots' => ['08:00 - 10:00', '10:30 - 12:00']
-                        ],
-                    ]
-                ],
-                [
-                    'name' => 'Philippe Macaire',
-                    'title' => 'Giáo sư, Tiến sĩ, Bác sĩ',
-                    'specialty' => 'Gây mê - điều trị đau',
-                    'center' => 'Khoa Gây mê giảm đau - Bệnh viện Vinmec Times City',
-                    'city' => 'Hồ Chí Minh',
-                    'avatar' => 'https://i.pravatar.cc/100?img=12',
-                    'working_hours' => [
-                        [
-                            'day' => 'Thứ 3',
-                            'slots' => ['08:00 - 10:00']
-                        ],
-                        [
-                            'day' => 'Thứ 5',
-                            'slots' => ['09:00 - 11:00', '14:00 - 16:30']
-                        ],
-                        [
-                            'day' => 'Thứ 7',
-                            'slots' => ['13:30 - 15:30', '16:00 - 18:00']
-                        ],
-                    ]
-                ],
-            ];
-            @endphp
+            @forelse($doctors as $doctor)
+                @php
+                    $avatar = ($doctor->user && $doctor->user->avatar)
+                        ? asset('storage/avatars/' . $doctor->user->avatar)
+                        : asset('images/default-avatar.png');
 
-            @foreach($doctors as $doctor)
-            <div class="doctor-card">
-                <div class="doctor-card-top">
-                    <div class="doctor-avatar">
-                        <img src="{{ $doctor['avatar'] }}" alt="{{ $doctor['name'] }}">
+                    $doctorName = $doctor->name ?? 'Chưa cập nhật tên';
+                    $doctorTitle = $doctor->degree ?? 'Bác sĩ';
+                    $doctorSpecialty = optional($doctor->specialty)->name ?? 'Chưa cập nhật chuyên khoa';
+                    $doctorExperience = $doctor->experience_years
+                        ? $doctor->experience_years . ' năm kinh nghiệm'
+                        : 'Chưa cập nhật kinh nghiệm';
+                    $doctorCity = $doctor->city ?? 'Chưa cập nhật';
+
+                    $groupedSchedules = collect();
+
+                    if ($doctor->schedules && $doctor->schedules->count()) {
+                        $normalized = $doctor->schedules->flatMap(function ($schedule) {
+                            $days = collect(explode(',', $schedule->days))
+                                ->map(fn($day) => trim($day))
+                                ->filter();
+
+                            if ($days->isEmpty()) {
+                                return collect([$schedule]);
+                            }
+
+                            return $days->map(function ($day) use ($schedule) {
+                                $clone = clone $schedule;
+                                $clone->display_day = $day;
+                                return $clone;
+                            });
+                        });
+
+                        $dayOrder = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+
+                        $groupedSchedules = $normalized
+                            ->sortBy(function ($schedule) use ($dayOrder) {
+                                $day = $schedule->display_day ?? trim($schedule->days);
+                                $dayIndex = array_search($day, $dayOrder);
+                                $timeValue = strtotime($schedule->start_time);
+
+                                return sprintf('%02d-%010d', $dayIndex !== false ? $dayIndex : 99, $timeValue);
+                            })
+                            ->groupBy(function ($schedule) {
+                                return $schedule->display_day ?? trim($schedule->days);
+                            });
+                    }
+
+                    $dayLabels = [
+                        'Mon' => 'Thứ 2',
+                        'Tue' => 'Thứ 3',
+                        'Wed' => 'Thứ 4',
+                        'Thu' => 'Thứ 5',
+                        'Fri' => 'Thứ 6',
+                        'Sat' => 'Thứ 7',
+                        'Sun' => 'Chủ nhật',
+                    ];
+                @endphp
+
+                <div class="doctor-card">
+                    <div class="doctor-card-top">
+                        <div class="doctor-avatar">
+                            <img src="{{ $avatar }}" alt="{{ $doctorName }}">
+                        </div>
+
+                        <div class="doctor-info">
+                            <h5>{{ $doctorName }}</h5>
+                            <p><i class="fas fa-user-graduate"></i> {{ $doctorTitle }}</p>
+                            <p><i class="fas fa-stethoscope"></i> {{ $doctorSpecialty }}</p>
+                            <p><i class="fas fa-briefcase"></i> {{ $doctorExperience }}</p>
+                            <p><i class="fas fa-map-marker-alt"></i> {{ $doctorCity }}</p>
+                        </div>
                     </div>
 
-                    <div class="doctor-info">
-                        <h5>{{ $doctor['name'] }}</h5>
-                        <p><i class="fas fa-user-graduate"></i> {{ $doctor['title'] }}</p>
-                        <p><i class="fas fa-stethoscope"></i> {{ $doctor['specialty'] }}</p>
-                        <p><i class="fas fa-hospital"></i> {{ $doctor['center'] }}</p>
-                        <p><i class="fas fa-map-marker-alt"></i> {{ $doctor['city'] }}</p>
-                    </div>
-                </div>
+                    <div class="doctor-schedule">
+                        <h6><i class="fas fa-clock"></i> Lịch khám</h6>
 
-                <div class="doctor-schedule">
-                    <h6><i class="fas fa-clock"></i> Khung giờ làm việc</h6>
+                        @if($groupedSchedules->count())
+                            @foreach($groupedSchedules as $day => $daySchedules)
+                                <div class="schedule-row">
+                                    <div class="schedule-row-day">
+                                        {{ $dayLabels[$day] ?? $day }}
+                                    </div>
 
-                    @if(!empty($doctor['working_hours']))
-                        @foreach($doctor['working_hours'] as $schedule)
-                            <div class="schedule-day">
-                                <div class="schedule-day-name">{{ $schedule['day'] }}</div>
-
-                                @if(!empty($schedule['slots']))
-                                    <div class="schedule-slots">
-                                        @foreach($schedule['slots'] as $slot)
-                                            <span class="schedule-slot">{{ $slot }}</span>
+                                    <div class="schedule-row-slots">
+                                        @foreach($daySchedules->take(3) as $schedule)
+                                            <span class="time-slot-btn">
+                                                {{ \Carbon\Carbon::parse($schedule->start_time)->format('H:i') }}
+                                                -
+                                                {{ \Carbon\Carbon::parse($schedule->end_time)->format('H:i') }}
+                                            </span>
                                         @endforeach
                                     </div>
-                                @else
-                                    <div class="schedule-empty">Chưa có khung giờ</div>
-                                @endif
-                            </div>
-                        @endforeach
-                    @else
-                        <div class="schedule-empty">Bác sĩ chưa cập nhật lịch làm việc</div>
-                    @endif
-                </div>
+                                </div>
+                            @endforeach
 
-                <div class="doctor-card-actions">
-                    <button class="btn-detail">Xem chi tiết</button>
-                    <button class="btn-book">Đặt hẹn</button>
+                            @php
+                                $firstSchedule = $doctor->schedules->sortBy('start_date')->first();
+                                $lastSchedule = $doctor->schedules->sortByDesc('end_date')->first();
+                            @endphp
+
+                            @if($firstSchedule && $lastSchedule)
+                                <div class="schedule-note">
+                                    Áp dụng:
+                                    {{ \Carbon\Carbon::parse($firstSchedule->start_date)->format('d/m/Y') }}
+                                    -
+                                    {{ \Carbon\Carbon::parse($lastSchedule->end_date)->format('d/m/Y') }}
+                                </div>
+                            @endif
+                        @else
+                            <div class="schedule-empty">Bác sĩ chưa cập nhật lịch làm việc</div>
+                        @endif
+                    </div>
+
+                    <div class="doctor-card-actions">
+                        <button type="button" class="btn-detail">Xem chi tiết</button>
+                        <button type="button" class="btn-book">Đặt hẹn</button>
+                    </div>
                 </div>
-            </div>
-            @endforeach
+            @empty
+                <div class="doctor-card" style="flex: 1 1 100%;">
+                    <div class="schedule-empty" style="font-size:15px;">
+                        Hiện chưa có bác sĩ nào đã được duyệt hoặc chưa có dữ liệu hiển thị.
+                    </div>
+                </div>
+            @endforelse
         </div>
 
     </div>

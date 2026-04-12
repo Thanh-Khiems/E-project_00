@@ -9,6 +9,7 @@ use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\MedicationController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\User\ProfileController;
+use App\Http\Controllers\User\DoctorListController;
 
 // Admin Controllers
 use App\Http\Controllers\Admin\DoctorController;
@@ -47,17 +48,14 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 | Doctor
 |--------------------------------------------------------------------------
 */
-/*  Trang chính */
 Route::get('/doctor-main', [DashboardController::class, 'doctor'])
     ->middleware('auth')
     ->name('doctor.dashboard');
 
-/* Trang quản lí */
 Route::get('/doctor-manage', [DashboardController::class, 'manageAppointments'])
     ->middleware('auth')
     ->name('doctor.manage');
 
-/* Trang lịch hẹn */
 Route::get('/doctor-appointments', [DashboardController::class, 'appointments'])
     ->middleware('auth')
     ->name('doctor.appointments');
@@ -67,31 +65,20 @@ Route::get('/doctor-appointments', [DashboardController::class, 'appointments'])
 | Schedule
 |--------------------------------------------------------------------------
 */
-Route::get('/schedule', [ScheduleController::class, 'index']);
-Route::post('/schedule', [ScheduleController::class, 'store'])->name('schedule.store');
-
+Route::middleware('auth')->group(function () {
+    Route::post('/schedule', [ScheduleController::class, 'store'])->name('schedule.store');
+    Route::put('/schedule/{id}', [ScheduleController::class, 'update'])->name('schedule.update');
+    Route::delete('/schedule/{id}', [ScheduleController::class, 'destroy'])->name('schedule.destroy');
+});
 /*
 |--------------------------------------------------------------------------
-| Medication
+| Doctor List
 |--------------------------------------------------------------------------
 */
-
-
-
-
-/*
-|--------------------------------------------------------------------------
-| User
-|--------------------------------------------------------------------------
-*/
-Route::get('/user/dashboard', function () {
-    return view('pages.user.dashboard');
-})->middleware('auth')->name('user.dashboard');
+Route::get('/doctor-list', [DoctorListController::class, 'index'])->name('doctor-list');
 
 Route::middleware(['auth'])->prefix('user')->name('user.')->group(function () {
-    Route::get('/doctor-list', function () {
-        return view('pages.user.doctor-list');
-    })->name('doctor-list');
+    Route::get('/doctor-list', [DoctorListController::class, 'index'])->name('doctor-list');
 
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
     Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -102,10 +89,18 @@ Route::middleware(['auth'])->prefix('user')->name('user.')->group(function () {
 
 /*
 |--------------------------------------------------------------------------
-| Admin (Temporary Disabled)
+| User
 |--------------------------------------------------------------------------
 */
+Route::get('/user/dashboard', function () {
+    return view('pages.user.dashboard');
+})->middleware('auth')->name('user.dashboard');
 
+/*
+|--------------------------------------------------------------------------
+| Admin
+|--------------------------------------------------------------------------
+*/
 Route::redirect('/admin', '/admin/doctors');
 
 Route::prefix('admin')->name('admin.')->group(function () {
@@ -129,7 +124,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::delete('/locations/{location}', [LocationController::class, 'destroy'])->name('locations.destroy');
 });
 
-
+/*
+|--------------------------------------------------------------------------
+| Medication
+|--------------------------------------------------------------------------
+*/
 Route::get('/medications', [MedicationController::class, 'index']);
 Route::post('/medications', [MedicationController::class, 'store']);
 Route::delete('/medications/{id}', [MedicationController::class, 'destroy']);

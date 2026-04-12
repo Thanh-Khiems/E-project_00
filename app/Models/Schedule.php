@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Schedule extends Model
 {
     protected $fillable = [
+        'doctor_id',
         'start_date',
         'end_date',
         'type',
@@ -15,6 +16,11 @@ class Schedule extends Model
         'end_time',
         'max_patients',
         'location',
-        'notes'
+        'notes',
     ];
+
+    public function doctor()
+    {
+        return $this->belongsTo(Doctor::class);
+    }
 }
