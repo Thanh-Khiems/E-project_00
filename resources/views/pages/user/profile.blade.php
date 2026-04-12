@@ -72,6 +72,7 @@
 
         <div id="account-settings" class="content-card tab-content active">
             <h2>Cài đặt tài khoản</h2>
+
             @if($errors->any())
                 <div class="alert-success" style="background-color: #fee2e2; color: #991b1b; border: 1px solid #ef4444;">
                     <ul style="margin: 0; padding-left: 18px;">
@@ -81,9 +82,11 @@
                     </ul>
                 </div>
             @endif
+
             @if(session('success'))
                 <div class="alert-success">{{ session('success') }}</div>
             @endif
+
             <form action="{{ route('user.profile.update') }}" method="POST">
                 @csrf
                 @method('PUT')
@@ -136,191 +139,213 @@
             </form>
         </div>
 
-        <div class="content-card">
-            <h2>Đổi Avatar</h2>
+        <div id="appointments" class="content-card tab-content">
+            <h2>Lịch hẹn</h2>
+
             @if(session('success'))
                 <div class="alert-success">{{ session('success') }}</div>
             @endif
-            <form action="{{ route('user.profile.avatar') }}" method="POST" enctype="multipart/form-data">
-                @csrf
-                <div class="form-group">
-                    <label>Chọn ảnh</label>
-                    <input type="file" name="avatar" accept="image/*" required>
+
+            <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="background: #f8fafc;">
+                            <th style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: left;">Bác sĩ</th>
+                            <th style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: left;">Chuyên khoa</th>
+                            <th style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: left;">Ngày khám</th>
+                            <th style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: left;">Thứ</th>
+                            <th style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: left;">Giờ</th>
+                            <th style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: left;">Hình thức</th>
+                            <th style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: left;">Địa điểm</th>
+                            <th style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: left;">Trạng thái</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($appointments as $appointment)
+                            <tr>
+                                <td style="padding: 12px; border-bottom: 1px solid #e5e7eb;">
+                                    {{ $appointment->doctor->name ?? 'N/A' }}
+                                </td>
+                                <td style="padding: 12px; border-bottom: 1px solid #e5e7eb;">
+                                    {{ optional($appointment->doctor->specialty)->name ?? 'N/A' }}
+                                </td>
+                                <td style="padding: 12px; border-bottom: 1px solid #e5e7eb;">
+                                    {{ \Carbon\Carbon::parse($appointment->appointment_date)->format('d/m/Y') }}
+                                </td>
+                                <td style="padding: 12px; border-bottom: 1px solid #e5e7eb;">
+                                    {{ $appointment->appointment_day }}
+                                </td>
+                                <td style="padding: 12px; border-bottom: 1px solid #e5e7eb;">
+                                    {{ \Carbon\Carbon::parse($appointment->start_time)->format('H:i') }}
+                                    -
+                                    {{ \Carbon\Carbon::parse($appointment->end_time)->format('H:i') }}
+                                </td>
+                                <td style="padding: 12px; border-bottom: 1px solid #e5e7eb;">
+                                    {{ ucfirst($appointment->type ?? 'N/A') }}
+                                </td>
+                                <td style="padding: 12px; border-bottom: 1px solid #e5e7eb;">
+                                    {{ $appointment->location ?? 'N/A' }}
+                                </td>
+                                <td style="padding: 12px; border-bottom: 1px solid #e5e7eb;">
+                                    {{ ucfirst($appointment->status) }}
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="8" style="padding: 16px; text-align: center; color: #6b7280;">
+                                    Bạn chưa có lịch hẹn nào.
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="doctor-verification" class="content-card tab-content">
+            <h2>Xác thực bác sĩ</h2>
+
+            @if(session('success'))
+                <div class="alert-success">{{ session('success') }}</div>
+            @endif
+
+            @if(session('error'))
+                <div class="alert-success" style="background-color: #fee2e2; color: #991b1b; border: 1px solid #ef4444;">
+                    {{ session('error') }}
                 </div>
-                <button type="submit" class="btn-primary">Cập nhật Avatar</button>
+            @endif
+
+            @if($user->doctor_verification_status === 'pending')
+                <div class="alert-success" style="background-color: #fef3c7; color: #92400e; border: 1px solid #f59e0b;">
+                    Tài khoản của bạn đang trong trạng thái <strong>chờ duyệt xác thực bác sĩ</strong>.
+                </div>
+            @elseif($user->doctor_verification_status === 'approved')
+                <div class="alert-success">
+                    Tài khoản của bạn đã được <strong>xác thực bác sĩ thành công</strong>.
+                </div>
+            @elseif($user->doctor_verification_status === 'rejected')
+                <div class="alert-success" style="background-color: #fee2e2; color: #991b1b; border: 1px solid #ef4444;">
+                    Yêu cầu xác thực đã bị từ chối.
+                    @if($user->doctor_rejection_reason)
+                        <br><strong>Lý do:</strong> {{ $user->doctor_rejection_reason }}
+                    @endif
+                </div>
+            @endif
+
+            <p style="margin-bottom: 20px; color: #666;">
+                Vui lòng điền đầy đủ thông tin để gửi yêu cầu xác thực tài khoản bác sĩ.
+            </p>
+
+            <form action="{{ route('user.profile.verifyDoctor') }}" method="POST" enctype="multipart/form-data">
+                @csrf
+
+                <div class="form-group">
+                    <label>Họ và tên</label>
+                    <input type="text" name="doctor_full_name" value="{{ old('doctor_full_name', $user->full_name) }}" required>
+                    @error('doctor_full_name')
+                        <small style="color:red">{{ $message }}</small>
+                    @enderror
+                </div>
+
+                <div class="form-group">
+                    <label>Ngày sinh</label>
+                    <input type="date" name="doctor_dob" value="{{ old('doctor_dob', $user->dob) }}" required>
+                    @error('doctor_dob')
+                        <small style="color:red">{{ $message }}</small>
+                    @enderror
+                </div>
+
+                <div class="form-group">
+                    <label>Số CCCD</label>
+                    <input type="text" name="citizen_id" value="{{ old('citizen_id') }}" required>
+                    @error('citizen_id')
+                        <small style="color:red">{{ $message }}</small>
+                    @enderror
+                </div>
+
+                <div class="form-group">
+                    <label>Ảnh mặt trước CCCD</label>
+                    <input type="file" name="citizen_id_front" accept="image/*" required>
+                    @error('citizen_id_front')
+                        <small style="color:red">{{ $message }}</small>
+                    @enderror
+                </div>
+
+                <div class="form-group">
+                    <label>Ảnh mặt sau CCCD</label>
+                    <input type="file" name="citizen_id_back" accept="image/*" required>
+                    @error('citizen_id_back')
+                        <small style="color:red">{{ $message }}</small>
+                    @enderror
+                </div>
+
+                <div class="form-group">
+                    <label>Số điện thoại</label>
+                    <input type="text" name="doctor_phone" value="{{ old('doctor_phone', $user->phone) }}" required>
+                    @error('doctor_phone')
+                        <small style="color:red">{{ $message }}</small>
+                    @enderror
+                </div>
+
+                <div class="form-group">
+                    <label>Bằng cấp</label>
+                    <select name="degree" required>
+                        <option value="">-- Chọn bằng cấp --</option>
+                        <option value="Thạc sĩ" {{ old('degree') == 'Thạc sĩ' ? 'selected' : '' }}>Thạc sĩ</option>
+                        <option value="Tiến sĩ" {{ old('degree') == 'Tiến sĩ' ? 'selected' : '' }}>Tiến sĩ</option>
+                    </select>
+                    @error('degree')
+                        <small style="color:red">{{ $message }}</small>
+                    @enderror
+                </div>
+
+                <div class="form-group">
+                    <label>Ảnh bằng cấp bác sĩ</label>
+                    <input type="file" name="degree_image" accept="image/*" required>
+                    @error('degree_image')
+                        <small style="color:red">{{ $message }}</small>
+                    @enderror
+                </div>
+
+                <div class="form-group">
+                    <label>Chuyên khoa</label>
+                    <select name="specialty" required>
+                        <option value="">-- Chọn chuyên khoa --</option>
+                        <option value="Tim mạch" {{ old('specialty') == 'Tim mạch' ? 'selected' : '' }}>Tim mạch</option>
+                        <option value="Nhi" {{ old('specialty') == 'Nhi' ? 'selected' : '' }}>Nhi</option>
+                        <option value="Da liễu" {{ old('specialty') == 'Da liễu' ? 'selected' : '' }}>Da liễu</option>
+                        <option value="Ngoại tổng quát" {{ old('specialty') == 'Ngoại tổng quát' ? 'selected' : '' }}>Ngoại tổng quát</option>
+                        <option value="Chấn thương chỉnh hình" {{ old('specialty') == 'Chấn thương chỉnh hình' ? 'selected' : '' }}>Chấn thương chỉnh hình</option>
+                        <option value="Tai mũi họng" {{ old('specialty') == 'Tai mũi họng' ? 'selected' : '' }}>Tai mũi họng</option>
+                        <option value="Sản phụ khoa" {{ old('specialty') == 'Sản phụ khoa' ? 'selected' : '' }}>Sản phụ khoa</option>
+                        <option value="Thần kinh" {{ old('specialty') == 'Thần kinh' ? 'selected' : '' }}>Thần kinh</option>
+                        <option value="Hô hấp" {{ old('specialty') == 'Hô hấp' ? 'selected' : '' }}>Hô hấp</option>
+                        <option value="Tiêu hóa" {{ old('specialty') == 'Tiêu hóa' ? 'selected' : '' }}>Tiêu hóa</option>
+                    </select>
+                    @error('specialty')
+                        <small style="color:red">{{ $message }}</small>
+                    @enderror
+                </div>
+
+                <div class="form-group">
+                    <label>Số năm kinh nghiệm</label>
+                    <input type="number" name="experience_years" min="0" value="{{ old('experience_years') }}" required>
+                    @error('experience_years')
+                        <small style="color:red">{{ $message }}</small>
+                    @enderror
+                </div>
+
+                <div class="form-group">
+                    <label>Thành phố</label>
+                    <input type="text" value="{{ $user->province ?? '' }}" readonly>
+                    <input type="hidden" name="doctor_city" value="{{ $user->province ?? '' }}">
+                </div>
+
+                @if($user->doctor_verification_status !== 'approved')
+                    <button type="submit" class="btn-primary">Yêu Cầu Xác Thực</button>
+                @endif
             </form>
         </div>
-
-        <div id="password-change" class="content-card tab-content">
-            <h2>Đổi mật khẩu</h2>
-            @if(session('password_success'))
-                <div class="alert-success">{{ session('password_success') }}</div>
-            @endif
-            @if(session('password_error'))
-                <div class="alert-success">{{ session('password_error') }}</div>
-            @endif
-            <form action="{{ route('user.profile.password') }}" method="POST">
-                @csrf
-                <div class="form-group">
-                    <label>Mật khẩu hiện tại</label>
-                    <input type="password" name="current_password" required>
-                </div>
-                <div class="form-group">
-                    <label>Mật khẩu mới</label>
-                    <input type="password" name="new_password" required>
-                </div>
-                <div class="form-group">
-                    <label>Xác nhận mật khẩu mới</label>
-                    <input type="password" name="new_password_confirmation" required>
-                </div>
-                <button type="submit" class="btn-primary">Đổi mật khẩu</button>
-            </form>
-        </div>
-
-<div id="doctor-verification" class="content-card tab-content">
-    <h2>Xác thực bác sĩ</h2>
-
-    @if(session('success'))
-        <div class="alert-success">{{ session('success') }}</div>
-    @endif
-
-    @if(session('error'))
-        <div class="alert-success" style="background-color: #fee2e2; color: #991b1b; border: 1px solid #ef4444;">
-            {{ session('error') }}
-        </div>
-    @endif
-
-    @if($user->doctor_verification_status === 'pending')
-        <div class="alert-success" style="background-color: #fef3c7; color: #92400e; border: 1px solid #f59e0b;">
-            Tài khoản của bạn đang trong trạng thái <strong>chờ duyệt xác thực bác sĩ</strong>.
-        </div>
-    @elseif($user->doctor_verification_status === 'approved')
-        <div class="alert-success">
-            Tài khoản của bạn đã được <strong>xác thực bác sĩ thành công</strong>.
-        </div>
-    @elseif($user->doctor_verification_status === 'rejected')
-        <div class="alert-success" style="background-color: #fee2e2; color: #991b1b; border: 1px solid #ef4444;">
-            Yêu cầu xác thực đã bị từ chối.
-            @if($user->doctor_rejection_reason)
-                <br><strong>Lý do:</strong> {{ $user->doctor_rejection_reason }}
-            @endif
-        </div>
-    @endif
-
-    <p style="margin-bottom: 20px; color: #666;">
-        Vui lòng điền đầy đủ thông tin để gửi yêu cầu xác thực tài khoản bác sĩ.
-    </p>
-
-    <form action="{{ route('user.profile.verifyDoctor') }}" method="POST" enctype="multipart/form-data">
-        @csrf
-
-        <div class="form-group">
-            <label>Họ và tên</label>
-            <input type="text" name="doctor_full_name" value="{{ old('doctor_full_name', $user->full_name) }}" required>
-            @error('doctor_full_name')
-                <small style="color:red">{{ $message }}</small>
-            @enderror
-        </div>
-
-        <div class="form-group">
-            <label>Ngày sinh</label>
-            <input type="date" name="doctor_dob" value="{{ old('doctor_dob', $user->dob) }}" required>
-            @error('doctor_dob')
-                <small style="color:red">{{ $message }}</small>
-            @enderror
-        </div>
-
-        <div class="form-group">
-            <label>Số CCCD</label>
-            <input type="text" name="citizen_id" value="{{ old('citizen_id') }}" required>
-            @error('citizen_id')
-                <small style="color:red">{{ $message }}</small>
-            @enderror
-        </div>
-
-        <div class="form-group">
-            <label>Ảnh mặt trước CCCD</label>
-            <input type="file" name="citizen_id_front" accept="image/*" required>
-            @error('citizen_id_front')
-                <small style="color:red">{{ $message }}</small>
-            @enderror
-        </div>
-
-        <div class="form-group">
-            <label>Ảnh mặt sau CCCD</label>
-            <input type="file" name="citizen_id_back" accept="image/*" required>
-            @error('citizen_id_back')
-                <small style="color:red">{{ $message }}</small>
-            @enderror
-        </div>
-
-        <div class="form-group">
-            <label>Số điện thoại</label>
-            <input type="text" name="doctor_phone" value="{{ old('doctor_phone', $user->phone) }}" required>
-            @error('doctor_phone')
-                <small style="color:red">{{ $message }}</small>
-            @enderror
-        </div>
-
-        <div class="form-group">
-            <label>Bằng cấp</label>
-            <select name="degree" required>
-                <option value="">-- Chọn bằng cấp --</option>
-                <option value="Thạc sĩ" {{ old('degree') == 'Thạc sĩ' ? 'selected' : '' }}>Thạc sĩ</option>
-                <option value="Tiến sĩ" {{ old('degree') == 'Tiến sĩ' ? 'selected' : '' }}>Tiến sĩ</option>
-            </select>
-            @error('degree')
-                <small style="color:red">{{ $message }}</small>
-            @enderror
-        </div>
-
-        <div class="form-group">
-            <label>Ảnh bằng cấp bác sĩ</label>
-            <input type="file" name="degree_image" accept="image/*" required>
-            @error('degree_image')
-                <small style="color:red">{{ $message }}</small>
-            @enderror
-        </div>
-
-        <div class="form-group">
-            <label>Chuyên khoa</label>
-            <select name="specialty" required>
-                <option value="">-- Chọn chuyên khoa --</option>
-                <option value="Tim mạch" {{ old('specialty') == 'Tim mạch' ? 'selected' : '' }}>Tim mạch</option>
-                <option value="Nhi" {{ old('specialty') == 'Nhi' ? 'selected' : '' }}>Nhi</option>
-                <option value="Da liễu" {{ old('specialty') == 'Da liễu' ? 'selected' : '' }}>Da liễu</option>
-                <option value="Ngoại tổng quát" {{ old('specialty') == 'Ngoại tổng quát' ? 'selected' : '' }}>Ngoại tổng quát</option>
-                <option value="Chấn thương chỉnh hình" {{ old('specialty') == 'Chấn thương chỉnh hình' ? 'selected' : '' }}>Chấn thương chỉnh hình</option>
-                <option value="Tai mũi họng" {{ old('specialty') == 'Tai mũi họng' ? 'selected' : '' }}>Tai mũi họng</option>
-                <option value="Sản phụ khoa" {{ old('specialty') == 'Sản phụ khoa' ? 'selected' : '' }}>Sản phụ khoa</option>
-                <option value="Thần kinh" {{ old('specialty') == 'Thần kinh' ? 'selected' : '' }}>Thần kinh</option>
-                <option value="Hô hấp" {{ old('specialty') == 'Hô hấp' ? 'selected' : '' }}>Hô hấp</option>
-                <option value="Tiêu hóa" {{ old('specialty') == 'Tiêu hóa' ? 'selected' : '' }}>Tiêu hóa</option>
-            </select>
-            @error('specialty')
-                <small style="color:red">{{ $message }}</small>
-            @enderror
-        </div>
-
-        <div class="form-group">
-            <label>Số năm kinh nghiệm</label>
-            <input type="number" name="experience_years" min="0" value="{{ old('experience_years') }}" required>
-            @error('experience_years')
-                <small style="color:red">{{ $message }}</small>
-            @enderror
-        </div>
-
-        <div class="form-group">
-            <label>Thành phố</label>
-            <input type="text" value="{{ $user->province ?? '' }}" readonly>
-            <input type="hidden" name="doctor_city" value="{{ $user->province ?? '' }}">
-        </div>
-
-        @if($user->doctor_verification_status !== 'approved')
-            <button type="submit" class="btn-primary">Yêu Cầu Xác Thực</button>
-        @endif
-    </form>
-</div>
 
     </div>
 </div>
@@ -386,6 +411,18 @@
 
     document.addEventListener('DOMContentLoaded', () => {
         if (provinceSelect.value) populateDistricts(provinceSelect.value, selectedDistrict);
+
+        @if(session('success'))
+            const appointmentTab = document.querySelector('.tab-link[href="#appointments"]');
+            const appointmentContent = document.querySelector('#appointments');
+
+            if (appointmentTab && appointmentContent) {
+                tabs.forEach(t => t.classList.remove('active'));
+                contents.forEach(c => c.classList.remove('active'));
+                appointmentTab.classList.add('active');
+                appointmentContent.classList.add('active');
+            }
+        @endif
     });
 
     setTimeout(() => {

@@ -2,33 +2,37 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Appointment extends Model
 {
-    use HasFactory;
-
     protected $fillable = [
-        'appointment_code', 'doctor_id', 'patient_id', 'specialty_id', 'patient_name', 'doctor_name', 'appointment_date', 'status', 'note'
+        'patient_id',
+        'doctor_id',
+        'schedule_id',
+        'appointment_date',
+        'appointment_day',
+        'start_time',
+        'end_time',
+        'type',
+        'location',
+        'max_patients',
+        'status',
+        'notes',
     ];
-
-    protected $casts = [
-        'appointment_date' => 'datetime',
-    ];
-
-    public function doctor()
-    {
-        return $this->belongsTo(Doctor::class);
-    }
 
     public function patient()
     {
-        return $this->belongsTo(Patient::class);
+        return $this->belongsTo(User::class, 'patient_id');
     }
 
-    public function specialty()
+    public function doctor()
     {
-        return $this->belongsTo(Specialty::class);
+        return $this->belongsTo(Doctor::class, 'doctor_id');
+    }
+
+    public function schedule()
+    {
+        return $this->belongsTo(Schedule::class, 'schedule_id');
     }
 }

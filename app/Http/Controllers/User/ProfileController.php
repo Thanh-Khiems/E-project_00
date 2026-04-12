@@ -9,19 +9,31 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Doctor;
 use App\Models\Specialty;
+use App\Models\Appointment;
 use App\Services\LocationService;
 
 class ProfileController extends Controller
 {
     // Hiển thị trang profile
-    public function index(LocationService $locationService)
-    {
-        $user = Auth::user();
-        $locations = $locationService->getStructuredLocations();
-        $provinces = array_keys($locations);
+    public function index()
+        {
+            $user = Auth::user();
 
-        return view('pages.user.profile', compact('user', 'locations', 'provinces'));
-    }
+            $locations = config('locations');
+            $provinces = array_keys($locations);
+
+            $appointments = Appointment::with(['doctor.user', 'doctor.specialty'])
+                ->where('patient_id', $user->id)
+                ->latest()
+                ->get();
+
+            return view('pages.user.profile', compact(
+                'user',
+                'locations',
+                'provinces',
+                'appointments'
+            ));
+        }
 
     // Cập nhật thông tin cá nhân
     public function update(Request $request, LocationService $locationService)

@@ -137,6 +137,7 @@ class ScheduleController extends Controller
         $schedule = Schedule::where('doctor_id', $doctor->id)->findOrFail($id);
         $schedule->delete();
 
-        return back()->with('success', 'Xóa lịch làm việc thành công.');
+        return redirect()->route('doctor.manage')
+            ->with('success', 'Xóa lịch làm việc thành công.');
     }
 }

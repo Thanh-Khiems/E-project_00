@@ -438,12 +438,11 @@
                 </div>
 
                 <nav class="doctor-manage-menu">
-                    <button type="button" id="btn-tab-dashboard" class="active" onclick="switchTab('dashboard')">Manage Appointments</button>
+                    <button type="button" id="btn-tab-dashboard" class="active" onclick="switchTab('dashboard')">Dashboard</button>
                     <button type="button" id="btn-tab-schedule" onclick="switchTab('schedule')">Schedule Settings</button>
 
-                    <button type="button" onclick="window.location.href='{{ route('doctor.dashboard') }}'">Doctor Main</button>
-                    <button type="button" onclick="window.location.href='{{ route('doctor.appointments') }}'">Appointments</button>
-                    <button type="button">Patients</button>
+                   {{--  <button type="button" onclick="window.location.href='{{ route('doctor.appointments') }}'">Appointments</button> --}}
+                    <button type="button" onclick="">Appointments</button>
                 </nav>
             </div>
 
@@ -771,9 +770,9 @@
                                                     Sửa
                                                 </button>
 
-                                                <form method="POST" action="{{ route('schedule.destroy', $s->id) }}" onsubmit="return confirm('Bạn có chắc muốn xóa lịch này?');">
+                                                <form action="{{ url('/schedule/' . $s->id) }}" method="POST" style="display:inline-block;" onsubmit="return confirm('Bạn có chắc muốn xóa lịch này?');">
                                                     @csrf
-                                                    @method('DELETE')
+                                                    <input type="hidden" name="_method" value="DELETE">
                                                     <button type="submit" class="btn-delete-row">Xóa</button>
                                                 </form>
                                             </div>

@@ -5,12 +5,12 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ScheduleController;
-use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\MedicationController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\User\ProfileController;
 use App\Http\Controllers\User\DoctorListController;
-
+use App\Http\Controllers\User\DoctorBookingController;
+use App\Http\Controllers\AppointmentController;
 // Admin Controllers
 use App\Http\Controllers\Admin\DoctorController;
 use App\Http\Controllers\Admin\SpecialtyController;
@@ -56,9 +56,7 @@ Route::get('/doctor-manage', [DashboardController::class, 'manageAppointments'])
     ->middleware('auth')
     ->name('doctor.manage');
 
-Route::get('/doctor-appointments', [DashboardController::class, 'appointments'])
-    ->middleware('auth')
-    ->name('doctor.appointments');
+
 
 /*
 |--------------------------------------------------------------------------
@@ -66,6 +64,7 @@ Route::get('/doctor-appointments', [DashboardController::class, 'appointments'])
 |--------------------------------------------------------------------------
 */
 Route::middleware('auth')->group(function () {
+    Route::get('/schedule', [ScheduleController::class, 'index'])->name('schedule.index');
     Route::post('/schedule', [ScheduleController::class, 'store'])->name('schedule.store');
     Route::put('/schedule/{id}', [ScheduleController::class, 'update'])->name('schedule.update');
     Route::delete('/schedule/{id}', [ScheduleController::class, 'destroy'])->name('schedule.destroy');
@@ -116,7 +115,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/specialties', [SpecialtyController::class, 'index'])->name('specialties.index');
     Route::get('/patients', [PatientController::class, 'index'])->name('patients.index');
     Route::get('/staffs', [StaffController::class, 'index'])->name('staffs.index');
-    Route::get('/appointments', [AdminAppointmentController::class, 'index'])->name('appointments.index');
 
     Route::get('/locations', [LocationController::class, 'index'])->name('locations.index');
     Route::post('/locations', [LocationController::class, 'store'])->name('locations.store');
@@ -133,3 +131,15 @@ Route::get('/medications', [MedicationController::class, 'index']);
 Route::post('/medications', [MedicationController::class, 'store']);
 Route::delete('/medications/{id}', [MedicationController::class, 'destroy']);
 Route::post('/medicine-types', [MedicineTypeController::class, 'store']);
+
+
+Route::get('/doctor-booking/{doctor}', [DoctorBookingController::class, 'show'])->name('doctor.booking');
+
+
+
+
+Route::middleware('auth')->group(function () {
+    Route::post('/appointments', [AppointmentController::class, 'store'])->name('appointments.store');
+    Route::get('/my-appointments', [AppointmentController::class, 'patientIndex'])->name('appointments.patient');
+    Route::get('/doctor-appointments', [AppointmentController::class, 'doctorIndex'])->name('doctor.appointments');
+});

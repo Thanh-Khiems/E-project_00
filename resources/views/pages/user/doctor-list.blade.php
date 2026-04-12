@@ -115,6 +115,20 @@
     min-width: 18px;
 }
 
+.doctor-card-actions .btn-book {
+    flex: 1;
+    padding: 10px 0;
+    border: none;
+    border-radius: 10px;
+    background: #007bff;
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    text-align: center;
+    display: inline-block;
+}
+
 /* Schedule */
 .doctor-schedule {
     margin-top: 12px;
@@ -391,7 +405,7 @@
 
                     <div class="doctor-card-actions">
                         <button type="button" class="btn-detail">Xem chi tiết</button>
-                        <button type="button" class="btn-book">Đặt hẹn</button>
+                        <a href="{{ route('doctor.booking', $doctor->id) }}" class="btn-book">Đặt hẹn</a>
                     </div>
                 </div>
             @empty
