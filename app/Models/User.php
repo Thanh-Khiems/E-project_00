@@ -32,15 +32,9 @@ class User extends Authenticatable
         'remember_token',
     ];
 
-        public function doctorProfile()
+    public function doctorProfile()
     {
         return $this->hasOne(Doctor::class);
     }
 
-    public function appointments()
-    {
-        return $this->hasMany(\App\Models\Appointment::class, 'patient_id');
-    }
-
-    
 }

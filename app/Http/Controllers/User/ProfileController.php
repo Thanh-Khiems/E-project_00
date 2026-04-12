@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Doctor;
+use App\Models\Patient;
 use App\Models\Specialty;
 use App\Models\Appointment;
 use App\Services\LocationService;
@@ -73,6 +74,8 @@ class ProfileController extends Controller
             'ward' => $validated['ward'],
             'address_detail' => $validated['address_detail'],
         ]);
+
+        Patient::syncFromUser($user->fresh());
 
         return redirect()->back()->with('success', 'Thông tin cá nhân đã được cập nhật!');
     }

@@ -114,6 +114,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
     Route::get('/specialties', [SpecialtyController::class, 'index'])->name('specialties.index');
     Route::get('/patients', [PatientController::class, 'index'])->name('patients.index');
+    Route::get('/patients/{patient}', [PatientController::class, 'show'])->name('patients.show');
+    Route::get('/patients/{patient}/edit', [PatientController::class, 'edit'])->name('patients.edit');
+    Route::put('/patients/{patient}', [PatientController::class, 'update'])->name('patients.update');
+    Route::delete('/patients/{patient}', [PatientController::class, 'destroy'])->name('patients.destroy');
     Route::get('/staffs', [StaffController::class, 'index'])->name('staffs.index');
 
     Route::get('/locations', [LocationController::class, 'index'])->name('locations.index');
