@@ -12,9 +12,9 @@
         <div class="panel-head">
             <div>
                 <h5>Danh sách bệnh nhân</h5>
-                <p>Quản lý hồ sơ cơ bản, lịch sử đặt hẹn và thông tin liên hệ.</p>
+                <p>Tài khoản bệnh nhân đăng ký mới sẽ tự động hiển thị tại đây để admin theo dõi và quản lý.</p>
             </div>
-            <button class="btn btn-primary">+ Thêm bệnh nhân</button>
+            <span class="btn btn-light">Tự động đồng bộ từ đăng ký</span>
         </div>
 
         <form method="GET" class="row g-3 filter-bar">
@@ -28,7 +28,7 @@
                 </select>
             </div>
             <div class="col-md-2 d-grid"><button class="btn btn-outline-primary">Lọc</button></div>
-            <div class="col-md-2 d-grid"><button type="button" class="btn btn-light">Xuất Excel</button></div>
+            <div class="col-md-2 d-grid"><a href="{{ route('admin.patients.index') }}" class="btn btn-light">Đặt lại</a></div>
         </form>
 
         <div class="table-responsive mt-4">
@@ -51,7 +51,8 @@
                                     <div class="avatar-circle">{{ strtoupper(substr($patient->name, 0, 1)) }}</div>
                                     <div>
                                         <strong>{{ $patient->name }}</strong>
-                                        <small>{{ $patient->patient_code ?? 'BN-0000' }} · {{ $patient->phone }}</small>
+                                        <small>{{ $patient->patient_code ?? 'BN-0000' }} · {{ $patient->phone ?: ($patient->user->phone ?? 'Chưa có SĐT') }}</small><br>
+                                        <small>{{ $patient->email ?: ($patient->user->email ?? 'Chưa có email') }}</small>
                                     </div>
                                 </div>
                             </td>
@@ -60,9 +61,13 @@
                             <td>{{ $patient->appointments_count }}</td>
                             <td>{{ $patient->address ?? '—' }}</td>
                             <td class="text-end table-actions">
-                                <a href="#">Hồ sơ</a>
-                                <a href="#">Sửa</a>
-                                <a href="#" class="text-danger">Khóa</a>
+                                <a href="{{ route('admin.patients.show', $patient) }}">Hồ sơ</a>
+                                <a href="{{ route('admin.patients.edit', $patient) }}">Sửa</a>
+                                <form method="POST" action="{{ route('admin.patients.destroy', $patient) }}" class="action-form" onsubmit="return confirm('Bạn có chắc muốn xóa tài khoản bệnh nhân này không?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="action-link text-danger">Xóa</button>
+                                </form>
                             </td>
                         </tr>
                     @empty

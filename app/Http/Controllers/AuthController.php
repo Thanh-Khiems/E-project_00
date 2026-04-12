@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Patient;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -53,9 +54,11 @@ class AuthController extends Controller
             'password' => Hash::make($validated['password']),
         ]);
 
+        Patient::syncFromUser($user);
+
         Auth::login($user);
 
-        return redirect()->route('user.dashboard')->with('success', 'Register successful');
+        return redirect()->route('user.dashboard')->with('success', 'Đăng ký tài khoản thành công');
     }
 
     public function showLogin()

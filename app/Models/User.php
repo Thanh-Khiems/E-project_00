@@ -32,8 +32,13 @@ class User extends Authenticatable
         'remember_token',
     ];
 
-        public function doctorProfile()
+    public function doctorProfile()
     {
         return $this->hasOne(Doctor::class);
+    }
+
+    public function patientProfile()
+    {
+        return $this->hasOne(Patient::class);
     }
 }
