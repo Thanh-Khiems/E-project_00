@@ -6,6 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class Appointment extends Model
 {
+    protected $casts = [
+        'appointment_date' => 'date',
+        'start_time' => 'datetime:H:i:s',
+        'end_time' => 'datetime:H:i:s',
+    ];
+
     protected $fillable = [
         'patient_id',
         'doctor_id',
@@ -29,6 +35,11 @@ class Appointment extends Model
     public function doctor()
     {
         return $this->belongsTo(Doctor::class, 'doctor_id');
+    }
+
+    public function getAppointmentCodeAttribute(): string
+    {
+        return 'APP-' . str_pad((string) $this->id, 4, '0', STR_PAD_LEFT);
     }
 
     public function schedule()

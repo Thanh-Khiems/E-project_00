@@ -14,7 +14,7 @@
                 <h5>Lịch hẹn toàn hệ thống</h5>
                 <p>Theo dõi, lọc và điều phối lịch khám theo bác sĩ, bệnh nhân, chuyên khoa và trạng thái.</p>
             </div>
-            <button class="btn btn-primary">+ Tạo lịch hẹn</button>
+            <a href="{{ route('admin.appointments.index') }}" class="btn btn-primary">Danh sách mới nhất</a>
         </div>
 
         <form method="GET" class="row g-3 filter-bar">
@@ -55,16 +55,18 @@
                 <tbody>
                     @forelse($appointments as $appointment)
                         <tr>
-                            <td><strong>{{ $appointment->appointment_code ?? 'APP-0000' }}</strong></td>
-                            <td>{{ $appointment->patient->name ?? $appointment->patient_name ?? '—' }}</td>
+                            <td><strong>{{ $appointment->appointment_code }}</strong></td>
+                            <td>{{ $appointment->patient->full_name ?? '—' }}</td>
                             <td>{{ $appointment->doctor->name ?? $appointment->doctor_name ?? '—' }}</td>
-                            <td>{{ $appointment->specialty->name ?? '—' }}</td>
-                            <td>{{ optional($appointment->appointment_date)->format('d/m/Y H:i') ?? '—' }}</td>
+                            <td>{{ optional($appointment->doctor->specialty)->name ?? '—' }}</td>
+                            <td>
+                                {{ optional($appointment->appointment_date)->format('d/m/Y') ?? '—' }}
+                                <br>
+                                <small>{{ \Carbon\Carbon::parse($appointment->start_time)->format('H:i') }} - {{ \Carbon\Carbon::parse($appointment->end_time)->format('H:i') }}</small>
+                            </td>
                             <td><span class="status-badge {{ $appointment->status }}">{{ ucfirst($appointment->status ?? 'pending') }}</span></td>
                             <td class="text-end table-actions">
-                                <a href="#">Xem</a>
-                                <a href="#">Dời lịch</a>
-                                <a href="#" class="text-danger">Hủy</a>
+                                <a href="{{ route('admin.appointments.show', $appointment) }}">Xem chi tiết</a>
                             </td>
                         </tr>
                     @empty

@@ -24,7 +24,7 @@ return new class extends Migration {
             $table->string('location')->nullable();
             $table->integer('max_patients')->nullable();
 
-            $table->string('status')->default('pending');
+            $table->enum('status', ['pending', 'confirmed', 'cancelled'])->default('pending');
             $table->text('notes')->nullable();
 
             $table->timestamps();

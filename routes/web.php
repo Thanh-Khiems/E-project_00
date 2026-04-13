@@ -124,6 +124,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::post('/locations', [LocationController::class, 'store'])->name('locations.store');
     Route::put('/locations/{location}', [LocationController::class, 'update'])->name('locations.update');
     Route::delete('/locations/{location}', [LocationController::class, 'destroy'])->name('locations.destroy');
+
+    Route::get('/appointments', [AdminAppointmentController::class, 'index'])->name('appointments.index');
+    Route::get('/appointments/{appointment}', [AdminAppointmentController::class, 'show'])->name('appointments.show');
 });
 
 /*
@@ -146,4 +149,13 @@ Route::middleware('auth')->group(function () {
     Route::post('/appointments', [AppointmentController::class, 'store'])->name('appointments.store');
     Route::get('/my-appointments', [AppointmentController::class, 'patientIndex'])->name('appointments.patient');
     Route::get('/doctor-appointments', [AppointmentController::class, 'doctorIndex'])->name('doctor.appointments');
+});
+
+
+Route::middleware(['auth'])->group(function () {
+    Route::patch('/appointments/{appointment}/confirm', [AppointmentController::class, 'confirm'])
+        ->name('appointments.confirm');
+
+    Route::patch('/appointments/{appointment}/cancel', [AppointmentController::class, 'cancel'])
+        ->name('appointments.cancel');
 });

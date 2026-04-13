@@ -22,6 +22,6 @@ class Specialty extends Model
 
     public function appointments()
     {
-        return $this->hasMany(Appointment::class);
+        return $this->hasManyThrough(Appointment::class, Doctor::class, 'specialty_id', 'doctor_id');
     }
 }

@@ -441,8 +441,7 @@
                     <button type="button" id="btn-tab-dashboard" class="active" onclick="switchTab('dashboard')">Dashboard</button>
                     <button type="button" id="btn-tab-schedule" onclick="switchTab('schedule')">Schedule Settings</button>
 
-                   {{--  <button type="button" onclick="window.location.href='{{ route('doctor.appointments') }}'">Appointments</button> --}}
-                    <button type="button" onclick="">Appointments</button>
+                    <button type="button" onclick="window.location.href='{{ route('doctor.appointments') }}'">Appointments</button>
                 </nav>
             </div>
 
@@ -910,8 +909,10 @@
         resetScheduleForm();
     });
 
-    @if($errors->any() || session('success') || session('error'))
+    @if(request('tab') === 'schedule' || $errors->any() || session('success') || session('error'))
         switchTab('schedule');
+    @else
+        switchTab('dashboard');
     @endif
 </script>
 @endsection
