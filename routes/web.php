@@ -7,6 +7,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\MedicationController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\BlogController;
 use App\Http\Controllers\User\ProfileController;
 use App\Http\Controllers\User\DoctorListController;
 use App\Http\Controllers\User\DoctorBookingController;
@@ -18,6 +19,7 @@ use App\Http\Controllers\Admin\PatientController;
 use App\Http\Controllers\Admin\StaffController;
 use App\Http\Controllers\Admin\AppointmentController as AdminAppointmentController;
 use App\Http\Controllers\Admin\LocationController;
+use App\Http\Controllers\Admin\BlogController as AdminBlogController;
 use App\Http\Controllers\MedicineTypeController;
 
 /*
@@ -29,6 +31,8 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::view('/about', 'pages.about');
 Route::view('/services', 'pages.services');
 Route::view('/contact', 'pages.contact');
+Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');
+Route::get('/blog/{slug}', [BlogController::class, 'show'])->name('blog.show');
 
 /*
 |--------------------------------------------------------------------------
@@ -40,6 +44,13 @@ Route::post('/register', [AuthController::class, 'register'])->name('register.su
 
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
+
+Route::get('/forgot-password', [AuthController::class, 'showForgotPassword'])->name('password.request');
+Route::post('/forgot-password', [AuthController::class, 'sendResetCode'])->name('password.email');
+Route::get('/forgot-password/otp', [AuthController::class, 'showOtpForm'])->name('password.otp');
+Route::post('/forgot-password/otp', [AuthController::class, 'verifyResetCode'])->name('password.otp.verify');
+Route::get('/forgot-password/reset', [AuthController::class, 'showResetPasswordForm'])->name('password.reset.form');
+Route::post('/forgot-password/reset', [AuthController::class, 'resetPassword'])->name('password.update.custom');
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
@@ -113,6 +124,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::delete('/doctors/{doctor}', [DoctorController::class, 'destroy'])->name('doctors.destroy');
 
     Route::get('/specialties', [SpecialtyController::class, 'index'])->name('specialties.index');
+    Route::post('/specialties', [SpecialtyController::class, 'store'])->name('specialties.store');
+    Route::put('/specialties/{specialty}', [SpecialtyController::class, 'update'])->name('specialties.update');
+    Route::delete('/specialties/{specialty}', [SpecialtyController::class, 'destroy'])->name('specialties.destroy');
     Route::get('/patients', [PatientController::class, 'index'])->name('patients.index');
     Route::get('/patients/{patient}', [PatientController::class, 'show'])->name('patients.show');
     Route::get('/patients/{patient}/edit', [PatientController::class, 'edit'])->name('patients.edit');
@@ -127,6 +141,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
     Route::get('/appointments', [AdminAppointmentController::class, 'index'])->name('appointments.index');
     Route::get('/appointments/{appointment}', [AdminAppointmentController::class, 'show'])->name('appointments.show');
+
+    Route::get('/blogs', [AdminBlogController::class, 'index'])->name('blogs.index');
+    Route::post('/blogs', [AdminBlogController::class, 'store'])->name('blogs.store');
+    Route::put('/blogs/{blog}', [AdminBlogController::class, 'update'])->name('blogs.update');
+    Route::delete('/blogs/{blog}', [AdminBlogController::class, 'destroy'])->name('blogs.destroy');
 });
 
 /*

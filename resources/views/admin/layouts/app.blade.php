@@ -7,6 +7,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     <link href="{{ asset('admin-ui/css/admin-hospital.css') }}" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <style>
         .logout-form { margin: 0; }
         .logout-btn {
@@ -28,7 +29,7 @@
 <div class="admin-shell">
     <aside class="sidebar">
         <div class="brand-box">
-            <img src="{{ asset('admin-ui/images/logo.png') }}" alt="logo" style="width:200px;">
+            <img src="{{ asset('admin-ui/images/logo.png') }}" alt="MediConnect logo" style="width:220px; max-width:100%;">
         </div>
 
         <div class="menu-label">Quản trị hệ thống</div>
@@ -54,14 +55,20 @@
             <a class="nav-link {{ request()->routeIs('admin.locations.*') ? 'active' : '' }}" href="{{ route('admin.locations.index') }}">
                 <i class="bi bi-geo-alt"></i><span>Khu vực</span>
             </a>
+            <a class="nav-link {{ request()->routeIs('admin.blogs.*') ? 'active' : '' }}" href="{{ route('admin.blogs.index') }}">
+                <i class="bi bi-journal-richtext"></i><span>Blog</span>              
+            </a>
         </nav>
     </aside>
 
     <main class="content-wrapper">
         <header class="topbar">
-            <div>
-                <p class="topbar-label">Admin Panel</p>
-                <h2>{{ $pageTitle ?? 'Dashboard' }}</h2>
+            <div class="d-flex align-items-center gap-3">
+                <img src="{{ asset('admin-ui/images/logo.png') }}" alt="MediConnect logo" style="height:48px; width:auto;">
+                <div>
+                    <p class="topbar-label">Admin Panel</p>
+                    <h2>{{ $pageTitle ?? 'Dashboard' }}</h2>
+                </div>
             </div>
             <div class="topbar-actions">
                 <div class="search-pill">

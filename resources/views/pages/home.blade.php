@@ -7,6 +7,6 @@
     @include('components.about-section')
     @include('components.doctors-section')
     @include('components.services-section')
-    @include('components.news-section')
+    @include('components.news-section', ['featuredBlogs' => $featuredBlogs ?? collect()])
     @include('components.feedback-section')
 @endsection

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Patient;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -31,6 +32,12 @@ class User extends Authenticatable
         'password',
         'remember_token',
     ];
+
+
+    public function patientProfile()
+    {
+        return $this->hasOne(Patient::class, 'user_id');
+    }
 
     public function doctorProfile()
     {

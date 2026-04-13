@@ -15,7 +15,13 @@ class PatientController extends Controller
     {
         $this->syncMissingPatients();
 
-        $query = Patient::query()->with(['user'])->withCount('appointments');
+        $query = Patient::query()
+            ->with(['user'])
+            ->withCount('appointments')
+            ->where(function ($q) {
+                $q->whereNull('user_id')
+                  ->orWhereHas('user', fn ($userQuery) => $userQuery->whereDoesntHave('doctorProfile'));
+            });
 
         if ($request->filled('keyword')) {
             $keyword = $request->keyword;
@@ -144,8 +150,13 @@ class PatientController extends Controller
 
     protected function syncMissingPatients(): void
     {
+        Patient::query()
+            ->whereHas('user', fn ($query) => $query->has('doctorProfile'))
+            ->delete();
+
         User::query()
             ->where('role', 'user')
+            ->whereDoesntHave('doctorProfile')
             ->whereDoesntHave('patientProfile')
             ->get()
             ->each(fn (User $user) => Patient::syncFromUser($user));
@@ -153,11 +164,16 @@ class PatientController extends Controller
 
     protected function stats(): array
     {
+        $visiblePatients = Patient::query()->where(function ($q) {
+            $q->whereNull('user_id')
+              ->orWhereHas('user', fn ($userQuery) => $userQuery->whereDoesntHave('doctorProfile'));
+        });
+
         return [
-            'total' => Patient::count(),
-            'male' => Patient::where('gender', 'male')->count(),
-            'female' => Patient::where('gender', 'female')->count(),
-            'new_this_month' => Patient::whereMonth('created_at', now()->month)
+            'total' => (clone $visiblePatients)->count(),
+            'male' => (clone $visiblePatients)->where('gender', 'male')->count(),
+            'female' => (clone $visiblePatients)->where('gender', 'female')->count(),
+            'new_this_month' => (clone $visiblePatients)->whereMonth('created_at', now()->month)
                 ->whereYear('created_at', now()->year)
                 ->count(),
         ];

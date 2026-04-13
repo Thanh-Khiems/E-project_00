@@ -7,6 +7,7 @@ use App\Models\Patient;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Password;
 use App\Services\LocationService;
 
 class AuthController extends Controller
@@ -94,6 +95,92 @@ class AuthController extends Controller
         return back()->withErrors([
             'email' => 'Email or password is incorrect.',
         ])->onlyInput('email');
+    }
+
+    public function showForgotPassword()
+    {
+        return view('pages.auth.forgot-password-email');
+    }
+
+    public function sendResetCode(Request $request)
+    {
+        $validated = $request->validate([
+            'email' => 'required|email|exists:users,email',
+        ], [
+            'email.exists' => 'Email này chưa được đăng ký trong hệ thống.',
+        ]);
+
+        $otp = (string) random_int(100000, 999999);
+
+        $request->session()->put('password_reset.email', $validated['email']);
+        $request->session()->put('password_reset.otp', $otp);
+        $request->session()->put('password_reset.verified', false);
+        $request->session()->put('password_reset.sent_at', now()->timestamp);
+
+        return redirect()->route('password.otp')
+            ->with('success', 'Mã xác thực đã được tạo. Mã demo: ' . $otp);
+    }
+
+    public function showOtpForm(Request $request)
+    {
+        abort_unless($request->session()->has('password_reset.email'), 403);
+
+        return view('pages.auth.forgot-password-otp', [
+            'email' => $request->session()->get('password_reset.email'),
+        ]);
+    }
+
+    public function verifyResetCode(Request $request)
+    {
+        $request->validate([
+            'otp' => 'required|digits:6',
+        ], [
+            'otp.digits' => 'Mã xác thực phải gồm đúng 6 số.',
+        ]);
+
+        if (! $request->session()->has('password_reset.otp')) {
+            return redirect()->route('password.request')->withErrors([
+                'email' => 'Phiên đặt lại mật khẩu đã hết hạn. Vui lòng thử lại.',
+            ]);
+        }
+
+        if ($request->otp !== $request->session()->get('password_reset.otp')) {
+            return back()->withErrors([
+                'otp' => 'Mã xác thực không đúng.',
+            ])->withInput();
+        }
+
+        $request->session()->put('password_reset.verified', true);
+
+        return redirect()->route('password.reset.form');
+    }
+
+    public function showResetPasswordForm(Request $request)
+    {
+        abort_unless($request->session()->get('password_reset.verified') === true, 403);
+
+        return view('pages.auth.forgot-password-reset', [
+            'email' => $request->session()->get('password_reset.email'),
+        ]);
+    }
+
+    public function resetPassword(Request $request)
+    {
+        abort_unless($request->session()->get('password_reset.verified') === true, 403);
+
+        $validated = $request->validate([
+            'password' => 'required|string|min:8|confirmed',
+        ]);
+
+        $email = $request->session()->get('password_reset.email');
+        $user = User::where('email', $email)->firstOrFail();
+        $user->update([
+            'password' => Hash::make($validated['password']),
+        ]);
+
+        $request->session()->forget('password_reset');
+
+        return redirect()->route('login')->with('success', 'Mật khẩu mới đã được cập nhật. Vui lòng đăng nhập lại.');
     }
 
     public function logout(Request $request)

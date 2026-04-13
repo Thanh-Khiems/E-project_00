@@ -309,20 +309,15 @@
 
                 <div class="form-group">
                     <label>Chuyên khoa</label>
-                    <select name="specialty" required>
+                    <select name="specialty_id" required>
                         <option value="">-- Chọn chuyên khoa --</option>
-                        <option value="Tim mạch" {{ old('specialty') == 'Tim mạch' ? 'selected' : '' }}>Tim mạch</option>
-                        <option value="Nhi" {{ old('specialty') == 'Nhi' ? 'selected' : '' }}>Nhi</option>
-                        <option value="Da liễu" {{ old('specialty') == 'Da liễu' ? 'selected' : '' }}>Da liễu</option>
-                        <option value="Ngoại tổng quát" {{ old('specialty') == 'Ngoại tổng quát' ? 'selected' : '' }}>Ngoại tổng quát</option>
-                        <option value="Chấn thương chỉnh hình" {{ old('specialty') == 'Chấn thương chỉnh hình' ? 'selected' : '' }}>Chấn thương chỉnh hình</option>
-                        <option value="Tai mũi họng" {{ old('specialty') == 'Tai mũi họng' ? 'selected' : '' }}>Tai mũi họng</option>
-                        <option value="Sản phụ khoa" {{ old('specialty') == 'Sản phụ khoa' ? 'selected' : '' }}>Sản phụ khoa</option>
-                        <option value="Thần kinh" {{ old('specialty') == 'Thần kinh' ? 'selected' : '' }}>Thần kinh</option>
-                        <option value="Hô hấp" {{ old('specialty') == 'Hô hấp' ? 'selected' : '' }}>Hô hấp</option>
-                        <option value="Tiêu hóa" {{ old('specialty') == 'Tiêu hóa' ? 'selected' : '' }}>Tiêu hóa</option>
+                        @foreach(($specialties ?? collect()) as $specialty)
+                            <option value="{{ $specialty->id }}" {{ (string) old('specialty_id') === (string) $specialty->id ? 'selected' : '' }}>
+                                {{ $specialty->name }}
+                            </option>
+                        @endforeach
                     </select>
-                    @error('specialty')
+                    @error('specialty_id')
                         <small style="color:red">{{ $message }}</small>
                     @enderror
                 </div>

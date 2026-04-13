@@ -5,6 +5,7 @@ namespace App\Http\Controllers\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Doctor;
+use App\Models\Specialty;
 
 class DoctorListController extends Controller
 {
@@ -14,9 +15,7 @@ class DoctorListController extends Controller
             ->where('approval_status', 'approved');
 
         if ($request->filled('specialty')) {
-            $query->whereHas('specialty', function ($q) use ($request) {
-                $q->where('name', $request->specialty);
-            });
+            $query->where('specialty_id', $request->specialty);
         }
 
         if ($request->filled('city')) {
@@ -38,6 +37,11 @@ class DoctorListController extends Controller
 
         $doctors = $query->latest()->get();
 
-        return view('pages.user.doctor-list', compact('doctors'));
+        $specialties = Specialty::query()
+            ->active()
+            ->orderBy('name')
+            ->get(['id', 'name']);
+
+        return view('pages.user.doctor-list', compact('doctors', 'specialties'));
     }
 }

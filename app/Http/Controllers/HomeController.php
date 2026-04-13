@@ -1,8 +1,6 @@
 <?php
-
 namespace App\Http\Controllers;
-
-use Illuminate\Http\Request;
+use App\Models\Blog;
 use Illuminate\Support\Facades\Auth;
 
 class HomeController extends Controller
@@ -10,11 +8,15 @@ class HomeController extends Controller
     public function index()
     {
         if (Auth::check()) {
-            // Nếu đã đăng nhập → chuyển tới dashboard user
             return redirect()->route('user.dashboard');
         }
 
-        // Nếu chưa đăng nhập → hiển thị Home page bình thường
-        return view('pages.home');
+        $featuredBlogs = Blog::published()
+            ->where('is_featured', true)
+            ->latest('published_at')
+            ->take(3)
+            ->get();
+
+        return view('pages.home', compact('featuredBlogs'));
     }
 }

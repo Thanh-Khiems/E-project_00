@@ -28,11 +28,17 @@ class ProfileController extends Controller
                 ->latest()
                 ->get();
 
+            $specialties = Specialty::query()
+                ->active()
+                ->orderBy('name')
+                ->get();
+
             return view('pages.user.profile', compact(
                 'user',
                 'locations',
                 'provinces',
-                'appointments'
+                'appointments',
+                'specialties'
             ));
         }
 
@@ -138,7 +144,7 @@ class ProfileController extends Controller
             'doctor_phone'       => 'required|string|max:20',
             'degree'             => 'required|string|max:100',
             'degree_image'       => 'required|image|mimes:jpg,jpeg,png|max:2048',
-            'specialty'          => 'required|string|max:255',
+            'specialty_id'       => 'required|exists:specialties,id',
             'experience_years'   => 'required|integer|min:0|max:100',
             'doctor_city'        => 'nullable|string|max:100',
         ]);
@@ -154,15 +160,9 @@ class ProfileController extends Controller
             return redirect()->back()->with('error', 'Bạn đã có yêu cầu xác thực đang chờ duyệt.');
         }
 
-        // Tìm hoặc tạo chuyên khoa
-        $specialty = Specialty::firstOrCreate(
-            ['name' => $request->specialty],
-            [
-                'description' => null,
-                'status' => 'active',
-                'is_featured' => false,
-            ]
-        );
+        $specialty = Specialty::query()
+            ->active()
+            ->findOrFail($request->specialty_id);
 
         // Lưu file
         $citizenFrontPath = $request->file('citizen_id_front')->store('doctor-verifications', 'public');

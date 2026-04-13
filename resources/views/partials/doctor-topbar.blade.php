@@ -1,6 +1,9 @@
 <div class="topbar reveal-up">
     <div class="container topbar-inner">
         <div class="topbar-left">
+            <a href="{{ url('/') }}" class="topbar-brand" aria-label="MediConnect">
+                <img src="{{ asset('images/logo/MediConnect.png') }}" alt="MediConnect Logo">
+            </a>
             <div class="topbar-item">
                 <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                     <path d="M4 5h16a2 2 0 0 1 2 2v.4l-10 6.25L2 7.4V7a2 2 0 0 1 2-2Zm18 4.75-9.47 5.92a1 1 0 0 1-1.06 0L2 9.75V17a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9.75Z"/>
@@ -17,7 +20,7 @@
         </div>
 
         <div class="topbar-right">
-            <a href="{{ route('doctor.manage') }}" class="topbar-item topbar-link">
+            <a href="{{ route('doctor.dashboard') }}" class="topbar-item topbar-link">
                 <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                     <path d="M4 5a2 2 0 0 1 2-2h9l5 5v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5Zm11 0v4h4"/>
                     <path d="M8 13h8M8 17h5" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/>

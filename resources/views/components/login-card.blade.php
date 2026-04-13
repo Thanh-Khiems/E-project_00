@@ -6,6 +6,10 @@
 
         <h2>Log In</h2>
 
+        @if (session('success'))
+            <div class="auth-recovery-alert mb-3">{{ session('success') }}</div>
+        @endif
+
         <form class="login-form" method="POST" action="{{ route('login.submit') }}">
             @csrf
 
@@ -50,7 +54,7 @@
 
         <div class="login-links">
             <a href="{{ route('register') }}">Create new account</a>
-            <a href="#">Forgot password?</a>
+            <a href="{{ route('password.request') }}">Forgot password?</a>
         </div>
 
         <div class="login-divider">

@@ -36,6 +36,12 @@ class Patient extends Model
 
     public static function syncFromUser(User $user): self
     {
+        if ($user->doctorProfile()->exists()) {
+            static::where('user_id', $user->id)->delete();
+
+            return new static();
+        }
+
         $patient = static::firstOrNew(['user_id' => $user->id]);
 
         $patient->fill([

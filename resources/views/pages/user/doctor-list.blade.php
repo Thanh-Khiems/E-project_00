@@ -252,17 +252,10 @@
 
                 <select name="specialty">
                     <option value="">Chuyên khoa</option>
-                    @php
-                        $specialties = $doctors->pluck('specialty.name')
-                            ->filter()
-                            ->unique()
-                            ->sort()
-                            ->values();
-                    @endphp
 
                     @foreach($specialties as $specialty)
-                        <option value="{{ $specialty }}" {{ request('specialty') == $specialty ? 'selected' : '' }}>
-                            {{ $specialty }}
+                        <option value="{{ $specialty->id }}" {{ (string) request('specialty') === (string) $specialty->id ? 'selected' : '' }}>
+                            {{ $specialty->name }}
                         </option>
                     @endforeach
                 </select>
