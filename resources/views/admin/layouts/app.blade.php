@@ -29,7 +29,9 @@
 <div class="admin-shell">
     <aside class="sidebar">
         <div class="brand-box">
-            <img src="{{ asset('admin-ui/images/logo.png') }}" alt="MediConnect logo" style="width:220px; max-width:100%;">
+            <a href="{{ route('home') }}" aria-label="Về trang chủ" style="display:inline-block;">
+                <img src="{{ asset('admin-ui/images/logo.png') }}" alt="MediConnect logo" style="width:220px; max-width:100%;">
+            </a>
         </div>
 
         <div class="menu-label">Quản trị hệ thống</div>
@@ -42,6 +44,10 @@
             </a>
             <a class="nav-link {{ request()->routeIs('admin.specialties.*') ? 'active' : '' }}" href="{{ route('admin.specialties.index') }}">
                 <i class="bi bi-grid"></i><span>Chuyên khoa</span>
+            </a>
+
+            <a class="nav-link {{ request()->routeIs('admin.degrees.*') ? 'active' : '' }}" href="{{ route('admin.degrees.index') }}">
+                <i class="bi bi-mortarboard"></i><span>Bằng cấp</span>
             </a>
             <a class="nav-link {{ request()->routeIs('admin.patients.*') ? 'active' : '' }}" href="{{ route('admin.patients.index') }}">
                 <i class="bi bi-people"></i><span>Bệnh nhân</span>
@@ -64,23 +70,21 @@
     <main class="content-wrapper">
         <header class="topbar">
             <div class="d-flex align-items-center gap-3">
-                <img src="{{ asset('admin-ui/images/logo.png') }}" alt="MediConnect logo" style="height:48px; width:auto;">
+                <a href="{{ route('home') }}" aria-label="Về trang chủ" style="display:inline-flex; align-items:center;">
+                    <img src="{{ asset('admin-ui/images/logo.png') }}" alt="MediConnect logo" style="height:48px; width:auto;">
+                </a>
                 <div>
                     <p class="topbar-label">Admin Panel</p>
                     <h2>{{ $pageTitle ?? 'Dashboard' }}</h2>
                 </div>
             </div>
             <div class="topbar-actions">
-                <div class="search-pill">
-                    <i class="bi bi-search"></i>
-                </div>
                 <form method="POST" action="{{ route('logout') }}" class="logout-form" title="Đăng xuất">
                     @csrf
                     <button type="submit" class="logout-btn" aria-label="Đăng xuất">
                         <i class="bi bi-box-arrow-right"></i>
                     </button>
                 </form>
-                <div class="avatar-pill">AD</div>
             </div>
         </header>
 

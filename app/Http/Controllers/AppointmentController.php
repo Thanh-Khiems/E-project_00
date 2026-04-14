@@ -133,7 +133,34 @@ class AppointmentController extends Controller
             'cancelled' => Appointment::query()->where('doctor_id', $doctor->id)->where('status', 'cancelled')->count(),
         ];
 
-        return view('pages.doctor.appointments', compact('appointments', 'doctor', 'stats'));
+        $statusBoards = [
+            'confirmed' => Appointment::query()
+                ->with(['patient'])
+                ->where('doctor_id', $doctor->id)
+                ->where('status', 'confirmed')
+                ->orderByDesc('appointment_date')
+                ->orderByDesc('start_time')
+                ->take(5)
+                ->get(),
+            'cancelled' => Appointment::query()
+                ->with(['patient'])
+                ->where('doctor_id', $doctor->id)
+                ->where('status', 'cancelled')
+                ->orderByDesc('appointment_date')
+                ->orderByDesc('start_time')
+                ->take(5)
+                ->get(),
+            'completed' => Appointment::query()
+                ->with(['patient'])
+                ->where('doctor_id', $doctor->id)
+                ->where('status', 'completed')
+                ->orderByDesc('appointment_date')
+                ->orderByDesc('start_time')
+                ->take(5)
+                ->get(),
+        ];
+
+        return view('pages.doctor.appointments', compact('appointments', 'doctor', 'stats', 'statusBoards'));
     }
 
     public function confirm(Appointment $appointment): RedirectResponse
@@ -172,6 +199,32 @@ class AppointmentController extends Controller
         ]);
 
         return back()->with('success', 'Đã hủy lịch hẹn thành công.');
+    }
+
+
+    public function complete(Appointment $appointment): RedirectResponse
+    {
+        if (! $this->canManageAppointment($appointment)) {
+            return back()->with('error', 'Bạn không có quyền hoàn thành lịch hẹn này.');
+        }
+
+        if ($appointment->status === 'cancelled') {
+            return back()->with('error', 'Không thể hoàn thành lịch hẹn đã bị hủy.');
+        }
+
+        if ($appointment->status === 'completed') {
+            return back()->with('error', 'Lịch hẹn này đã hoàn thành trước đó.');
+        }
+
+        if (! in_array($appointment->status, ['confirmed'], true)) {
+            return back()->with('error', 'Chỉ có thể hoàn thành lịch hẹn đã được xác nhận.');
+        }
+
+        $appointment->update([
+            'status' => 'completed',
+        ]);
+
+        return back()->with('success', 'Đã cập nhật lịch hẹn sang trạng thái hoàn thành.');
     }
 
     private function canManageAppointment(Appointment $appointment): bool

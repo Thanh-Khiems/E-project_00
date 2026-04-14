@@ -50,8 +50,21 @@
     }
     .btn-confirm { background: #dbeafe; color: #1d4ed8; }
     .btn-cancel { background: #fee2e2; color: #b91c1c; }
+    .btn-complete { background: #dcfce7; color: #166534; }
     .btn-disabled { background: #f3f4f6; color: #9ca3af; cursor: not-allowed; }
-    @media (max-width: 1100px) { .doctor-appointments-wrapper { grid-template-columns: 1fr; } .doctor-stats { grid-template-columns: repeat(2, 1fr); } }
+    .doctor-status-grid { display:grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+    .doctor-status-box { background:#fff; border-radius:20px; box-shadow: 0 10px 26px rgba(0, 0, 0, 0.05); padding: 22px; }
+    .doctor-status-box h4 { margin:0 0 8px; font-size: 18px; font-weight:800; color:#111827; }
+    .doctor-status-box .status-total { font-size: 30px; font-weight: 800; margin-bottom: 16px; }
+    .doctor-status-box.confirmed-box { border-top: 5px solid #2563eb; }
+    .doctor-status-box.cancelled-box { border-top: 5px solid #ef4444; }
+    .doctor-status-box.completed-box { border-top: 5px solid #22c55e; }
+    .status-mini-list { display:flex; flex-direction:column; gap:12px; }
+    .status-mini-item { background:#f8fafc; border:1px solid #e5e7eb; border-radius:14px; padding:12px 14px; }
+    .status-mini-item strong { color:#111827; display:block; margin-bottom:4px; }
+    .status-mini-meta { color:#6b7280; font-size:13px; line-height:1.5; }
+    .status-empty { color:#9ca3af; font-size:14px; background:#f9fafb; border:1px dashed #d1d5db; border-radius:14px; padding:16px; text-align:center; }
+    @media (max-width: 1100px) { .doctor-appointments-wrapper { grid-template-columns: 1fr; } .doctor-stats { grid-template-columns: repeat(2, 1fr); } .doctor-status-grid { grid-template-columns: 1fr; } }
     @media (max-width: 768px) { .doctor-stats { grid-template-columns: 1fr; } .doctor-table-wrap { overflow-x: auto; } .doctor-table { min-width: 1200px; } }
 </style>
 
@@ -165,12 +178,19 @@
                                                 <button type="submit" class="action-btn btn-cancel">Hủy lịch</button>
                                             </form>
                                         @elseif($appointment->status === 'confirmed')
-                                            <span class="action-btn btn-disabled">Đã xác nhận</span>
+                                            <span class="action-btn btn-disabled">Đã nhận</span>
+                                            <form method="POST" action="{{ route('appointments.complete', $appointment) }}" onsubmit="return confirm('Đánh dấu lịch hẹn này là hoàn thành?')">
+                                                @csrf
+                                                @method('PATCH')
+                                                <button type="submit" class="action-btn btn-complete">Hoàn thành</button>
+                                            </form>
                                             <form method="POST" action="{{ route('appointments.cancel', $appointment) }}" onsubmit="return confirm('Bạn chắc chắn muốn hủy lịch hẹn này?')">
                                                 @csrf
                                                 @method('PATCH')
                                                 <button type="submit" class="action-btn btn-cancel">Hủy lịch</button>
                                             </form>
+                                        @elseif($appointment->status === 'completed')
+                                            <span class="action-btn btn-disabled">Đã hoàn thành</span>
                                         @elseif($appointment->status === 'cancelled')
                                             <span class="action-btn btn-disabled">Đã hủy</span>
                                         @else
@@ -189,6 +209,65 @@
 
                 <div class="pagination-wrap">
                     {{ $appointments->links() }}
+                </div>
+            </div>
+
+            <div class="doctor-status-grid">
+                <div class="doctor-status-box confirmed-box">
+                    <h4>Đã nhận</h4>
+                    <div class="status-total">{{ $stats['confirmed'] }}</div>
+                    <div class="status-mini-list">
+                        @forelse(($statusBoards['confirmed'] ?? collect()) as $statusAppointment)
+                            <div class="status-mini-item">
+                                <strong>{{ $statusAppointment->patient->full_name ?? 'Bệnh nhân' }}</strong>
+                                <div class="status-mini-meta">
+                                    Mã hẹn: {{ $statusAppointment->appointment_code }}<br>
+                                    Ngày khám: {{ optional($statusAppointment->appointment_date)->format('d/m/Y') ?? '—' }}<br>
+                                    Giờ: {{ \Carbon\Carbon::parse($statusAppointment->start_time)->format('H:i') }} - {{ \Carbon\Carbon::parse($statusAppointment->end_time)->format('H:i') }}
+                                </div>
+                            </div>
+                        @empty
+                            <div class="status-empty">Hiện chưa có lịch hẹn nào đã nhận.</div>
+                        @endforelse
+                    </div>
+                </div>
+
+                <div class="doctor-status-box cancelled-box">
+                    <h4>Đã hủy</h4>
+                    <div class="status-total">{{ $stats['cancelled'] }}</div>
+                    <div class="status-mini-list">
+                        @forelse(($statusBoards['cancelled'] ?? collect()) as $statusAppointment)
+                            <div class="status-mini-item">
+                                <strong>{{ $statusAppointment->patient->full_name ?? 'Bệnh nhân' }}</strong>
+                                <div class="status-mini-meta">
+                                    Mã hẹn: {{ $statusAppointment->appointment_code }}<br>
+                                    Ngày khám: {{ optional($statusAppointment->appointment_date)->format('d/m/Y') ?? '—' }}<br>
+                                    Trạng thái: Đã hủy
+                                </div>
+                            </div>
+                        @empty
+                            <div class="status-empty">Hiện chưa có lịch hẹn nào đã hủy.</div>
+                        @endforelse
+                    </div>
+                </div>
+
+                <div class="doctor-status-box completed-box">
+                    <h4>Hoàn thành</h4>
+                    <div class="status-total">{{ $stats['completed'] }}</div>
+                    <div class="status-mini-list">
+                        @forelse(($statusBoards['completed'] ?? collect()) as $statusAppointment)
+                            <div class="status-mini-item">
+                                <strong>{{ $statusAppointment->patient->full_name ?? 'Bệnh nhân' }}</strong>
+                                <div class="status-mini-meta">
+                                    Mã hẹn: {{ $statusAppointment->appointment_code }}<br>
+                                    Ngày khám: {{ optional($statusAppointment->appointment_date)->format('d/m/Y') ?? '—' }}<br>
+                                    Trạng thái: Hoàn thành
+                                </div>
+                            </div>
+                        @empty
+                            <div class="status-empty">Hiện chưa có lịch hẹn nào hoàn thành.</div>
+                        @endforelse
+                    </div>
                 </div>
             </div>
         </main>

@@ -291,12 +291,20 @@
                     <label>Bằng cấp</label>
                     <select name="degree" required>
                         <option value="">-- Chọn bằng cấp --</option>
-                        <option value="Thạc sĩ" {{ old('degree') == 'Thạc sĩ' ? 'selected' : '' }}>Thạc sĩ</option>
-                        <option value="Tiến sĩ" {{ old('degree') == 'Tiến sĩ' ? 'selected' : '' }}>Tiến sĩ</option>
+                        @forelse($degrees as $degree)
+                            <option value="{{ $degree->name }}" {{ old('degree') == $degree->name ? 'selected' : '' }}>
+                                {{ $degree->name }}
+                            </option>
+                        @empty
+                            <option value="" disabled>Admin chưa thêm bằng cấp nào</option>
+                        @endforelse
                     </select>
                     @error('degree')
                         <small style="color:red">{{ $message }}</small>
                     @enderror
+                    @if($degrees->isEmpty())
+                        <small style="color:#b45309">Hiện chưa có danh sách bằng cấp. Vui lòng liên hệ admin để thêm bằng cấp trước khi gửi xác thực.</small>
+                    @endif
                 </div>
 
                 <div class="form-group">

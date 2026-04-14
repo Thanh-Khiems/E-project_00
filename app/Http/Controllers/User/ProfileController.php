@@ -11,6 +11,7 @@ use App\Models\Doctor;
 use App\Models\Patient;
 use App\Models\Specialty;
 use App\Models\Appointment;
+use App\Models\Degree;
 use App\Services\LocationService;
 
 class ProfileController extends Controller
@@ -33,12 +34,18 @@ class ProfileController extends Controller
                 ->orderBy('name')
                 ->get();
 
+            $degrees = Degree::query()
+                ->active()
+                ->orderBy('name')
+                ->get();
+
             return view('pages.user.profile', compact(
                 'user',
                 'locations',
                 'provinces',
                 'appointments',
-                'specialties'
+                'specialties',
+                'degrees'
             ));
         }
 
@@ -142,7 +149,7 @@ class ProfileController extends Controller
             'citizen_id_front'   => 'required|image|mimes:jpg,jpeg,png|max:2048',
             'citizen_id_back'    => 'required|image|mimes:jpg,jpeg,png|max:2048',
             'doctor_phone'       => 'required|string|max:20',
-            'degree'             => 'required|string|max:100',
+            'degree'             => 'required|string|max:100|exists:degrees,name',
             'degree_image'       => 'required|image|mimes:jpg,jpeg,png|max:2048',
             'specialty_id'       => 'required|exists:specialties,id',
             'experience_years'   => 'required|integer|min:0|max:100',

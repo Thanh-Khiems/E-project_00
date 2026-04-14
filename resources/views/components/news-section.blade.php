@@ -1,73 +1,51 @@
+@php
+    $blogs = $blogs
+        ?? $featuredBlogs
+        ?? \App\Models\Blog::published()
+            ->where('is_featured', true)
+            ->latest('published_at')
+            ->take(3)
+            ->get();
+@endphp
+
 <section class="news-section">
     <div class="container">
         <div class="section-heading" data-reveal="zoom" data-delay="0">
-            <h2>News at MediConnect</h2>
+            <h2>Tin nổi bật tại MediConnect</h2>
             <span class="section-line"></span>
             <p class="news-subtitle">
-                Explore the latest highlights, medical updates, and featured news from MediConnect.
+                Những bài blog nổi bật do admin đăng sẽ hiển thị ở đây để mọi người đều có thể theo dõi nhanh.
             </p>
         </div>
 
-        <div class="news-grid">
-            <article class="news-card" data-reveal="up" data-delay="100">
-                <div class="news-image-wrap">
-                    <img
-                        src="{{ asset('images/news/news-1.webp') }}"
-                        alt="Healthcare news"
-                        class="news-image"
-                    >
-                </div>
+        @if($blogs->count())
+            <div class="news-grid">
+                @foreach($blogs as $index => $blog)
+                    <article class="news-card" data-reveal="up" data-delay="{{ ($index + 1) * 100 }}">
+                        <div class="news-image-wrap">
+                            <img
+                                src="{{ $blog->thumbnail_url }}"
+                                alt="{{ $blog->title }}"
+                                class="news-image"
+                            >
+                        </div>
 
-                <div class="news-content">
-                    <h3>Latest Healthcare News from MediConnect</h3>
-                    <p>
-                        Stay informed with the latest healthcare insights, medical trends,
-                        and important updates from MediConnect.
-                    </p>
+                        <div class="news-content">
+                            <div class="blog-meta">{{ $blog->published_at?->format('d/m/Y') ?? 'Mới cập nhật' }}</div>
+                            <h3>{{ $blog->title }}</h3>
+                            <p>{{ $blog->excerpt_text }}</p>
 
-                    <a href="#" class="news-btn">More</a>
-                </div>
-            </article>
+                            <a href="{{ route('blog.show', $blog->slug) }}" class="news-btn">Xem bài viết</a>
+                        </div>
+                    </article>
+                @endforeach
+            </div>
 
-            <article class="news-card" data-reveal="up" data-delay="200">
-                <div class="news-image-wrap">
-                    <img
-                        src="{{ asset('images/news/news-1.webp') }}"
-                        alt="Healthcare news"
-                        class="news-image"
-                    >
-                </div>
-
-                <div class="news-content">
-                    <h3>Latest Healthcare News from MediConnect</h3>
-                    <p>
-                        Stay informed with the latest healthcare insights, medical trends,
-                        and important updates from MediConnect.
-                    </p>
-
-                    <a href="#" class="news-btn">More</a>
-                </div>
-            </article>
-
-            <article class="news-card" data-reveal="up" data-delay="300">
-                <div class="news-image-wrap">
-                    <img
-                        src="{{ asset('images/news/news-1.webp') }}"
-                        alt="Healthcare news"
-                        class="news-image"
-                    >
-                </div>
-
-                <div class="news-content">
-                    <h3>Latest Healthcare News from MediConnect</h3>
-                    <p>
-                        Stay informed with the latest healthcare insights, medical trends,
-                        and important updates from MediConnect.
-                    </p>
-
-                    <a href="#" class="news-btn">More</a>
-                </div>
-            </article>
-        </div>
+            <div class="blog-more-wrap">
+                <a href="{{ route('blog.index') }}" class="blog-outline-btn">Xem tất cả blog</a>
+            </div>
+        @else
+            <div class="empty-blog-state">Hiện chưa có bài blog nổi bật nào được đăng.</div>
+        @endif
     </div>
 </section>

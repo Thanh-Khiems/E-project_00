@@ -16,6 +16,7 @@ use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\Admin\DoctorController;
 use App\Http\Controllers\Admin\SpecialtyController;
 use App\Http\Controllers\Admin\PatientController;
+use App\Http\Controllers\Admin\DegreeController;
 use App\Http\Controllers\Admin\StaffController;
 use App\Http\Controllers\Admin\AppointmentController as AdminAppointmentController;
 use App\Http\Controllers\Admin\LocationController;
@@ -127,6 +128,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::post('/specialties', [SpecialtyController::class, 'store'])->name('specialties.store');
     Route::put('/specialties/{specialty}', [SpecialtyController::class, 'update'])->name('specialties.update');
     Route::delete('/specialties/{specialty}', [SpecialtyController::class, 'destroy'])->name('specialties.destroy');
+
+    Route::get('/degrees', [DegreeController::class, 'index'])->name('degrees.index');
+    Route::post('/degrees', [DegreeController::class, 'store'])->name('degrees.store');
+    Route::put('/degrees/{degree}', [DegreeController::class, 'update'])->name('degrees.update');
+    Route::delete('/degrees/{degree}', [DegreeController::class, 'destroy'])->name('degrees.destroy');
     Route::get('/patients', [PatientController::class, 'index'])->name('patients.index');
     Route::get('/patients/{patient}', [PatientController::class, 'show'])->name('patients.show');
     Route::get('/patients/{patient}/edit', [PatientController::class, 'edit'])->name('patients.edit');
@@ -177,4 +183,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::patch('/appointments/{appointment}/cancel', [AppointmentController::class, 'cancel'])
         ->name('appointments.cancel');
+
+    Route::patch('/appointments/{appointment}/complete', [AppointmentController::class, 'complete'])
+        ->name('appointments.complete');
 });
