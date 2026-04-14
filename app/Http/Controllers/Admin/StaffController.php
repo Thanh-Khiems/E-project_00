@@ -4,12 +4,15 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Staff;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class StaffController extends Controller
 {
     public function index(Request $request)
     {
+        $this->syncAdminUsersToStaff();
+
         $query = Staff::query();
 
         if ($request->filled('keyword')) {
@@ -38,5 +41,26 @@ class StaffController extends Controller
                 'admin' => Staff::where('role', 'admin')->count(),
             ]
         ]);
+    }
+
+    protected function syncAdminUsersToStaff(): void
+    {
+        User::query()
+            ->where('role', 'admin')
+            ->get()
+            ->each(function (User $user) {
+                Staff::updateOrCreate(
+                    ['user_id' => $user->id],
+                    [
+                        'name' => $user->full_name,
+                        'email' => $user->email,
+                        'phone' => $user->phone,
+                        'role' => 'admin',
+                        'department' => 'Quản trị viên',
+                        'shift' => 'Hành chính',
+                        'status' => 'working',
+                    ]
+                );
+            });
     }
 }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Patient;
+use App\Models\Staff;
 use App\Models\User;
 use App\Services\LocationService;
 use Illuminate\Http\Request;
@@ -20,7 +21,9 @@ class PatientController extends Controller
             ->withCount('appointments')
             ->where(function ($q) {
                 $q->whereNull('user_id')
-                  ->orWhereHas('user', fn ($userQuery) => $userQuery->whereDoesntHave('doctorProfile'));
+                  ->orWhereHas('user', fn ($userQuery) => $userQuery
+                      ->where('role', 'user')
+                      ->whereDoesntHave('doctorProfile'));
             });
 
         if ($request->filled('keyword')) {
@@ -80,10 +83,11 @@ class PatientController extends Controller
             'district' => 'nullable|string|max:255',
             'ward' => 'nullable|string|max:255',
             'address_detail' => 'nullable|string|max:255',
+            'role' => 'required|in:user,admin',
         ]);
 
-        if ($validated['province'] || $validated['district'] || $validated['ward']) {
-            if (! $validated['province'] || ! $validated['district'] || ! $validated['ward']) {
+        if (($validated['province'] ?? null) || ($validated['district'] ?? null) || ($validated['ward'] ?? null)) {
+            if (! ($validated['province'] ?? null) || ! ($validated['district'] ?? null) || ! ($validated['ward'] ?? null)) {
                 return back()->withErrors([
                     'province' => 'Vui lòng chọn đầy đủ tỉnh/thành phố, quận/huyện và phường/xã.',
                 ])->withInput();
@@ -100,18 +104,40 @@ class PatientController extends Controller
             $user = $patient->user;
 
             if ($user) {
+                $newRole = $validated['role'] ?? $user->role ?? 'user';
+
                 $user->update([
                     'full_name' => $validated['full_name'],
                     'email' => $validated['email'] ?? $user->email,
                     'phone' => $validated['phone'] ?? null,
-                    'gender' => $validated['gender'] !== 'other' ? ($validated['gender'] ?? null) : null,
+                    'gender' => ($validated['gender'] ?? null) !== 'other' ? ($validated['gender'] ?? null) : null,
                     'dob' => $validated['dob'] ?? null,
                     'province' => $validated['province'] ?? null,
                     'district' => $validated['district'] ?? null,
                     'ward' => $validated['ward'] ?? null,
                     'address_detail' => $validated['address_detail'] ?? null,
+                    'role' => $newRole,
                 ]);
 
+                if ($newRole === 'admin') {
+                    Staff::updateOrCreate(
+                        ['user_id' => $user->id],
+                        [
+                            'name' => $user->full_name,
+                            'email' => $user->email,
+                            'phone' => $user->phone,
+                            'role' => 'admin',
+                            'department' => 'Quản trị viên',
+                            'shift' => 'Hành chính',
+                            'status' => 'working',
+                        ]
+                    );
+
+                    Patient::where('user_id', $user->id)->delete();
+                    return;
+                }
+
+                Staff::where('user_id', $user->id)->delete();
                 Patient::syncFromUser($user->fresh());
                 return;
             }
@@ -138,6 +164,7 @@ class PatientController extends Controller
     {
         DB::transaction(function () use ($patient) {
             if ($patient->user) {
+                Staff::where('user_id', $patient->user->id)->delete();
                 $patient->user->delete();
             }
 
@@ -147,11 +174,10 @@ class PatientController extends Controller
         return redirect()->route('admin.patients.index')->with('success', 'Đã xóa tài khoản bệnh nhân.');
     }
 
-
     protected function syncMissingPatients(): void
     {
         Patient::query()
-            ->whereHas('user', fn ($query) => $query->has('doctorProfile'))
+            ->whereHas('user', fn ($query) => $query->where('role', '!=', 'user')->orWhereHas('doctorProfile'))
             ->delete();
 
         User::query()
@@ -160,13 +186,33 @@ class PatientController extends Controller
             ->whereDoesntHave('patientProfile')
             ->get()
             ->each(fn (User $user) => Patient::syncFromUser($user));
+
+        User::query()
+            ->where('role', 'admin')
+            ->get()
+            ->each(function (User $user) {
+                Staff::updateOrCreate(
+                    ['user_id' => $user->id],
+                    [
+                        'name' => $user->full_name,
+                        'email' => $user->email,
+                        'phone' => $user->phone,
+                        'role' => 'admin',
+                        'department' => 'Quản trị viên',
+                        'shift' => 'Hành chính',
+                        'status' => 'working',
+                    ]
+                );
+            });
     }
 
     protected function stats(): array
     {
         $visiblePatients = Patient::query()->where(function ($q) {
             $q->whereNull('user_id')
-              ->orWhereHas('user', fn ($userQuery) => $userQuery->whereDoesntHave('doctorProfile'));
+              ->orWhereHas('user', fn ($userQuery) => $userQuery
+                  ->where('role', 'user')
+                  ->whereDoesntHave('doctorProfile'));
         });
 
         return [

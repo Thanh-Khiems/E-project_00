@@ -72,6 +72,16 @@
                 </div>
 
                 <div class="col-md-4">
+                    <label class="form-label">Vai trò tài khoản</label>
+                    @php($selectedRole = old('role', $patient->user?->role ?? 'user'))
+                    <select name="role" class="form-select">
+                        <option value="user" @selected($selectedRole === 'user')>User</option>
+                        <option value="admin" @selected($selectedRole === 'admin')>Admin</option>
+                    </select>
+                    <small class="text-muted">Đổi sang admin sẽ chuyển dữ liệu tài khoản này sang bảng staff.</small>
+                </div>
+
+                <div class="col-md-4">
                     <label class="form-label">Tỉnh/Thành phố</label>
                     <select name="province" id="province" class="form-select">
                         <option value="">Chọn tỉnh/thành phố</option>
