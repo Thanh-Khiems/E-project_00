@@ -190,6 +190,9 @@ Route::middleware(['auth'])->group(function () {
 
     Route::patch('/appointments/{appointment}/complete', [AppointmentController::class, 'complete'])
         ->name('appointments.complete');
+
+    Route::post('/appointments/{appointment}/review', [AppointmentController::class, 'storeReview'])
+        ->name('appointments.review');
 });
 
 Route::middleware(['auth'])->group(function () {

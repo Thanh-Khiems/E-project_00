@@ -295,6 +295,9 @@
                         ? $doctor->experience_years . ' năm kinh nghiệm'
                         : 'Chưa cập nhật kinh nghiệm';
                     $doctorCity = $doctor->city ?? 'Chưa cập nhật';
+                    $averageRating = round((float) ($doctor->reviews_avg_rating ?? 0), 1);
+                    $reviewsCount = (int) ($doctor->reviews_count ?? 0);
+                    $ratingStars = str_repeat('★', (int) round($averageRating)) . str_repeat('☆', max(0, 5 - (int) round($averageRating)));
 
                     $groupedSchedules = collect();
 
@@ -354,6 +357,23 @@
                             <p><i class="fas fa-briefcase"></i> {{ $doctorExperience }}</p>
                             <p><i class="fas fa-map-marker-alt"></i> {{ $doctorCity }}</p>
                         </div>
+                    </div>
+
+                    <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin:8px 0 14px; padding:10px 12px; border-radius:12px; background:#f8fafc; border:1px solid #e5e7eb;">
+                        <div>
+                            <div style="color:#f59e0b;font-weight:700;letter-spacing:1px;">{{ $reviewsCount > 0 ? $ratingStars : '☆☆☆☆☆' }}</div>
+                            <div style="font-size:13px;color:#6b7280;margin-top:4px;">
+                                @if($reviewsCount > 0)
+                                    {{ number_format($averageRating, 1) }}/5 · {{ $reviewsCount }} đánh giá
+                                @else
+                                    Chưa có đánh giá
+                                @endif
+                            </div>
+                        </div>
+
+                        @if($reviewsCount > 0)
+                            <div style="font-size:28px;font-weight:800;color:#111827;line-height:1;">{{ number_format($averageRating, 1) }}</div>
+                        @endif
                     </div>
 
                     <div class="doctor-schedule">

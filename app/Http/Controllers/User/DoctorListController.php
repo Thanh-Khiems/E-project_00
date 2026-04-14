@@ -12,7 +12,10 @@ class DoctorListController extends Controller
     public function index(Request $request)
     {
         $query = Doctor::with(['user', 'specialty', 'schedules'])
-            ->where('approval_status', 'approved');
+            ->withCount('reviews')
+            ->withAvg('reviews', 'rating')
+            ->where('approval_status', 'approved')
+            ->where('status', 'active');
 
         if ($request->filled('specialty')) {
             $query->where('specialty_id', $request->specialty);

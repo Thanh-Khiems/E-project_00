@@ -16,6 +16,31 @@
             </div>
         @endif
 
+
+        <div class="row g-4 mt-1">
+            <div class="col-lg-4">
+                <div class="border rounded-4 p-4 bg-white h-100">
+                    <div class="text-muted small mb-2">Điểm trung bình</div>
+                    <div style="font-size:32px;font-weight:800;color:#ea580c;">{{ number_format($reviewStats['average_rating'], 1) }}/5</div>
+                    <div class="mt-2 text-warning fw-semibold">{{ str_repeat('★', (int) floor($reviewStats['average_rating'])) }}{{ str_repeat('☆', max(0, 5 - (int) floor($reviewStats['average_rating']))) }}</div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="border rounded-4 p-4 bg-white h-100">
+                    <div class="text-muted small mb-2">Tổng lượt đánh giá</div>
+                    <div style="font-size:32px;font-weight:800;color:#111827;">{{ $reviewStats['reviews_count'] }}</div>
+                    <div class="mt-2 text-muted small">Số đánh giá bệnh nhân đã gửi cho bác sĩ này.</div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="border rounded-4 p-4 bg-white h-100">
+                    <div class="text-muted small mb-2">Lịch hẹn đã hoàn tất</div>
+                    <div style="font-size:32px;font-weight:800;color:#111827;">{{ $reviewStats['completed_appointments'] }}</div>
+                    <div class="mt-2 text-muted small">Dùng để đối chiếu số ca khám hoàn thành và số đánh giá.</div>
+                </div>
+            </div>
+        </div>
+
         <div class="row g-4 mt-1">
             <div class="col-lg-6">
                 <div class="border rounded-4 p-4 bg-white h-100">
@@ -93,6 +118,51 @@
                     </div>
                 </div>
             </div>
+        </div>
+
+
+        <div class="panel-card mt-4">
+            <div class="panel-head">
+                <div>
+                    <h5>Đánh giá từ bệnh nhân</h5>
+                    <p>Admin có thể xem trực tiếp các đánh giá mà bệnh nhân đã gửi cho bác sĩ này.</p>
+                </div>
+            </div>
+
+            @if($recentReviews->count())
+                <div class="table-responsive mt-3">
+                    <table class="table align-middle">
+                        <thead>
+                            <tr>
+                                <th>Bệnh nhân</th>
+                                <th>Lịch hẹn</th>
+                                <th>Điểm</th>
+                                <th>Nhận xét</th>
+                                <th>Thời gian</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($recentReviews as $review)
+                                <tr>
+                                    <td>
+                                        <strong>{{ $review->patient->full_name ?? 'Bệnh nhân' }}</strong>
+                                        <div class="text-muted small">{{ $review->patient->email ?? '—' }}</div>
+                                    </td>
+                                    <td>{{ $review->appointment->appointment_code ?? '—' }}</td>
+                                    <td>
+                                        <div class="fw-semibold text-warning">{{ str_repeat('★', (int) $review->rating) }}{{ str_repeat('☆', 5 - (int) $review->rating) }}</div>
+                                        <div class="text-muted small">{{ $review->rating }}/5</div>
+                                    </td>
+                                    <td>{{ $review->review ?: 'Không có nhận xét thêm.' }}</td>
+                                    <td>{{ optional($review->reviewed_at)->format('d/m/Y H:i') ?? optional($review->created_at)->format('d/m/Y H:i') ?? '—' }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            @else
+                <div class="text-muted mt-3">Bác sĩ này chưa có đánh giá nào từ bệnh nhân.</div>
+            @endif
         </div>
 
         <div class="mt-4 d-flex gap-3">

@@ -17,3 +17,11 @@ Ghi chú:
 - Migration sẽ tạo bảng location_cities và import dữ liệu mặc định từ config/locations.php.
 - Sau đó admin có thể thêm/sửa/xóa thành phố, quận/huyện, phường/xã tại /admin/locations.
 - Form đăng ký và chỉnh sửa hồ sơ user sẽ đọc dữ liệu khu vực từ database.
+
+[2026-04-14] Added patient doctor-review flow after appointment completion:
+- Created appointment_reviews table + AppointmentReview model.
+- Added one-review-per-appointment logic.
+- Added POST route: /appointments/{appointment}/review.
+- Patient can review completed appointments from patient-appointments page.
+- Doctor appointments page now shows rating count, average rating, and review details.
+- Admin appointments index/show now display patient reviews.

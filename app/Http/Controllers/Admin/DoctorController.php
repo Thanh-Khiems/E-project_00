@@ -136,11 +136,29 @@ class DoctorController extends Controller
 
         public function show(Doctor $doctor)
     {
-        $doctor->load(['specialty', 'user']);
+        $doctor->load([
+            'specialty',
+            'user',
+            'reviews.patient',
+            'reviews.appointment',
+        ]);
+
+        $reviewStats = [
+            'reviews_count' => $doctor->reviews->count(),
+            'average_rating' => round((float) $doctor->reviews->avg('rating'), 1),
+            'completed_appointments' => $doctor->appointments()->where('status', 'completed')->count(),
+        ];
+
+        $recentReviews = $doctor->reviews
+            ->sortByDesc(fn ($review) => optional($review->reviewed_at)?->timestamp ?? $review->created_at?->timestamp ?? 0)
+            ->take(10)
+            ->values();
 
         return view('admin.doctors.show', [
             'pageTitle' => 'Hồ sơ bác sĩ',
             'doctor' => $doctor,
+            'reviewStats' => $reviewStats,
+            'recentReviews' => $recentReviews,
         ]);
     }
 

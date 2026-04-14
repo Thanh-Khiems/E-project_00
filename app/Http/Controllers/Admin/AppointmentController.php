@@ -12,7 +12,7 @@ class AppointmentController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Appointment::query()->with(['doctor.user', 'doctor.specialty', 'patient', 'schedule', 'prescriptions']);
+        $query = Appointment::query()->with(['doctor.user', 'doctor.specialty', 'patient', 'schedule', 'prescriptions', 'review.patient']);
 
         if ($request->filled('doctor_id')) {
             $query->where('doctor_id', $request->doctor_id);
@@ -70,6 +70,7 @@ class AppointmentController extends Controller
             'patient',
             'schedule',
             'prescriptions.items.medication.medicineType',
+            'review.patient',
         ]);
 
         $patientHistory = Appointment::with(['doctor.specialty', 'prescriptions.items.medication.medicineType'])

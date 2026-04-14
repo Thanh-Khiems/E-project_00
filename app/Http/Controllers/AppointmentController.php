@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Appointment;
+use App\Models\AppointmentReview;
 use App\Models\Doctor;
 use App\Models\Schedule;
 use Carbon\Carbon;
@@ -100,7 +101,7 @@ class AppointmentController extends Controller
     public function patientIndex()
     {
         $appointments = Appointment::query()
-            ->with(['doctor.user', 'doctor.specialty', 'schedule', 'prescriptions.items.medication'])
+            ->with(['doctor.user', 'doctor.specialty', 'schedule', 'prescriptions.items.medication', 'review.patient'])
             ->where('patient_id', Auth::id())
             ->orderByDesc('appointment_date')
             ->orderByDesc('start_time')
@@ -117,7 +118,7 @@ class AppointmentController extends Controller
             ->firstOrFail();
 
         $appointments = Appointment::query()
-            ->with(['patient', 'schedule', 'doctor.specialty', 'prescriptions.items.medication'])
+            ->with(['patient', 'schedule', 'doctor.specialty', 'prescriptions.items.medication', 'review.patient'])
             ->where('doctor_id', $doctor->id)
             ->orderBy('appointment_date')
             ->orderBy('start_time')
@@ -131,6 +132,8 @@ class AppointmentController extends Controller
             'confirmed' => Appointment::query()->where('doctor_id', $doctor->id)->where('status', 'confirmed')->count(),
             'completed' => Appointment::query()->where('doctor_id', $doctor->id)->where('status', 'completed')->count(),
             'cancelled' => Appointment::query()->where('doctor_id', $doctor->id)->where('status', 'cancelled')->count(),
+            'reviews_count' => AppointmentReview::query()->where('doctor_id', $doctor->id)->count(),
+            'average_rating' => round((float) AppointmentReview::query()->where('doctor_id', $doctor->id)->avg('rating'), 1),
         ];
 
         $statusBoards = [
@@ -180,6 +183,36 @@ class AppointmentController extends Controller
         return back()->with('success', 'Đã hủy lịch hẹn thành công.');
     }
 
+
+    public function storeReview(Request $request, Appointment $appointment): RedirectResponse
+    {
+        if ((int) $appointment->patient_id !== (int) Auth::id()) {
+            return back()->with('error', 'Bạn không có quyền đánh giá lịch hẹn này.');
+        }
+
+        if ($appointment->status !== 'completed') {
+            return back()->with('error', 'Chỉ có thể đánh giá sau khi lịch hẹn đã hoàn tất.');
+        }
+
+        if ($appointment->review()->exists()) {
+            return back()->with('error', 'Bạn đã đánh giá lịch hẹn này rồi.');
+        }
+
+        $validated = $request->validate([
+            'rating' => ['required', 'integer', 'min:1', 'max:5'],
+            'review' => ['nullable', 'string', 'max:2000'],
+        ]);
+
+        $appointment->review()->create([
+            'patient_id' => Auth::id(),
+            'doctor_id' => $appointment->doctor_id,
+            'rating' => $validated['rating'],
+            'review' => $validated['review'] ?? null,
+            'reviewed_at' => now(),
+        ]);
+
+        return back()->with('success', 'Đánh giá bác sĩ thành công.');
+    }
 
     public function complete(Appointment $appointment): RedirectResponse
     {

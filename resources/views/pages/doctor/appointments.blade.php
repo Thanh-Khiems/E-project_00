@@ -6,7 +6,7 @@
         <aside style="background:#fff;border-radius:20px;padding:24px 18px;box-shadow:0 10px 26px rgba(0,0,0,.05);display:flex;flex-direction:column;justify-content:space-between;">
             <div>
                 <h2 style="color:#1d4ed8;margin:0 0 8px;font-size:22px;font-weight:800;">Doctor Panel</h2>
-                <p style="color:#6b7280;font-size:14px;margin-bottom:24px;">Quản lý lịch hẹn, hoàn tất buổi khám và phát hành đơn thuốc.</p>
+                <p style="color:#6b7280;font-size:14px;margin-bottom:24px;">Quản lý lịch hẹn, hoàn tất buổi khám, phát hành đơn thuốc và xem đánh giá từ bệnh nhân.</p>
 
                 <div style="display:flex;flex-direction:column;gap:10px;">
                     <a href="{{ route('doctor.dashboard') }}" style="display:block;padding:12px 14px;border-radius:12px;text-decoration:none;color:#374151;font-weight:600;">Dashboard</a>
@@ -22,13 +22,14 @@
         </aside>
 
         <main>
-            <div style="display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:16px;margin-bottom:20px;">
+            <div style="display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:16px;margin-bottom:20px;">
                 @foreach([
                     ['Tổng lịch hẹn', $stats['total'], '#1d4ed8'],
                     ['Hôm nay', $stats['today'], '#0f766e'],
                     ['Chờ xác nhận', $stats['pending'], '#d97706'],
                     ['Đã xác nhận', $stats['confirmed'], '#2563eb'],
                     ['Hoàn tất', $stats['completed'], '#059669'],
+                    ['Lượt đánh giá', $stats['reviews_count'], '#ea580c'],
                 ] as $card)
                     <div style="background:#fff;border-radius:18px;padding:18px;box-shadow:0 10px 26px rgba(0,0,0,.05);">
                         <div style="font-size:13px;color:#6b7280;">{{ $card[0] }}</div>
@@ -37,11 +38,21 @@
                 @endforeach
             </div>
 
+            <div style="background:#fff;border-radius:20px;padding:22px;box-shadow:0 10px 26px rgba(0,0,0,.05);margin-bottom:20px;">
+                <div style="display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:center;">
+                    <div>
+                        <div style="font-size:14px;color:#6b7280;">Điểm đánh giá trung bình</div>
+                        <div style="font-size:32px;font-weight:800;color:#ea580c;">{{ number_format($stats['average_rating'], 1) }}/5</div>
+                    </div>
+                    <div style="color:#6b7280;font-size:14px;">Tổng số lượt đánh giá: <strong>{{ $stats['reviews_count'] }}</strong></div>
+                </div>
+            </div>
+
             <div style="background:#fff;border-radius:20px;padding:24px;box-shadow:0 10px 26px rgba(0,0,0,.05);overflow:auto;">
                 <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px;">
                     <div>
                         <h3 style="margin:0;color:#111827;">Danh sách lịch hẹn</h3>
-                        <p style="margin:6px 0 0;color:#6b7280;">Bác sĩ xác nhận lịch, từ chối lịch hoặc hoàn tất buổi khám để phát hành toa thuốc.</p>
+                        <p style="margin:6px 0 0;color:#6b7280;">Bác sĩ xác nhận lịch, hoàn tất buổi khám và theo dõi đánh giá từ bệnh nhân.</p>
                     </div>
                 </div>
 
@@ -52,7 +63,7 @@
                     <div style="margin-bottom:16px;padding:12px 16px;border-radius:12px;background:#fef2f2;color:#991b1b;">{{ session('error') }}</div>
                 @endif
 
-                <table style="width:100%;border-collapse:collapse;min-width:1100px;">
+                <table style="width:100%;border-collapse:collapse;min-width:1280px;">
                     <thead>
                         <tr style="background:#eff6ff;color:#1d4ed8;">
                             <th style="padding:12px;text-align:left;">Mã hẹn</th>
@@ -63,6 +74,7 @@
                             <th style="padding:12px;text-align:left;">Trạng thái</th>
                             <th style="padding:12px;text-align:left;">Chẩn đoán</th>
                             <th style="padding:12px;text-align:left;">Toa thuốc</th>
+                            <th style="padding:12px;text-align:left;">Đánh giá</th>
                             <th style="padding:12px;text-align:left;">Thao tác</th>
                         </tr>
                     </thead>
@@ -95,6 +107,15 @@
                                 <td style="padding:12px;border-bottom:1px solid #e5e7eb;">
                                     {{ $appointment->prescriptions->count() }} toa
                                 </td>
+                                <td style="padding:12px;border-bottom:1px solid #e5e7eb;max-width:240px;">
+                                    @if($appointment->review)
+                                        <div style="font-weight:800;color:#ea580c;">{{ str_repeat('★', (int) $appointment->review->rating) }}{{ str_repeat('☆', 5 - (int) $appointment->review->rating) }}</div>
+                                        <div style="font-size:13px;color:#111827;margin-top:4px;">{{ $appointment->review->rating }}/5 · {{ $appointment->review->patient->full_name ?? 'Bệnh nhân' }}</div>
+                                        <div style="font-size:12px;color:#6b7280;margin-top:4px;">{{ \Illuminate\Support\Str::limit($appointment->review->review ?: 'Không có nhận xét.', 70) }}</div>
+                                    @else
+                                        <span style="color:#6b7280;font-size:13px;">Chưa có đánh giá</span>
+                                    @endif
+                                </td>
                                 <td style="padding:12px;border-bottom:1px solid #e5e7eb;">
                                     <div style="display:flex;flex-direction:column;gap:8px;min-width:170px;">
                                         @if($appointment->status === 'pending')
@@ -125,7 +146,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="9" style="padding:24px;text-align:center;color:#6b7280;">Chưa có lịch hẹn nào.</td>
+                                <td colspan="10" style="padding:24px;text-align:center;color:#6b7280;">Chưa có lịch hẹn nào.</td>
                             </tr>
                         @endforelse
                     </tbody>

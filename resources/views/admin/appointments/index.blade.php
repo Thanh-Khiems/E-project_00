@@ -44,6 +44,7 @@
                     <th>Trạng thái</th>
                     <th>Chẩn đoán</th>
                     <th>Toa thuốc</th>
+                    <th>Đánh giá</th>
                     <th></th>
                 </tr>
             </thead>
@@ -70,12 +71,20 @@
                         </td>
                         <td>{{ \Illuminate\Support\Str::limit($appointment->diagnosis ?: 'Chưa có', 60) }}</td>
                         <td>{{ $appointment->prescriptions->count() }}</td>
+                        <td>
+                            @if($appointment->review)
+                                <div class="fw-semibold text-warning">{{ str_repeat('★', (int) $appointment->review->rating) }}</div>
+                                <div class="text-muted small">{{ $appointment->review->rating }}/5 · {{ $appointment->review->patient->full_name ?? 'Bệnh nhân' }}</div>
+                            @else
+                                <span class="text-muted small">Chưa có</span>
+                            @endif
+                        </td>
                         <td class="text-end">
                             <a href="{{ route('admin.appointments.show', $appointment) }}" class="btn btn-sm btn-outline-primary">Xem chi tiết</a>
                         </td>
                     </tr>
                 @empty
-                    <tr><td colspan="8" class="text-center text-muted py-4">Không có lịch hẹn phù hợp.</td></tr>
+                    <tr><td colspan="9" class="text-center text-muted py-4">Không có lịch hẹn phù hợp.</td></tr>
                 @endforelse
             </tbody>
         </table>

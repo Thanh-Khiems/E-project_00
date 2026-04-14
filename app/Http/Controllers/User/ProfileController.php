@@ -22,7 +22,7 @@ class ProfileController extends Controller
         $locations = config('locations');
         $provinces = array_keys($locations);
 
-        $appointments = Appointment::with(['doctor.user', 'doctor.specialty', 'prescriptions.items.medication.medicineType'])
+        $appointments = Appointment::with(['doctor.user', 'doctor.specialty', 'prescriptions.items.medication.medicineType', 'review.patient'])
             ->where('patient_id', $user->id)
             ->latest('appointment_date')
             ->latest('start_time')

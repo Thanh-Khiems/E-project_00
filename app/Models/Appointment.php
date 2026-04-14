@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Appointment extends Model
 {
@@ -55,5 +56,10 @@ class Appointment extends Model
     public function prescriptions(): HasMany
     {
         return $this->hasMany(Prescription::class)->latest();
+    }
+
+    public function review(): HasOne
+    {
+        return $this->hasOne(AppointmentReview::class, 'appointment_id');
     }
 }

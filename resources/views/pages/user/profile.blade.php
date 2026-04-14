@@ -144,6 +144,45 @@
                         <div style="margin-top:8px;"><strong>Lời dặn của bác sĩ:</strong> {{ $appointment->doctor_advice ?: 'Chưa có lời dặn.' }}</div>
                     </div>
 
+                    @if($appointment->status === 'completed')
+                        <div style="margin-top:16px;padding:16px;border:1px solid #e5e7eb;border-radius:14px;background:#fff;">
+                            <h4 style="margin:0 0 12px;color:#111827;">Đánh giá bác sĩ</h4>
+
+                            @if($appointment->review)
+                                <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:flex-start;">
+                                    <div>
+                                        <div style="font-size:22px;font-weight:800;color:#f59e0b;">{{ str_repeat('★', (int) $appointment->review->rating) }}{{ str_repeat('☆', 5 - (int) $appointment->review->rating) }}</div>
+                                        <div style="margin-top:8px;"><strong>Số điểm:</strong> {{ $appointment->review->rating }}/5</div>
+                                        <div style="margin-top:6px;"><strong>Nhận xét:</strong> {{ $appointment->review->review ?: 'Không có nhận xét thêm.' }}</div>
+                                    </div>
+                                    <div style="color:#6b7280;font-size:13px;">
+                                        Đã gửi lúc {{ optional($appointment->review->reviewed_at)->format('d/m/Y H:i') ?? '—' }}
+                                    </div>
+                                </div>
+                            @else
+                                <form method="POST" action="{{ route('appointments.review', $appointment) }}" style="margin-top:8px;">
+                                    @csrf
+                                    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;">
+                                        <div>
+                                            <label for="profile-rating-{{ $appointment->id }}" style="display:block;margin-bottom:6px;font-weight:700;">Chấm điểm</label>
+                                            <select id="profile-rating-{{ $appointment->id }}" name="rating" style="width:100%;padding:12px 14px;border-radius:12px;border:1px solid #d1d5db;" required>
+                                                <option value="">-- Chọn số sao --</option>
+                                                @for($star = 5; $star >= 1; $star--)
+                                                    <option value="{{ $star }}">{{ $star }} sao</option>
+                                                @endfor
+                                            </select>
+                                        </div>
+                                        <div style="grid-column:1 / -1;">
+                                            <label for="profile-review-{{ $appointment->id }}" style="display:block;margin-bottom:6px;font-weight:700;">Nhận xét</label>
+                                            <textarea id="profile-review-{{ $appointment->id }}" name="review" rows="4" placeholder="Nhập cảm nhận của bạn về bác sĩ..." style="width:100%;padding:12px 14px;border-radius:12px;border:1px solid #d1d5db;resize:vertical;"></textarea>
+                                        </div>
+                                    </div>
+                                    <button type="submit" style="margin-top:12px;padding:12px 18px;border:none;border-radius:12px;background:#1d4ed8;color:#fff;font-weight:700;cursor:pointer;">Gửi đánh giá</button>
+                                </form>
+                            @endif
+                        </div>
+                    @endif
+
                     @if($appointment->prescriptions->count())
                         <div style="margin-top:16px;">
                             <h4 style="margin:0 0 12px;">Toa thuốc đã kê</h4>

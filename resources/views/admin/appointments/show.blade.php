@@ -101,6 +101,34 @@
     <div class="panel-card mt-4">
         <div class="panel-head">
             <div>
+                <h5>Đánh giá của bệnh nhân</h5>
+                <p>Thông tin này được gửi từ tài khoản bệnh nhân sau khi bác sĩ xác nhận hoàn tất buổi khám.</p>
+            </div>
+        </div>
+
+        @if($appointment->review)
+            <div class="border rounded-4 p-4 bg-white">
+                <div class="d-flex justify-content-between flex-wrap gap-2">
+                    <div>
+                        <strong>{{ $appointment->review->patient->full_name ?? 'Bệnh nhân' }}</strong>
+                        <div class="text-muted small">{{ $appointment->review->patient->email ?? '—' }}</div>
+                    </div>
+                    <div class="text-warning fw-bold fs-5">
+                        {{ str_repeat('★', (int) $appointment->review->rating) }}{{ str_repeat('☆', 5 - (int) $appointment->review->rating) }}
+                    </div>
+                </div>
+                <div class="mt-3"><strong>Số điểm:</strong> {{ $appointment->review->rating }}/5</div>
+                <div class="mt-2"><strong>Nhận xét:</strong> {{ $appointment->review->review ?: 'Không có nhận xét thêm.' }}</div>
+                <div class="mt-2 text-muted small">Đánh giá lúc: {{ optional($appointment->review->reviewed_at)->format('d/m/Y H:i') ?? '—' }}</div>
+            </div>
+        @else
+            <p class="text-muted mb-0">Bệnh nhân chưa gửi đánh giá cho buổi khám này.</p>
+        @endif
+    </div>
+
+    <div class="panel-card mt-4">
+        <div class="panel-head">
+            <div>
                 <h5>Lịch sử khám bệnh đã hoàn tất của bệnh nhân</h5>
                 <p>Admin có thể xem lại những cuộc khám trước đây và các toa thuốc đã từng cấp.</p>
             </div>
