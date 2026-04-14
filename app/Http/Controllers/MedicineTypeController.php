@@ -3,22 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Models\MedicineType;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
 class MedicineTypeController extends Controller
 {
-    // Thêm loại thuốc
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
-        $request->validate([
-            'name' => 'required'
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'description' => ['nullable', 'string', 'max:1000'],
         ]);
 
-        MedicineType::create([
-            'name' => $request->name,
-            'description' => $request->description
-        ]);
+        MedicineType::create($validated);
 
-        return redirect('/medications')->with('success', 'Thêm loại thuốc thành công');
+        return back()->with('success', 'Đã thêm nhóm thuốc mới.');
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Appointment extends Model
 {
@@ -10,6 +11,7 @@ class Appointment extends Model
         'appointment_date' => 'date',
         'start_time' => 'datetime:H:i:s',
         'end_time' => 'datetime:H:i:s',
+        'completed_at' => 'datetime',
     ];
 
     protected $fillable = [
@@ -25,6 +27,9 @@ class Appointment extends Model
         'max_patients',
         'status',
         'notes',
+        'diagnosis',
+        'doctor_advice',
+        'completed_at',
     ];
 
     public function patient()
@@ -45,5 +50,10 @@ class Appointment extends Model
     public function schedule()
     {
         return $this->belongsTo(Schedule::class, 'schedule_id');
+    }
+
+    public function prescriptions(): HasMany
+    {
+        return $this->hasMany(Prescription::class)->latest();
     }
 }

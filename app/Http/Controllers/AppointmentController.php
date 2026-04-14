@@ -100,7 +100,7 @@ class AppointmentController extends Controller
     public function patientIndex()
     {
         $appointments = Appointment::query()
-            ->with(['doctor.user', 'doctor.specialty', 'schedule'])
+            ->with(['doctor.user', 'doctor.specialty', 'schedule', 'prescriptions.items.medication'])
             ->where('patient_id', Auth::id())
             ->orderByDesc('appointment_date')
             ->orderByDesc('start_time')
@@ -117,7 +117,7 @@ class AppointmentController extends Controller
             ->firstOrFail();
 
         $appointments = Appointment::query()
-            ->with(['patient', 'schedule', 'doctor.specialty'])
+            ->with(['patient', 'schedule', 'doctor.specialty', 'prescriptions.items.medication'])
             ->where('doctor_id', $doctor->id)
             ->orderBy('appointment_date')
             ->orderBy('start_time')
@@ -134,30 +134,9 @@ class AppointmentController extends Controller
         ];
 
         $statusBoards = [
-            'confirmed' => Appointment::query()
-                ->with(['patient'])
-                ->where('doctor_id', $doctor->id)
-                ->where('status', 'confirmed')
-                ->orderByDesc('appointment_date')
-                ->orderByDesc('start_time')
-                ->take(5)
-                ->get(),
-            'cancelled' => Appointment::query()
-                ->with(['patient'])
-                ->where('doctor_id', $doctor->id)
-                ->where('status', 'cancelled')
-                ->orderByDesc('appointment_date')
-                ->orderByDesc('start_time')
-                ->take(5)
-                ->get(),
-            'completed' => Appointment::query()
-                ->with(['patient'])
-                ->where('doctor_id', $doctor->id)
-                ->where('status', 'completed')
-                ->orderByDesc('appointment_date')
-                ->orderByDesc('start_time')
-                ->take(5)
-                ->get(),
+            'confirmed' => Appointment::query()->with(['patient'])->where('doctor_id', $doctor->id)->where('status', 'confirmed')->latest('appointment_date')->take(5)->get(),
+            'cancelled' => Appointment::query()->with(['patient'])->where('doctor_id', $doctor->id)->where('status', 'cancelled')->latest('appointment_date')->take(5)->get(),
+            'completed' => Appointment::query()->with(['patient'])->where('doctor_id', $doctor->id)->where('status', 'completed')->latest('appointment_date')->take(5)->get(),
         ];
 
         return view('pages.doctor.appointments', compact('appointments', 'doctor', 'stats', 'statusBoards'));
@@ -205,26 +184,14 @@ class AppointmentController extends Controller
     public function complete(Appointment $appointment): RedirectResponse
     {
         if (! $this->canManageAppointment($appointment)) {
-            return back()->with('error', 'Bạn không có quyền hoàn thành lịch hẹn này.');
+            return back()->with('error', 'Bạn không có quyền hoàn tất lịch hẹn này.');
         }
 
         if ($appointment->status === 'cancelled') {
-            return back()->with('error', 'Không thể hoàn thành lịch hẹn đã bị hủy.');
+            return back()->with('error', 'Không thể hoàn tất lịch hẹn đã bị hủy.');
         }
 
-        if ($appointment->status === 'completed') {
-            return back()->with('error', 'Lịch hẹn này đã hoàn thành trước đó.');
-        }
-
-        if (! in_array($appointment->status, ['confirmed'], true)) {
-            return back()->with('error', 'Chỉ có thể hoàn thành lịch hẹn đã được xác nhận.');
-        }
-
-        $appointment->update([
-            'status' => 'completed',
-        ]);
-
-        return back()->with('success', 'Đã cập nhật lịch hẹn sang trạng thái hoàn thành.');
+        return redirect()->route('doctor.appointments.prescriptions.create', $appointment);
     }
 
     private function canManageAppointment(Appointment $appointment): bool

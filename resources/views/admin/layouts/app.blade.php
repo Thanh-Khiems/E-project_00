@@ -58,6 +58,9 @@
             <a class="nav-link {{ request()->routeIs('admin.appointments.*') ? 'active' : '' }}" href="{{ route('admin.appointments.index') }}">
                 <i class="bi bi-calendar-check"></i><span>Lịch hẹn</span>
             </a>
+            <a class="nav-link {{ request()->routeIs('admin.medications.*') || request()->routeIs('admin.medicine-types.*') ? 'active' : '' }}" href="{{ route('admin.medications.index') }}">
+                <i class="bi bi-capsule"></i><span>Danh mục thuốc</span>
+            </a>
             <a class="nav-link {{ request()->routeIs('admin.locations.*') ? 'active' : '' }}" href="{{ route('admin.locations.index') }}">
                 <i class="bi bi-geo-alt"></i><span>Khu vực</span>
             </a>

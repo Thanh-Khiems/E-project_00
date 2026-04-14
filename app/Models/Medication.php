@@ -2,24 +2,26 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Medication extends Model
 {
-    use HasFactory;
+    protected $fillable = [
+        'name',
+        'dosage',
+        'medicine_type_id',
+        'category',
+    ];
 
-    protected $table = 'medications';
+    public function medicineType(): BelongsTo
+    {
+        return $this->belongsTo(MedicineType::class, 'medicine_type_id');
+    }
 
-   protected $fillable = [
-    'name',
-    'dosage',
-    'medicine_type_id',
-    'category'
-];
-
-public function type()
-{
-    return $this->belongsTo(MedicineType::class, 'medicine_type_id');
-}
+    public function prescriptionItems(): HasMany
+    {
+        return $this->hasMany(PrescriptionItem::class);
+    }
 }

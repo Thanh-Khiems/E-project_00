@@ -22,6 +22,8 @@ use App\Http\Controllers\Admin\AppointmentController as AdminAppointmentControll
 use App\Http\Controllers\Admin\LocationController;
 use App\Http\Controllers\Admin\BlogController as AdminBlogController;
 use App\Http\Controllers\MedicineTypeController;
+use App\Http\Controllers\Admin\MedicationController as AdminMedicationController;
+use App\Http\Controllers\Doctor\PrescriptionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -148,6 +150,12 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/appointments', [AdminAppointmentController::class, 'index'])->name('appointments.index');
     Route::get('/appointments/{appointment}', [AdminAppointmentController::class, 'show'])->name('appointments.show');
 
+    Route::get('/medications', [AdminMedicationController::class, 'index'])->name('medications.index');
+    Route::post('/medications', [AdminMedicationController::class, 'store'])->name('medications.store');
+    Route::put('/medications/{medication}', [AdminMedicationController::class, 'update'])->name('medications.update');
+    Route::delete('/medications/{medication}', [AdminMedicationController::class, 'destroy'])->name('medications.destroy');
+    Route::post('/medicine-types', [MedicineTypeController::class, 'store'])->name('medicine-types.store');
+
     Route::get('/blogs', [AdminBlogController::class, 'index'])->name('blogs.index');
     Route::post('/blogs', [AdminBlogController::class, 'store'])->name('blogs.store');
     Route::put('/blogs/{blog}', [AdminBlogController::class, 'update'])->name('blogs.update');
@@ -159,10 +167,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
 | Medication
 |--------------------------------------------------------------------------
 */
-Route::get('/medications', [MedicationController::class, 'index']);
-Route::post('/medications', [MedicationController::class, 'store']);
-Route::delete('/medications/{id}', [MedicationController::class, 'destroy']);
-Route::post('/medicine-types', [MedicineTypeController::class, 'store']);
 
 
 Route::get('/doctor-booking/{doctor}', [DoctorBookingController::class, 'show'])->name('doctor.booking');
@@ -186,4 +190,11 @@ Route::middleware(['auth'])->group(function () {
 
     Route::patch('/appointments/{appointment}/complete', [AppointmentController::class, 'complete'])
         ->name('appointments.complete');
+});
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/appointments/{appointment}/prescriptions/create', [PrescriptionController::class, 'create'])
+        ->name('doctor.appointments.prescriptions.create');
+    Route::post('/appointments/{appointment}/prescriptions', [PrescriptionController::class, 'store'])
+        ->name('doctor.appointments.prescriptions.store');
 });

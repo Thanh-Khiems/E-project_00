@@ -62,8 +62,13 @@ class Doctor extends Model
         return $this->hasMany(Schedule::class);
     }
 
-        public function appointments()
+    public function appointments()
     {
-        return $this->hasMany(\App\Models\Appointment::class, 'doctor_id');
+        return $this->hasMany(Appointment::class, 'doctor_id');
+    }
+
+    public function prescriptions()
+    {
+        return $this->hasMany(Prescription::class, 'doctor_id');
     }
 }
