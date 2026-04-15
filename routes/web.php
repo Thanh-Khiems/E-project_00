@@ -88,6 +88,7 @@ Route::middleware('auth')->group(function () {
 | Doctor List
 |--------------------------------------------------------------------------
 */
+Route::get('/doctor', [DoctorListController::class, 'index'])->name('doctors.index');
 Route::get('/doctor-list', [DoctorListController::class, 'index'])->name('doctor-list');
 
 Route::middleware(['auth'])->prefix('user')->name('user.')->group(function () {
@@ -105,9 +106,9 @@ Route::middleware(['auth'])->prefix('user')->name('user.')->group(function () {
 | User
 |--------------------------------------------------------------------------
 */
-Route::get('/user/dashboard', function () {
-    return view('pages.user.dashboard');
-})->middleware('auth')->name('user.dashboard');
+Route::get('/user/dashboard', [DashboardController::class, 'user'])
+    ->middleware('auth')
+    ->name('user.dashboard');
 
 /*
 |--------------------------------------------------------------------------

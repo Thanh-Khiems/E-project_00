@@ -225,9 +225,7 @@
 </style>
 
 @php
-    $avatar = ($doctor->user && $doctor->user->avatar)
-        ? asset('storage/avatars/' . $doctor->user->avatar)
-        : asset('images/default-avatar.png');
+    $avatar = $doctor->user?->avatar_url ?? asset('images/default-avatar.png');
 
     $dayLabels = [
         'Mon' => 'Thứ 2',

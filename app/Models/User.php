@@ -5,6 +5,8 @@ namespace App\Models;
 use App\Models\Patient;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class User extends Authenticatable
 {
@@ -59,4 +61,43 @@ class User extends Authenticatable
     {
         return $this->hasMany(AppointmentReview::class, 'patient_id');
     }
+
+    public function getAvatarUrlAttribute(): string
+    {
+        $avatar = trim((string) ($this->avatar ?? ''));
+
+        if ($avatar === '') {
+            return asset('images/default-avatar.png');
+        }
+
+        if (Str::startsWith($avatar, ['http://', 'https://'])) {
+            return $avatar;
+        }
+
+        $normalized = ltrim($avatar, '/');
+
+        if (Str::startsWith($normalized, ['storage/', 'uploads/', 'images/'])) {
+            return asset($normalized);
+        }
+
+        if (Storage::disk('public')->exists($normalized)) {
+            return Storage::disk('public')->url($normalized);
+        }
+
+        if (Storage::disk('public')->exists('avatars/' . $normalized)) {
+            return Storage::disk('public')->url('avatars/' . $normalized);
+        }
+
+        if (is_file(public_path($normalized))) {
+            return asset($normalized);
+        }
+
+        if (is_file(public_path('uploads/avatars/' . $normalized))) {
+            return asset('uploads/avatars/' . $normalized);
+        }
+
+        return asset('storage/' . $normalized);
+    }
+
 }
+

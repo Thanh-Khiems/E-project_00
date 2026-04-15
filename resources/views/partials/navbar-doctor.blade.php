@@ -8,7 +8,7 @@
             <a href="{{ route('doctor.dashboard') }}">Home</a>
             <a href="/about">About</a>
             <a href="/services">Services</a>
-            <a href="/doctor">Doctor</a>
+            <a href="{{ route('doctors.index') }}">Doctor</a>
             <a href="/blog">Blog</a>
             <a href="/contact">Contact</a>
         </nav>

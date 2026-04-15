@@ -1,0 +1,51 @@
+
+# HomeController.php
+- In the index method, ensure homeDoctors is passed to the view:
+$homeDoctors = Doctor::query()
+    ->with(['user', 'specialty'])
+    ->withCount('reviews')
+    ->withAvg('reviews', 'rating')
+    ->where('approval_status', 'approved')
+    ->where('status', 'active')
+    ->orderByDesc('is_featured')
+    ->orderByDesc('reviews_avg_rating')
+    ->orderByDesc('reviews_count')
+    ->orderByDesc('experience_years')
+    ->latest()
+    ->take(3)
+    ->get();
+
+return view('pages.home', compact('homeDoctors', 'featuredBlogs'));
+
+# doctors-section.blade.php
+- Ensure the $homeDoctors variable is properly checked and rendered in the section.
+@php
+    $homeDoctors = $homeDoctors ?? collect();
+@endphp
+
+<section class="doctors-section">
+    <div class="container">
+        <div class="section-heading" data-reveal="zoom" data-delay="0">
+            <h2>Meet our doctors at MediConnect</h2>
+            <span class="section-line"></span>
+        </div>
+        <div class="doctor-grid">
+            @forelse($homeDoctors as $index => $doctor)
+                @php
+                    $avatar = ($doctor->user && $doctor->user->avatar)
+                        ? asset('storage/avatars/' . $doctor->user->avatar)
+                        : asset('images/default-avatar.png');
+                    $doctorName = $doctor->name ?: ($doctor->user->full_name ?? 'Bác sĩ');
+                @endphp
+                <div class="doctor-item">
+                    <img src="{{ $avatar }}" alt="{{ $doctorName }}">
+                    <h3>{{ $doctorName }}</h3>
+                    <p>{{ $doctor->specialty->name ?? 'Specialty' }}</p>
+                    <p>Rating: {{ round($doctor->reviews_avg_rating, 1) ?? 'N/A' }}</p>
+                </div>
+            @empty
+                <p>No doctors available.</p>
+            @endforelse
+        </div>
+    </div>
+</section>

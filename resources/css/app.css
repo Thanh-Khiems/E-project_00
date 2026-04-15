@@ -892,6 +892,14 @@ input {
     display: inline-block;
 }
 
+.section-subtitle {
+    max-width: 760px;
+    margin: 0 auto 18px;
+    color: #6b7280;
+    font-size: 16px;
+    line-height: 1.7;
+}
+
 .doctor-grid {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -924,6 +932,24 @@ input {
     align-items: flex-start;
     gap: 14px;
     margin-bottom: 16px;
+}
+
+.doctor-featured-badge {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 28px;
+    padding: 0 12px;
+    border-radius: 999px;
+    background: #e8f1ff;
+    color: #1668e8;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
 }
 
 .doctor-avatar {
@@ -1139,6 +1165,10 @@ input {
 
     .doctor-grid {
         grid-template-columns: 1fr;
+    }
+
+    .section-subtitle {
+        font-size: 15px;
     }
 
     .doctor-card-top {

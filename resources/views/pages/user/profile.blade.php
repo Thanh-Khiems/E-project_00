@@ -29,7 +29,7 @@
 <div class="dashboard-container">
     <div class="sidebar">
         <div class="profile-preview">
-            <img src="{{ $user->avatar ? asset('storage/' . $user->avatar) : asset('images/default-avatar.png') }}" alt="Avatar">
+            <img src="{{ $user->avatar_url }}" alt="Avatar">
             <h3 style="margin:0;color:#1d4ed8;">{{ $user->full_name }}</h3>
             <p style="margin:6px 0;color:#6b7280;">{{ $user->email }}</p>
             <p style="margin:0;color:#6b7280;">{{ $user->province ?? '' }}{{ $user->district ? ' - ' . $user->district : '' }}</p>
