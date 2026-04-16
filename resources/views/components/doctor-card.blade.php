@@ -25,9 +25,15 @@
             <div><i class="fas fa-hospital text-warning me-2"></i>{{ $hospital }} Dept</div>
         </div>
 
-        <button class="btn btn-primary w-100 rounded-pill py-2 fw-bold shadow-sm transition-all appointment-btn">
-            Book Appointment
-        </button>
+        @auth
+            <button class="btn btn-primary w-100 rounded-pill py-2 fw-bold shadow-sm transition-all appointment-btn">
+                Book Appointment
+            </button>
+        @else
+            <button class="btn btn-primary w-100 rounded-pill py-2 fw-bold shadow-sm transition-all appointment-btn auth-locked" type="button" disabled title="Vui lòng đăng nhập hoặc đăng ký để tiếp tục">
+                Book Appointment
+            </button>
+        @endauth
     </div>
 </div>
 

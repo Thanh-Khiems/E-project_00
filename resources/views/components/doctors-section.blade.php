@@ -71,8 +71,13 @@
                     </div>
 
                     <div class="doctor-actions">
-                        <a href="{{ route('doctor.booking', $doctor->id) }}" class="doctor-btn doctor-btn-light">Xem lịch khám</a>
-                        <a href="{{ route('doctor.booking', $doctor->id) }}" class="doctor-btn doctor-btn-primary">Đặt lịch</a>
+                        @auth
+                            <a href="{{ route('doctor.booking', $doctor->id) }}" class="doctor-btn doctor-btn-light">Xem lịch khám</a>
+                            <a href="{{ route('doctor.booking', $doctor->id) }}" class="doctor-btn doctor-btn-primary">Đặt lịch</a>
+                        @else
+                            <span class="doctor-btn doctor-btn-light auth-locked" aria-disabled="true" title="Vui lòng đăng nhập hoặc đăng ký để tiếp tục">Xem lịch khám</span>
+                            <span class="doctor-btn doctor-btn-primary auth-locked" aria-disabled="true" title="Vui lòng đăng nhập hoặc đăng ký để tiếp tục">Đặt lịch</span>
+                        @endauth
                     </div>
                 </article>
             @empty

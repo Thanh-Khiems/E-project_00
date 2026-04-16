@@ -35,7 +35,11 @@
                             <h3>{{ $blog->title }}</h3>
                             <p>{{ $blog->excerpt_text }}</p>
 
-                            <a href="{{ route('blog.show', $blog->slug) }}" class="news-btn">Xem bài viết</a>
+                            @auth
+                                <a href="{{ route('blog.show', $blog->slug) }}" class="news-btn">Xem bài viết</a>
+                            @else
+                                <span class="news-btn auth-locked" aria-disabled="true" title="Vui lòng đăng nhập hoặc đăng ký để tiếp tục">Xem bài viết</span>
+                            @endauth
                         </div>
                     </article>
                 @endforeach
