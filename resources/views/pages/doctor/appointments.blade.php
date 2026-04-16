@@ -9,7 +9,7 @@
                 <p style="color:#6b7280;font-size:14px;margin-bottom:24px;">Quản lý lịch hẹn, hoàn tất buổi khám, phát hành đơn thuốc và xem đánh giá từ bệnh nhân.</p>
 
                 <div style="display:flex;flex-direction:column;gap:10px;">
-                    <a href="{{ route('doctor.dashboard') }}" style="display:block;padding:12px 14px;border-radius:12px;text-decoration:none;color:#374151;font-weight:600;">Dashboard</a>
+                    <a href="{{ route('doctor.manage') }}" style="display:block;padding:12px 14px;border-radius:12px;text-decoration:none;color:#374151;font-weight:600;">Dashboard</a>
                     <a href="{{ route('doctor.manage', ['tab' => 'schedule']) }}" style="display:block;padding:12px 14px;border-radius:12px;text-decoration:none;color:#374151;font-weight:600;">Schedule Settings</a>
                     <a href="{{ route('doctor.appointments') }}" style="display:block;padding:12px 14px;border-radius:12px;text-decoration:none;background:#eff6ff;color:#1d4ed8;font-weight:700;">Appointments</a>
                 </div>
