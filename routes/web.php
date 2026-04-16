@@ -35,7 +35,7 @@ Route::view('/about', 'pages.about');
 Route::view('/services', 'pages.services');
 Route::view('/contact', 'pages.contact');
 Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');
-Route::get('/blog/{slug}', [BlogController::class, 'show'])->name('blog.show');
+Route::get('/blog/{slug}', [BlogController::class, 'show'])->middleware('auth')->name('blog.show');
 
 /*
 |--------------------------------------------------------------------------
@@ -88,6 +88,7 @@ Route::middleware('auth')->group(function () {
 | Doctor List
 |--------------------------------------------------------------------------
 */
+Route::get('/doctor', [DoctorListController::class, 'index'])->name('doctors.index');
 Route::get('/doctor-list', [DoctorListController::class, 'index'])->name('doctor-list');
 
 Route::middleware(['auth'])->prefix('user')->name('user.')->group(function () {
@@ -105,18 +106,20 @@ Route::middleware(['auth'])->prefix('user')->name('user.')->group(function () {
 | User
 |--------------------------------------------------------------------------
 */
-Route::get('/user/dashboard', function () {
-    return view('pages.user.dashboard');
-})->middleware('auth')->name('user.dashboard');
+Route::get('/user/dashboard', [DashboardController::class, 'user'])
+    ->middleware('auth')
+    ->name('user.dashboard');
 
 /*
 |--------------------------------------------------------------------------
 | Admin
 |--------------------------------------------------------------------------
 */
-Route::redirect('/admin', '/admin/doctors');
-
-Route::prefix('admin')->name('admin.')->group(function () {
+Route::prefix('admin')
+    ->name('admin.')
+    ->middleware(['auth', \App\Http\Middleware\AdminMiddleware::class])
+    ->group(function () {
+    Route::get('/', fn () => redirect()->route('admin.doctors.index'))->name('index');
     Route::get('/doctors', [DoctorController::class, 'index'])->name('doctors.index');
     Route::get('/doctor-approvals', [DoctorController::class, 'approvals'])->name('doctors.approvals');
     Route::post('/doctors/{doctor}/approve', [DoctorController::class, 'approve'])->name('doctors.approve');
@@ -169,7 +172,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 */
 
 
-Route::get('/doctor-booking/{doctor}', [DoctorBookingController::class, 'show'])->name('doctor.booking');
+Route::get('/doctor-booking/{doctor}', [DoctorBookingController::class, 'show'])->middleware('auth')->name('doctor.booking');
 
 
 

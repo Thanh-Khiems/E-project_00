@@ -12,6 +12,7 @@ use App\Models\Patient;
 use App\Models\Specialty;
 use App\Models\Appointment;
 use App\Models\Degree;
+use Illuminate\Support\Str;
 
 class ProfileController extends Controller
 {
@@ -95,17 +96,67 @@ class ProfileController extends Controller
         ]);
 
         $user = Auth::user();
+        $avatarFile = $request->file('avatar');
 
-        // Xóa avatar cũ nếu có
-        if ($user->avatar) {
-            Storage::disk('public')->delete('avatars/' . basename($user->avatar));
+        if (! $avatarFile || ! $avatarFile->isValid()) {
+            return back()->withErrors(['avatar' => 'Ảnh tải lên không hợp lệ, vui lòng thử lại.']);
         }
 
-        // Lưu file mới
-        $path = $request->file('avatar')->store('avatars', 'public');
-        $user->update(['avatar' => basename($path)]); // chỉ lưu tên file
+        // Xóa avatar cũ nếu có
+        $this->deletePreviousAvatar($user->avatar);
+
+        // Tạo thư mục lưu ảnh nếu chưa có
+        $directory = public_path('uploads/avatars');
+        if (! is_dir($directory)) {
+            mkdir($directory, 0755, true);
+        }
+
+        // Tạo tên file avatar mới
+        $filename = 'avatar_' . $user->id . '_' . now()->format('YmdHis') . '_' . Str::random(8) . '.' . $avatarFile->getClientOriginalExtension();
+        $avatarFile->move($directory, $filename);
+
+        // Cập nhật avatar mới vào database
+        $user->update([
+            'avatar' => 'uploads/avatars/' . $filename,
+        ]);
 
         return back()->with('success', 'Cập nhật ảnh đại diện thành công.');
+    }
+
+    protected function deletePreviousAvatar(?string $avatarPath): void
+    {
+        $avatarPath = trim((string) $avatarPath);
+
+        if ($avatarPath === '') {
+            return;
+        }
+
+        $normalized = ltrim($avatarPath, '/');
+
+        $storageCandidates = array_unique(array_filter([
+            $normalized,
+            Str::startsWith($normalized, 'storage/') ? Str::after($normalized, 'storage/') : null,
+            Str::startsWith($normalized, 'avatars/') ? null : 'avatars/' . $normalized,
+        ]));
+
+        foreach ($storageCandidates as $candidate) {
+            if (Storage::disk('public')->exists($candidate)) {
+                Storage::disk('public')->delete($candidate);
+            }
+        }
+
+        $publicCandidates = array_unique(array_filter([
+            $normalized,
+            Str::startsWith($normalized, 'uploads/') ? null : 'uploads/avatars/' . basename($normalized),
+        ]));
+
+        foreach ($publicCandidates as $candidate) {
+            $fullPath = public_path($candidate);
+
+            if (is_file($fullPath)) {
+                @unlink($fullPath);
+            }
+        }
     }
 
     public function verifyDoctor(Request $request)

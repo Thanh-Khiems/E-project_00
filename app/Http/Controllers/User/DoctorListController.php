@@ -26,25 +26,42 @@ class DoctorListController extends Controller
         }
 
         if ($request->filled('keyword')) {
-            $keyword = $request->keyword;
+            $keyword = trim($request->keyword);
 
             $query->where(function ($q) use ($keyword) {
                 $q->where('name', 'like', '%' . $keyword . '%')
-                  ->orWhere('degree', 'like', '%' . $keyword . '%')
-                  ->orWhere('city', 'like', '%' . $keyword . '%')
-                  ->orWhereHas('specialty', function ($sub) use ($keyword) {
-                      $sub->where('name', 'like', '%' . $keyword . '%');
-                  });
+                    ->orWhere('degree', 'like', '%' . $keyword . '%')
+                    ->orWhere('city', 'like', '%' . $keyword . '%')
+                    ->orWhere('hospital', 'like', '%' . $keyword . '%')
+                    ->orWhereHas('user', function ($userQuery) use ($keyword) {
+                        $userQuery->where('full_name', 'like', '%' . $keyword . '%');
+                    })
+                    ->orWhereHas('specialty', function ($sub) use ($keyword) {
+                        $sub->where('name', 'like', '%' . $keyword . '%');
+                    });
             });
         }
 
-        $doctors = $query->latest()->get();
+        $doctors = $query
+            ->orderByDesc('is_featured')
+            ->orderByDesc('experience_years')
+            ->latest()
+            ->get();
 
         $specialties = Specialty::query()
             ->active()
             ->orderBy('name')
             ->get(['id', 'name']);
 
-        return view('pages.user.doctor-list', compact('doctors', 'specialties'));
+        $cities = Doctor::query()
+            ->where('approval_status', 'approved')
+            ->where('status', 'active')
+            ->whereNotNull('city')
+            ->where('city', '!=', '')
+            ->distinct()
+            ->orderBy('city')
+            ->pluck('city');
+
+        return view('pages.user.doctor-list', compact('doctors', 'specialties', 'cities'));
     }
 }

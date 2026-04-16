@@ -19,7 +19,11 @@
                             <div class="blog-meta">{{ $blog->published_at?->format('d/m/Y') ?? 'Mới cập nhật' }}</div>
                             <h3>{{ $blog->title }}</h3>
                             <p>{{ $blog->excerpt_text }}</p>
-                            <a href="{{ route('blog.show', $blog->slug) }}" class="news-btn">Đọc thêm</a>
+                            @auth
+                                <a href="{{ route('blog.show', $blog->slug) }}" class="news-btn">Đọc thêm</a>
+                            @else
+                                <span class="news-btn auth-locked" aria-disabled="true" title="Vui lòng đăng nhập hoặc đăng ký để tiếp tục">Đọc thêm</span>
+                            @endauth
                         </div>
                     </article>
                 @endforeach
