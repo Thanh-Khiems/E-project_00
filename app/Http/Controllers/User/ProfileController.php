@@ -96,12 +96,14 @@ class ProfileController extends Controller
 
         $user = Auth::user();
 
+        // Xóa avatar cũ nếu có
         if ($user->avatar) {
-            Storage::disk('public')->delete($user->avatar);
+            Storage::disk('public')->delete('avatars/' . basename($user->avatar));
         }
 
+        // Lưu file mới
         $path = $request->file('avatar')->store('avatars', 'public');
-        $user->update(['avatar' => $path]);
+        $user->update(['avatar' => basename($path)]); // chỉ lưu tên file
 
         return back()->with('success', 'Cập nhật ảnh đại diện thành công.');
     }
