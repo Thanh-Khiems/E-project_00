@@ -2479,16 +2479,17 @@ input {
 
 .doctor-actions {
     display: flex;
-    justify-content: space-between;
+    gap: 10px;
     margin-top: 10px;
 }
 
-.doctor-actions a {
-    padding: 8px 12px;
-    border-radius: 6px;
-    text-align: center;
-    text-decoration: none;
-    font-weight: 600;
+.doctor-actions .doctor-btn-light {
+    flex: 1;
+}
+
+.doctor-actions .doctor-btn-primary {
+    width: 90px;
+    flex: 0 0 90px;
 }
 
 .btn-detail {

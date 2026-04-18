@@ -138,7 +138,7 @@
         border-radius: 14px;
         border: 1px solid #d5dfeb;
         background: #fff;
-        padding: 0 16px;
+        padding: 0px 10px;
         font-size: 15px;
         color: #374151;
         outline: none;
@@ -231,6 +231,7 @@
         color: #6b7280;
         margin-bottom: 18px;
         min-height: 96px;
+        text-align: justify;
     }
 
     .doctor-directory-meta {
