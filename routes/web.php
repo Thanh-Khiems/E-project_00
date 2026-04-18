@@ -33,7 +33,23 @@ use App\Http\Controllers\Doctor\PrescriptionController;
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::view('/about', 'pages.about')->name('about');
 Route::view('/services', 'pages.services')->name('services');
-Route::view('/contact', 'pages.contact')->name('contact');
+Route::get('/contact', function () {
+    return view('pages.contact');
+})->name('contact');
+
+Route::post('/contact', function (Request $request) {
+    $validated = $request->validate([
+        'name' => ['required', 'string', 'max:100'],
+        'phone' => ['nullable', 'string', 'max:30'],
+        'email' => ['required', 'email', 'max:120'],
+        'subject' => ['required', 'string', 'max:120'],
+        'message' => ['required', 'string', 'max:1500'],
+    ]);
+
+    return back()
+        ->with('success', 'Cảm ơn bạn đã liên hệ MediConnect. Chúng tôi đã nhận được yêu cầu và sẽ phản hồi sớm nhất.')
+        ->withInput();
+})->name('contact.submit');
 Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');
 Route::get('/blog/{slug}', [BlogController::class, 'show'])->middleware('auth')->name('blog.show');
 
