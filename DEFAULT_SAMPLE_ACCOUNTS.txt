@@ -1,0 +1,25 @@
+TAI KHOAN MAC DINH DEMO
+----------------------
+
+1. ADMIN
+Email: admin@gmail.com
+Mat khau: Admin@123456
+
+2. BAC SI MAC DINH (3 tai khoan, cung mot mat khau)
+- doctor1@gmail.com | Doctor@123456
+- doctor2@gmail.com | Doctor@123456
+- doctor3@gmail.com | Doctor@123456
+
+3. KHACH HANG MAC DINH (2 tai khoan, cung mot mat khau)
+- customer1@gmail.com | User@123456
+- customer2@gmail.com | User@123456
+
+Cach tao tat ca tai khoan demo trong database:
+1. Neu chua co database: php artisan migrate --seed
+2. Neu da co database: php artisan db:seed --class=DefaultDemoAccountsSeeder
+
+Luu y:
+- 3 tai khoan bac si duoc seed san voi role = doctor.
+- Ho so doctor da duoc gan specialty va approval_status = approved.
+- 2 tai khoan khach hang duoc seed san voi role = user va co patient profile.
+- Nen doi mat khau khi dua len moi truong thuc te.

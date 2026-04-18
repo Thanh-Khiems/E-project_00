@@ -27,56 +27,41 @@
 </head>
 <body>
 <div class="admin-shell">
-    <aside class="sidebar">
+    <aside class="sidebar d-none d-lg-flex">
         <div class="brand-box">
             <a href="{{ route('home') }}" aria-label="Back to homepage" style="display:inline-block;">
                 <img src="{{ asset('admin-ui/images/logo.png') }}" alt="MediConnect logo" style="width:220px; max-width:100%;">
             </a>
         </div>
 
-        <div class="menu-label">System administration</div>
-        <nav class="nav flex-column sidebar-nav">
-            <a class="nav-link {{ request()->routeIs('admin.doctors.index') ? 'active' : '' }}" href="{{ route('admin.doctors.index') }}">
-                <i class="bi bi-person-badge"></i><span>Doctor</span>
-            </a>
-            <a class="nav-link {{ request()->routeIs('admin.doctors.approvals') ? 'active' : '' }}" href="{{ route('admin.doctors.approvals') }}">
-                <i class="bi bi-patch-check"></i><span>Doctor approvals</span>
-            </a>
-            <a class="nav-link {{ request()->routeIs('admin.specialties.*') ? 'active' : '' }}" href="{{ route('admin.specialties.index') }}">
-                <i class="bi bi-grid"></i><span>Specialty</span>
-            </a>
-
-            <a class="nav-link {{ request()->routeIs('admin.degrees.*') ? 'active' : '' }}" href="{{ route('admin.degrees.index') }}">
-                <i class="bi bi-mortarboard"></i><span>Degree</span>
-            </a>
-            <a class="nav-link {{ request()->routeIs('admin.patients.*') ? 'active' : '' }}" href="{{ route('admin.patients.index') }}">
-                <i class="bi bi-people"></i><span>Patient</span>
-            </a>
-            <a class="nav-link {{ request()->routeIs('admin.staffs.*') ? 'active' : '' }}" href="{{ route('admin.staffs.index') }}">
-                <i class="bi bi-person-workspace"></i><span>Staff</span>
-            </a>
-            <a class="nav-link {{ request()->routeIs('admin.appointments.*') ? 'active' : '' }}" href="{{ route('admin.appointments.index') }}">
-                <i class="bi bi-calendar-check"></i><span>Appointments</span>
-            </a>
-            <a class="nav-link {{ request()->routeIs('admin.medications.*') || request()->routeIs('admin.medicine-types.*') ? 'active' : '' }}" href="{{ route('admin.medications.index') }}">
-                <i class="bi bi-capsule"></i><span>Medication catalog</span>
-            </a>
-            <a class="nav-link {{ request()->routeIs('admin.locations.*') ? 'active' : '' }}" href="{{ route('admin.locations.index') }}">
-                <i class="bi bi-geo-alt"></i><span>Locations</span>
-            </a>
-            <a class="nav-link {{ request()->routeIs('admin.blogs.*') ? 'active' : '' }}" href="{{ route('admin.blogs.index') }}">
-                <i class="bi bi-journal-richtext"></i><span>Blog</span>              
-            </a>
-        </nav>
+        @include('admin.layouts.partials.sidebar-nav')
     </aside>
+
+    <div class="offcanvas offcanvas-start admin-mobile-drawer" tabindex="-1" id="adminSidebar" aria-labelledby="adminSidebarLabel">
+        <div class="offcanvas-header">
+            <div class="brand-box border-0 p-0 w-100">
+                <a href="{{ route('home') }}" aria-label="Back to homepage" style="display:inline-block;">
+                    <img src="{{ asset('admin-ui/images/logo.png') }}" alt="MediConnect logo" style="width:180px; max-width:100%;">
+                </a>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            @include('admin.layouts.partials.sidebar-nav')
+        </div>
+    </div>
 
     <main class="content-wrapper">
         <header class="topbar">
-            <div class="d-flex align-items-center gap-3">
-                <a href="{{ route('home') }}" aria-label="Back to homepage" style="display:inline-flex; align-items:center;">
-                    <img src="{{ asset('admin-ui/images/logo.png') }}" alt="MediConnect logo" style="height:48px; width:auto;">
+            <div class="d-flex align-items-center gap-3 flex-grow-1 min-w-0">
+                <button class="btn btn-light admin-menu-toggle d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#adminSidebar" aria-controls="adminSidebar" aria-label="Open admin menu">
+                    <i class="bi bi-list fs-4"></i>
+                </button>
+
+                <a href="{{ route('home') }}" aria-label="Back to homepage" class="topbar-logo-link">
+                    <img src="{{ asset('admin-ui/images/logo.png') }}" alt="MediConnect logo" class="topbar-logo">
                 </a>
-                <div>
+                <div class="min-w-0">
                     <p class="topbar-label">Admin Panel</p>
                     <h2>{{ $pageTitle ?? 'Dashboard' }}</h2>
                 </div>
