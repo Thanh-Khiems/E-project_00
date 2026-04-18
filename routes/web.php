@@ -31,9 +31,9 @@ use App\Http\Controllers\Doctor\PrescriptionController;
 |--------------------------------------------------------------------------
 */
 Route::get('/', [HomeController::class, 'index'])->name('home');
-Route::view('/about', 'pages.about');
-Route::view('/services', 'pages.services');
-Route::view('/contact', 'pages.contact');
+Route::view('/about', 'pages.about')->name('about');
+Route::view('/services', 'pages.services')->name('services');
+Route::view('/contact', 'pages.contact')->name('contact');
 Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');
 Route::get('/blog/{slug}', [BlogController::class, 'show'])->middleware('auth')->name('blog.show');
 

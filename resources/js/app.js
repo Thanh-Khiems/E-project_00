@@ -4,6 +4,7 @@ import '../css/app.css';
 document.addEventListener('DOMContentLoaded', () => {
     initRevealOnScroll();
     initDoctorCardTilt();
+    initMobileNavbar();
 });
 
 /**
@@ -67,6 +68,76 @@ function initDoctorCardTilt() {
 
         card.addEventListener('mouseleave', () => {
             card.style.transform = '';
+        });
+    });
+}
+
+/**
+ * Mobile navbar toggle
+ */
+function initMobileNavbar() {
+    const navbars = document.querySelectorAll('[data-mobile-nav]');
+
+    if (!navbars.length) return;
+
+    const syncBodyState = () => {
+        const hasOpenMenu = Array.from(navbars).some((navbar) => navbar.classList.contains('is-open'));
+        document.body.classList.toggle('mobile-nav-open', hasOpenMenu && window.innerWidth <= 992);
+    };
+
+    navbars.forEach((navbar) => {
+        const toggle = navbar.querySelector('[data-nav-toggle]');
+        const menu = navbar.querySelector('[data-nav-menu]');
+
+        if (!toggle || !menu) return;
+
+        const closeMenu = () => {
+            navbar.classList.remove('is-open');
+            toggle.setAttribute('aria-expanded', 'false');
+            syncBodyState();
+        };
+
+        const openMenu = () => {
+            navbars.forEach((item) => {
+                if (item !== navbar) {
+                    item.classList.remove('is-open');
+                    const itemToggle = item.querySelector('[data-nav-toggle]');
+                    if (itemToggle) itemToggle.setAttribute('aria-expanded', 'false');
+                }
+            });
+
+            navbar.classList.add('is-open');
+            toggle.setAttribute('aria-expanded', 'true');
+            syncBodyState();
+        };
+
+        toggle.addEventListener('click', () => {
+            const isOpen = navbar.classList.contains('is-open');
+            isOpen ? closeMenu() : openMenu();
+        });
+
+        menu.querySelectorAll('a').forEach((link) => {
+            link.addEventListener('click', closeMenu);
+        });
+
+        document.addEventListener('click', (event) => {
+            if (!navbar.contains(event.target)) {
+                closeMenu();
+            }
+        });
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+                closeMenu();
+            }
+        });
+
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 992) {
+                closeMenu();
+            } else {
+                syncBodyState();
+            }
         });
     });
 }

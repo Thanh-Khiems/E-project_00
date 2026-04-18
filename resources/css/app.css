@@ -22,6 +22,10 @@ body {
     background: #ffffff;
 }
 
+body.mobile-nav-open {
+    overflow: hidden;
+}
+
 a {
     text-decoration: none;
     color: inherit;
@@ -150,11 +154,125 @@ input {
 .nav-menu a {
     font-size: 16px;
     color: #383838;
-    transition: color 0.2s ease;
+    transition: color 0.2s ease, background-color 0.2s ease;
 }
 
-.nav-menu a:hover {
+.nav-menu a:hover,
+.nav-menu a.active {
     color: #1668e8;
+}
+
+.topbar-link.active,
+.topbar-link:hover,
+.topbar-button:hover {
+    opacity: 0.95;
+}
+
+.topbar-button {
+    border: none;
+    background: transparent;
+    color: inherit;
+    padding: 0;
+    cursor: pointer;
+}
+
+.nav-toggle {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    width: 46px;
+    height: 46px;
+    border: 1px solid #d8e4f7;
+    border-radius: 14px;
+    background: #fff;
+    color: #1668e8;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.nav-toggle:hover {
+    border-color: #1668e8;
+    box-shadow: 0 10px 22px rgba(22, 104, 232, 0.12);
+}
+
+.nav-toggle span {
+    width: 20px;
+    height: 2px;
+    margin: 0 auto;
+    border-radius: 999px;
+    background: currentColor;
+    transition: transform 0.25s ease, opacity 0.25s ease;
+}
+
+.navbar.is-open .nav-toggle span:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+}
+
+.navbar.is-open .nav-toggle span:nth-child(2) {
+    opacity: 0;
+}
+
+.navbar.is-open .nav-toggle span:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+}
+
+.topbar,
+.navbar {
+    position: relative;
+    z-index: 120;
+}
+
+.nav-menu-mobile-extra {
+    display: none;
+}
+
+.nav-mobile-label {
+    display: block;
+    margin-bottom: 12px;
+    color: #6b7280;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.nav-mobile-action,
+.nav-mobile-button {
+    width: 100%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 46px;
+    padding: 12px 16px;
+    border-radius: 14px;
+    font-size: 15px;
+    font-weight: 700;
+    transition: all 0.2s ease;
+}
+
+.nav-mobile-action {
+    background: #f8fbff;
+    border: 1px solid #dfe9fb;
+    color: #1668e8;
+}
+
+.nav-mobile-button {
+    border: 1px solid #dfe9fb;
+    background: #fff;
+    color: #111827;
+    cursor: pointer;
+}
+
+.nav-mobile-action:hover,
+.nav-mobile-action.active,
+.nav-mobile-button:hover {
+    background: #eef4ff;
+    border-color: #bfd5fb;
+}
+
+.nav-mobile-form {
+    width: 100%;
 }
 
 /* HERO */
@@ -489,11 +607,69 @@ input {
 }
 
 @media (max-width: 992px) {
+    .topbar-account-group {
+        display: none;
+    }
+
+    .navbar {
+        z-index: 300;
+    }
+
     .navbar-inner {
+        position: relative;
+        min-height: 74px;
+        padding: 14px 0;
+        gap: 14px;
+    }
+
+    .nav-toggle {
+        display: inline-flex;
+        flex-shrink: 0;
+    }
+
+    .nav-menu {
+        position: absolute;
+        top: calc(100% + 10px);
+        right: 0;
+        left: 0;
+        z-index: 320;
+        display: none;
         flex-direction: column;
-        justify-content: center;
-        gap: 18px;
-        padding: 18px 0;
+        align-items: stretch;
+        gap: 8px;
+        padding: 14px;
+        background: #ffffff;
+        border: 1px solid #e4ecf7;
+        border-radius: 22px;
+        box-shadow: 0 22px 46px rgba(15, 42, 88, 0.16);
+        max-height: min(72vh, 560px);
+        overflow-y: auto;
+    }
+
+    .navbar.is-open .nav-menu {
+        display: flex;
+    }
+
+    .nav-menu a {
+        width: 100%;
+        padding: 14px 16px;
+        border-radius: 14px;
+        font-size: 15px;
+        font-weight: 600;
+        background: #ffffff;
+    }
+
+    .nav-menu a:hover,
+    .nav-menu a.active {
+        background: #eef4ff;
+    }
+
+    .nav-menu-mobile-extra {
+        display: grid;
+        gap: 10px;
+        margin-top: 10px;
+        padding-top: 14px;
+        border-top: 1px solid #e7eefb;
     }
 
     .hero-inner {
@@ -519,21 +695,62 @@ input {
     }
 
     .topbar-inner {
+        min-height: auto;
         flex-direction: column;
+        align-items: stretch;
         justify-content: center;
-        gap: 8px;
+        gap: 10px;
         padding: 10px 0;
     }
 
-    .topbar-left {
+    .topbar-left,
+    .topbar-right {
+        width: 100%;
         flex-wrap: wrap;
         justify-content: center;
+        gap: 10px 14px;
+    }
+
+    .topbar-item {
+        font-size: 13px;
+    }
+
+    .navbar-inner {
+        min-height: 68px;
+        padding: 10px 0;
+    }
+
+    .logo {
+        height: 44px;
+        max-width: calc(100% - 60px);
+    }
+
+    .logo-img {
+        height: 160px;
+        margin-top: 6px;
+    }
+
+    .nav-toggle {
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
     }
 
     .nav-menu {
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 16px;
+        top: calc(100% + 8px);
+        padding: 12px;
+        border-radius: 20px;
+        max-height: calc(100vh - 150px);
+    }
+
+    .nav-menu a,
+    .nav-mobile-action,
+    .nav-mobile-button {
+        font-size: 14px;
+    }
+
+    .nav-menu a {
+        padding: 13px 14px;
     }
 
     .hero {
@@ -566,6 +783,96 @@ input {
         flex-direction: column;
         gap: 10px;
         align-items: center;
+    }
+}
+
+@media (max-width: 576px) {
+    .container {
+        max-width: calc(100% - 20px);
+    }
+
+    .topbar {
+        font-size: 12px;
+    }
+
+    .topbar-left,
+    .topbar-right {
+        gap: 8px;
+    }
+
+    .topbar-item {
+        gap: 6px;
+        font-size: 12px;
+    }
+
+    .navbar-inner {
+        min-height: 62px;
+        padding: 8px 0;
+    }
+
+    .logo {
+        height: 40px;
+    }
+
+    .logo-img {
+        height: 136px;
+        margin-top: 5px;
+    }
+
+    .nav-toggle {
+        width: 40px;
+        height: 40px;
+    }
+
+    .nav-menu {
+        top: calc(100% + 6px);
+        padding: 10px;
+        border-radius: 18px;
+        max-height: calc(100vh - 140px);
+    }
+
+    .nav-menu a,
+    .nav-mobile-action,
+    .nav-mobile-button {
+        min-height: 44px;
+        padding: 11px 12px;
+    }
+
+    .hero-title {
+        font-size: 30px;
+    }
+
+    .hero-desc {
+        font-size: 15px;
+    }
+}
+
+@media (max-width: 400px) {
+    .topbar-left,
+    .topbar-right {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .navbar-inner {
+        column-gap: 12px;
+    }
+
+    .logo {
+        max-width: calc(100% - 56px);
+    }
+
+    .logo-img {
+        height: 124px;
+    }
+
+    .nav-menu {
+        left: -2px;
+        right: -2px;
+    }
+
+    .hero-title {
+        font-size: 28px;
     }
 }
 
@@ -4047,7 +4354,7 @@ input {
     .services-page-panel-grid,
     .services-page-grid,
     .services-advantages-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
     .services-page-section,
@@ -4118,7 +4425,81 @@ input {
         padding: 22px;
     }
 
+    .services-page-card h3,
+    .services-advantage-item h3 {
+        font-size: 19px;
+    }
+
     .services-page-cta {
         padding-bottom: 74px;
+    }
+}
+
+@media (max-width: 576px) {
+    .services-page-stats,
+    .services-page-panel-grid,
+    .services-page-grid,
+    .services-advantages-grid {
+        grid-template-columns: 1fr;
+    }
+}
+.nav-menu-mobile-extra {
+    display: none;
+}
+
+.nav-mobile-label {
+    display: block;
+    font-size: 13px;
+    font-weight: 700;
+    color: #7b8aa0;
+    margin: 10px 6px 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+.nav-mobile-action,
+.nav-mobile-button {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 14px 16px;
+    border-radius: 14px;
+    font-size: 15px;
+    font-weight: 600;
+    color: #383838;
+    background: transparent;
+    border: none;
+    text-decoration: none;
+    transition: 0.2s ease;
+}
+
+.nav-mobile-action:hover,
+.nav-mobile-action.active,
+.nav-mobile-button:hover {
+    background: #eef4ff;
+    color: #1668e8;
+}
+
+.nav-mobile-form {
+    width: 100%;
+    margin: 0;
+}
+
+.nav-mobile-button {
+    cursor: pointer;
+    text-align: left;
+}
+
+@media (max-width: 992px) {
+    .nav-menu-mobile-extra {
+        display: block;
+        margin-top: 10px;
+        padding-top: 10px;
+        border-top: 1px solid #e4ecf7;
+    }
+}
+@media (max-width: 992px) {
+    .topbar .topbar-right {
+        display: none;
     }
 }

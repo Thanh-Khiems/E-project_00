@@ -17,7 +17,7 @@
             @include('partials.navbar-doctor')
         @else
             @include('partials.user-topbar')
-            @include('partials.navbar')
+            @include('partials.navbar-user')
         @endif
     @else
         @include('partials.topbar')
