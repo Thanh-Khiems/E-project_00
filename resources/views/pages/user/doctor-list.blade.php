@@ -557,37 +557,50 @@
                     $reviewsCount = (int) ($doctor->reviews_count ?? 0);
 
                     $groupedSchedules = collect();
+                    $now = now();
+                    $today = $now->copy()->startOfDay();
+                    $windowEnd = $now->copy()->addWeek()->endOfDay();
 
                     if ($doctor->schedules && $doctor->schedules->count()) {
-                        $normalized = $doctor->schedules->flatMap(function ($schedule) {
-                            $days = collect(explode(',', $schedule->days))
+                        $upcomingOccurrences = collect();
+
+                        foreach ($doctor->schedules as $schedule) {
+                            $scheduleStart = \Carbon\Carbon::parse($schedule->start_date)->startOfDay();
+                            $scheduleEnd = \Carbon\Carbon::parse($schedule->end_date)->endOfDay();
+                            $activeStart = $scheduleStart->greaterThan($today) ? $scheduleStart->copy() : $today->copy();
+                            $activeEnd = $scheduleEnd->lessThan($windowEnd) ? $scheduleEnd->copy() : $windowEnd->copy();
+
+                            if ($activeStart->gt($activeEnd)) {
+                                continue;
+                            }
+
+                            $availableDays = collect(explode(',', (string) $schedule->days))
                                 ->map(fn($day) => trim($day))
                                 ->filter();
 
-                            if ($days->isEmpty()) {
-                                return collect([$schedule]);
+                            for ($date = $activeStart->copy(); $date->lte($activeEnd); $date->addDay()) {
+                                if ($availableDays->isNotEmpty() && ! $availableDays->contains($date->format('D'))) {
+                                    continue;
+                                }
+
+                                if ($date->isSameDay($now) && \Carbon\Carbon::parse($schedule->start_time)->format('H:i:s') <= $now->format('H:i:s')) {
+                                    continue;
+                                }
+
+                                $upcomingOccurrences->push([
+                                    'date_key' => $date->format('Y-m-d'),
+                                    'date_label' => $date->isSameDay($now)
+                                        ? 'Hôm nay'
+                                        : (($dayLabels[$date->format('D')] ?? $date->translatedFormat('l')) . ' · ' . $date->format('d/m')),
+                                    'start_time' => \Carbon\Carbon::parse($schedule->start_time),
+                                    'end_time' => \Carbon\Carbon::parse($schedule->end_time),
+                                ]);
                             }
+                        }
 
-                            return $days->map(function ($day) use ($schedule) {
-                                $clone = clone $schedule;
-                                $clone->display_day = $day;
-                                return $clone;
-                            });
-                        });
-
-                        $dayOrder = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-
-                        $groupedSchedules = $normalized
-                            ->sortBy(function ($schedule) use ($dayOrder) {
-                                $day = $schedule->display_day ?? trim($schedule->days);
-                                $dayIndex = array_search($day, $dayOrder);
-                                $timeValue = strtotime($schedule->start_time);
-
-                                return sprintf('%02d-%010d', $dayIndex !== false ? $dayIndex : 99, $timeValue);
-                            })
-                            ->groupBy(function ($schedule) {
-                                return $schedule->display_day ?? trim($schedule->days);
-                            });
+                        $groupedSchedules = $upcomingOccurrences
+                            ->sortBy(fn($item) => $item['date_key'] . ' ' . $item['start_time']->format('H:i:s'))
+                            ->groupBy('date_label');
                     }
                 @endphp
 
@@ -640,11 +653,11 @@
                         @if($groupedSchedules->isNotEmpty())
                             @foreach($groupedSchedules->take(2) as $day => $daySchedules)
                                 <div class="doctor-schedule-row">
-                                    <div class="doctor-schedule-day">{{ $dayLabels[$day] ?? $day }}</div>
+                                    <div class="doctor-schedule-day">{{ $day }}</div>
                                     <div class="doctor-schedule-time">
                                         @foreach($daySchedules->take(2) as $schedule)
                                             <span class="doctor-time-chip">
-                                                {{ \Carbon\Carbon::parse($schedule->start_time)->format('H:i') }} - {{ \Carbon\Carbon::parse($schedule->end_time)->format('H:i') }}
+                                                {{ $schedule['start_time']->format('H:i') }} - {{ $schedule['end_time']->format('H:i') }}
                                             </span>
                                         @endforeach
                                     </div>

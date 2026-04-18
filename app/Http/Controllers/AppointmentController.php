@@ -15,6 +15,8 @@ class AppointmentController extends Controller
 {
     public function store(Request $request): RedirectResponse
     {
+        Appointment::purgeExpired();
+
         $request->validate([
             'doctor_id' => ['required', 'exists:doctors,id'],
             'selected_slot' => ['required', 'string'],
@@ -25,7 +27,7 @@ class AppointmentController extends Controller
             return back()->with('error', 'Khung giờ đã chọn không hợp lệ.');
         }
 
-        [$scheduleId, $selectedDay] = $parts;
+        [$scheduleId, $selectedValue] = $parts;
 
         $doctor = Doctor::query()
             ->where('id', $request->doctor_id)
@@ -36,18 +38,17 @@ class AppointmentController extends Controller
             ->where('doctor_id', $doctor->id)
             ->firstOrFail();
 
-        $availableDays = collect(explode(',', (string) $schedule->days))
-            ->map(fn ($day) => trim($day))
-            ->filter();
-
-        if ($availableDays->isNotEmpty() && ! $availableDays->contains($selectedDay)) {
-            return back()->with('error', 'Khung giờ đã chọn không thuộc lịch làm việc của bác sĩ.');
-        }
-
-        $appointmentDate = $this->resolveNearestDate($schedule, $selectedDay);
+        $appointmentDate = $this->resolveAppointmentDate($schedule, $selectedValue);
 
         if (! $appointmentDate) {
-            return back()->with('error', 'Không tìm được ngày khám hợp lệ cho khung giờ này.');
+            return back()->with('error', 'Không thể tạo lịch hẹn cho ngày hoặc giờ đã qua. Vui lòng chọn khung giờ khác.');
+<<<<<<< HEAD
+        }
+
+        if ($appointmentDate->gt(now()->copy()->addWeek())) {
+            return back()->with('error', 'Chỉ được đặt lịch trong vòng 7 ngày tới.');
+=======
+>>>>>>> 68df70511387ac0b922fb64132c9a8932ec7b98b
         }
 
         $patientId = Auth::id();
@@ -55,6 +56,7 @@ class AppointmentController extends Controller
         $duplicate = Appointment::query()
             ->where('patient_id', $patientId)
             ->whereDate('appointment_date', $appointmentDate->toDateString())
+            ->where('status', '!=', 'cancelled')
             ->where(function ($query) use ($schedule) {
                 $query->where('schedule_id', $schedule->id)
                     ->orWhere(function ($subQuery) use ($schedule) {
@@ -72,6 +74,7 @@ class AppointmentController extends Controller
         $bookedCount = Appointment::query()
             ->where('schedule_id', $schedule->id)
             ->whereDate('appointment_date', $appointmentDate->toDateString())
+            ->where('status', '!=', 'cancelled')
             ->count();
 
         if ($schedule->max_patients && $bookedCount >= $schedule->max_patients) {
@@ -83,7 +86,7 @@ class AppointmentController extends Controller
             'doctor_id' => $doctor->id,
             'schedule_id' => $schedule->id,
             'appointment_date' => $appointmentDate->toDateString(),
-            'appointment_day' => $selectedDay,
+            'appointment_day' => $appointmentDate->format('D'),
             'start_time' => $schedule->start_time,
             'end_time' => $schedule->end_time,
             'type' => $schedule->type,
@@ -100,11 +103,14 @@ class AppointmentController extends Controller
 
     public function patientIndex()
     {
+        Appointment::purgeExpired();
+
         $appointments = Appointment::query()
             ->with(['doctor.user', 'doctor.specialty', 'schedule', 'prescriptions.items.medication', 'review.patient'])
             ->where('patient_id', Auth::id())
-            ->orderByDesc('appointment_date')
-            ->orderByDesc('start_time')
+            ->visibleInCurrentWeek()
+            ->orderBy('appointment_date')
+            ->orderBy('start_time')
             ->get();
 
         return view('pages.user.patient-appointments', compact('appointments'));
@@ -112,34 +118,39 @@ class AppointmentController extends Controller
 
     public function doctorIndex()
     {
+        Appointment::purgeExpired();
+
         $doctor = Doctor::query()
             ->with('user')
             ->where('user_id', Auth::id())
             ->firstOrFail();
 
-        $appointments = Appointment::query()
-            ->with(['patient', 'schedule', 'doctor.specialty', 'prescriptions.items.medication', 'review.patient'])
+        $visibleAppointmentsQuery = Appointment::query()
             ->where('doctor_id', $doctor->id)
+            ->visibleInCurrentWeek();
+
+        $appointments = (clone $visibleAppointmentsQuery)
+            ->with(['patient', 'schedule', 'doctor.specialty', 'prescriptions.items.medication', 'review.patient'])
             ->orderBy('appointment_date')
             ->orderBy('start_time')
             ->paginate(10)
             ->withQueryString();
 
         $stats = [
-            'total' => Appointment::query()->where('doctor_id', $doctor->id)->count(),
-            'today' => Appointment::query()->where('doctor_id', $doctor->id)->whereDate('appointment_date', today())->count(),
-            'pending' => Appointment::query()->where('doctor_id', $doctor->id)->where('status', 'pending')->count(),
-            'confirmed' => Appointment::query()->where('doctor_id', $doctor->id)->where('status', 'confirmed')->count(),
-            'completed' => Appointment::query()->where('doctor_id', $doctor->id)->where('status', 'completed')->count(),
-            'cancelled' => Appointment::query()->where('doctor_id', $doctor->id)->where('status', 'cancelled')->count(),
+            'total' => (clone $visibleAppointmentsQuery)->count(),
+            'today' => Appointment::query()->where('doctor_id', $doctor->id)->whereDate('appointment_date', today())->whereTime('end_time', '>=', now()->format('H:i:s'))->count(),
+            'pending' => (clone $visibleAppointmentsQuery)->where('status', 'pending')->count(),
+            'confirmed' => (clone $visibleAppointmentsQuery)->where('status', 'confirmed')->count(),
+            'completed' => (clone $visibleAppointmentsQuery)->where('status', 'completed')->count(),
+            'cancelled' => (clone $visibleAppointmentsQuery)->where('status', 'cancelled')->count(),
             'reviews_count' => AppointmentReview::query()->where('doctor_id', $doctor->id)->count(),
             'average_rating' => round((float) AppointmentReview::query()->where('doctor_id', $doctor->id)->avg('rating'), 1),
         ];
 
         $statusBoards = [
-            'confirmed' => Appointment::query()->with(['patient'])->where('doctor_id', $doctor->id)->where('status', 'confirmed')->latest('appointment_date')->take(5)->get(),
-            'cancelled' => Appointment::query()->with(['patient'])->where('doctor_id', $doctor->id)->where('status', 'cancelled')->latest('appointment_date')->take(5)->get(),
-            'completed' => Appointment::query()->with(['patient'])->where('doctor_id', $doctor->id)->where('status', 'completed')->latest('appointment_date')->take(5)->get(),
+            'confirmed' => Appointment::query()->with(['patient'])->where('doctor_id', $doctor->id)->visibleInCurrentWeek()->where('status', 'confirmed')->latest('appointment_date')->take(5)->get(),
+            'cancelled' => Appointment::query()->with(['patient'])->where('doctor_id', $doctor->id)->visibleInCurrentWeek()->where('status', 'cancelled')->latest('appointment_date')->take(5)->get(),
+            'completed' => Appointment::query()->with(['patient'])->where('doctor_id', $doctor->id)->visibleInCurrentWeek()->where('status', 'completed')->latest('appointment_date')->take(5)->get(),
         ];
 
         return view('pages.doctor.appointments', compact('appointments', 'doctor', 'stats', 'statusBoards'));
@@ -147,6 +158,12 @@ class AppointmentController extends Controller
 
     public function confirm(Appointment $appointment): RedirectResponse
     {
+        if ($appointment->isExpired()) {
+            $appointment->delete();
+
+            return back()->with('error', 'Lịch hẹn đã quá hạn nên đã được xóa khỏi hệ thống.');
+        }
+
         if (! $this->canManageAppointment($appointment)) {
             return back()->with('error', 'Bạn không có quyền xác nhận lịch hẹn này.');
         }
@@ -164,6 +181,12 @@ class AppointmentController extends Controller
 
     public function cancel(Appointment $appointment): RedirectResponse
     {
+        if ($appointment->isExpired()) {
+            $appointment->delete();
+
+            return back()->with('error', 'Lịch hẹn đã quá hạn nên đã được xóa khỏi hệ thống.');
+        }
+
         if (! $this->canManageAppointment($appointment)) {
             return back()->with('error', 'Bạn không có quyền hủy lịch hẹn này.');
         }
@@ -216,6 +239,12 @@ class AppointmentController extends Controller
 
     public function complete(Appointment $appointment): RedirectResponse
     {
+        if ($appointment->isExpired()) {
+            $appointment->delete();
+
+            return back()->with('error', 'Lịch hẹn đã quá hạn nên đã được xóa khỏi hệ thống.');
+        }
+
         if (! $this->canManageAppointment($appointment)) {
             return back()->with('error', 'Bạn không có quyền hoàn tất lịch hẹn này.');
         }
@@ -239,20 +268,62 @@ class AppointmentController extends Controller
         return $isAdmin || $isDoctorOwner;
     }
 
-    private function resolveNearestDate(Schedule $schedule, string $selectedDay): ?Carbon
+    private function resolveAppointmentDate(Schedule $schedule, string $selectedValue): ?Carbon
+    {
+        if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $selectedValue) === 1) {
+            return $this->resolveExactDate($schedule, $selectedValue);
+        }
+
+        return $this->resolveNearestDateByWeekday($schedule, $selectedValue);
+    }
+
+    private function resolveExactDate(Schedule $schedule, string $selectedDate): ?Carbon
+    {
+        $date = Carbon::parse($selectedDate)->startOfDay();
+        $start = Carbon::parse($schedule->start_date)->startOfDay();
+        $end = Carbon::parse($schedule->end_date)->startOfDay();
+        $now = now();
+        $allowedDays = collect(explode(',', (string) $schedule->days))
+            ->map(fn ($day) => trim($day))
+            ->filter();
+
+        if ($date->lt($now->copy()->startOfDay()) || $date->lt($start) || $date->gt($end)) {
+            return null;
+        }
+
+        if ($allowedDays->isNotEmpty() && ! $allowedDays->contains($date->format('D'))) {
+            return null;
+        }
+
+        if ($date->isSameDay($now) && Carbon::parse($schedule->start_time)->format('H:i:s') <= $now->format('H:i:s')) {
+            return null;
+        }
+
+        return $date;
+    }
+
+    private function resolveNearestDateByWeekday(Schedule $schedule, string $selectedDay): ?Carbon
     {
         $start = Carbon::parse($schedule->start_date)->startOfDay();
         $end = Carbon::parse($schedule->end_date)->startOfDay();
-        $today = Carbon::today();
+        $now = now();
+        $today = $now->copy()->startOfDay();
+        $scheduleStartTime = Carbon::parse($schedule->start_time)->format('H:i:s');
 
         for ($date = $start->copy(); $date->lte($end); $date->addDay()) {
             if ($date->lt($today)) {
                 continue;
             }
 
-            if ($date->format('D') === $selectedDay) {
-                return $date->copy();
+            if ($date->format('D') !== $selectedDay) {
+                continue;
             }
+
+            if ($date->isSameDay($today) && $scheduleStartTime <= $now->format('H:i:s')) {
+                continue;
+            }
+
+            return $date->copy();
         }
 
         return null;

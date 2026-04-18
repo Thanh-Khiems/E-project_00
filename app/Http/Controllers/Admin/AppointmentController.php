@@ -12,6 +12,8 @@ class AppointmentController extends Controller
 {
     public function index(Request $request)
     {
+        Appointment::purgeExpired();
+
         $query = Appointment::query()->with(['doctor.user', 'doctor.specialty', 'patient', 'schedule', 'prescriptions', 'review.patient']);
 
         if ($request->filled('doctor_id')) {
@@ -64,6 +66,12 @@ class AppointmentController extends Controller
 
     public function show(Appointment $appointment)
     {
+        if ($appointment->isExpired()) {
+            $appointment->delete();
+
+            return redirect()->route('admin.appointments.index')->with('error', 'Lịch hẹn đã quá hạn nên đã được xóa khỏi hệ thống.');
+        }
+
         $appointment->load([
             'doctor.user',
             'doctor.specialty',

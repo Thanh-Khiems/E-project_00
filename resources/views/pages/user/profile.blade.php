@@ -231,6 +231,7 @@
 
         <div id="appointments" class="content-card tab-content">
             <h2 style="margin-top:0;">Lịch hẹn</h2>
+            <p style="margin:0 0 16px;color:#6b7280;">Chỉ hiển thị các lịch hẹn còn hiệu lực trong 7 ngày tính từ hiện tại.</p>
             <div style="overflow:auto;">
                 <table style="width:100%;border-collapse:collapse;min-width:900px;">
                     <thead>
