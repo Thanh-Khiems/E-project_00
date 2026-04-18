@@ -6,19 +6,19 @@ use App\Http\Controllers\Controller;
 use App\Models\Appointment;
 use App\Models\Doctor;
 use Carbon\Carbon;
-<<<<<<< HEAD
+
 use Illuminate\Support\Collection;
-=======
+
 use Illuminate\Http\Request;
->>>>>>> 68df70511387ac0b922fb64132c9a8932ec7b98b
+
 
 class DoctorBookingController extends Controller
 {
     public function show(Doctor $doctor)
     {
-<<<<<<< HEAD
+
         Appointment::purgeExpired();
-=======
+
         $today = Carbon::today()->toDateString();
 
         $doctor->load([
@@ -37,7 +37,7 @@ class DoctorBookingController extends Controller
                 ->filter(fn ($schedule) => $this->scheduleHasUpcomingSlot($schedule))
                 ->values()
         );
->>>>>>> 68df70511387ac0b922fb64132c9a8932ec7b98b
+
 
         $doctor->load([
             'user',
