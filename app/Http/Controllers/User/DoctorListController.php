@@ -6,12 +6,25 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Doctor;
 use App\Models\Specialty;
+use Carbon\Carbon;
 
 class DoctorListController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Doctor::with(['user', 'specialty', 'schedules'])
+        $today = Carbon::today();
+        $windowEnd = $today->copy()->addDays(7);
+
+        $query = Doctor::with([
+                'user',
+                'specialty',
+                'schedules' => function ($scheduleQuery) use ($today, $windowEnd) {
+                    $scheduleQuery->whereDate('end_date', '>=', $today->toDateString())
+                        ->whereDate('start_date', '<=', $windowEnd->toDateString())
+                        ->orderBy('start_date')
+                        ->orderBy('start_time');
+                },
+            ])
             ->withCount('reviews')
             ->withAvg('reviews', 'rating')
             ->where('approval_status', 'approved')

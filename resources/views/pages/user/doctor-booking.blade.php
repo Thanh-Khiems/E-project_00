@@ -160,8 +160,8 @@
         font-size: 14px;
         color: #334155;
         transition: 0.2s ease;
-        min-width: 140px;
-        text-align: center;
+        min-width: 180px;
+        text-align: left;
     }
 
     .slot-option input[type="radio"]:checked + label {
@@ -171,12 +171,39 @@
         box-shadow: 0 8px 20px rgba(29, 78, 216, 0.18);
     }
 
+    .slot-option input[type="radio"]:disabled + label {
+        background: #f3f4f6;
+        color: #94a3b8;
+        border-color: #e5e7eb;
+        cursor: not-allowed;
+        box-shadow: none;
+    }
+
     .slot-sub {
         display: block;
         margin-top: 6px;
         font-size: 12px;
         font-weight: 500;
         opacity: 0.9;
+        line-height: 1.5;
+    }
+
+    .slot-capacity {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        margin-top: 8px;
+        padding: 4px 8px;
+        border-radius: 999px;
+        background: #eff6ff;
+        color: #1d4ed8;
+        font-size: 11px;
+        font-weight: 700;
+    }
+
+    .slot-full {
+        background: #fef2f2;
+        color: #dc2626;
     }
 
     .empty-slot {
@@ -210,6 +237,11 @@
         opacity: 0.96;
     }
 
+    .booking-submit-btn:disabled {
+        opacity: 0.55;
+        cursor: not-allowed;
+    }
+
     .booking-warning {
         margin-top: 12px;
         font-size: 13px;
@@ -236,40 +268,7 @@
         'Sat' => 'Thứ 7',
         'Sun' => 'Chủ nhật',
     ];
-
-    $normalizedSchedules = collect();
-
-    if ($doctor->schedules && $doctor->schedules->count()) {
-        $normalizedSchedules = $doctor->schedules->flatMap(function ($schedule) {
-            $days = collect(explode(',', $schedule->days))
-                ->map(fn($day) => trim($day))
-                ->filter();
-
-            if ($days->isEmpty()) {
-                return collect([$schedule]);
-            }
-
-            return $days->map(function ($day) use ($schedule) {
-                $clone = clone $schedule;
-                $clone->display_day = $day;
-                return $clone;
-            });
-        });
-
-        $dayOrder = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-
-        $normalizedSchedules = $normalizedSchedules
-            ->sortBy(function ($schedule) use ($dayOrder) {
-                $day = $schedule->display_day ?? trim($schedule->days);
-                $dayIndex = array_search($day, $dayOrder);
-                $timeValue = strtotime($schedule->start_time);
-
-                return sprintf('%02d-%010d', $dayIndex !== false ? $dayIndex : 99, $timeValue);
-            })
-            ->groupBy(function ($schedule) {
-                return $schedule->display_day ?? trim($schedule->days);
-            });
-    }
+    $hasAvailableBookingSlot = $bookingSlots->flatten(1)->contains(fn ($slot) => ! $slot['is_full']);
 @endphp
 
 <div class="booking-page">
@@ -277,7 +276,7 @@
 
         <div class="booking-header">
             <h2>Đặt lịch khám với bác sĩ</h2>
-            <p>Chọn khung giờ phù hợp với nhu cầu của bạn trước khi tiến hành đặt hẹn.</p>
+            <p>Chọn khung giờ phù hợp trong 7 ngày tới trước khi tiến hành đặt hẹn.</p>
         </div>
 
         <div class="booking-grid">
@@ -316,7 +315,7 @@
             <div class="booking-card">
                 <div class="schedule-section-title">Chọn khung giờ khám</div>
                 <div class="schedule-note">
-                    Bệnh nhân chọn 1 khung giờ phù hợp từ lịch làm việc mà bác sĩ đã công bố.
+                    Bệnh nhân chọn 1 khung giờ phù hợp từ lịch làm việc mà bác sĩ đã công bố trong 7 ngày tới.
                 </div>
 
                 <form action="{{ route('appointments.store') }}" method="POST">
@@ -324,51 +323,50 @@
 
                     <input type="hidden" name="doctor_id" value="{{ $doctor->id }}">
 
-                    @forelse($normalizedSchedules as $day => $daySchedules)
+                    @forelse($bookingSlots as $dateKey => $daySlots)
+                        @php
+                            $displayDate = \Carbon\Carbon::parse($dateKey);
+                        @endphp
                         <div class="schedule-day-block">
                             <div class="schedule-day-header">
                                 <div class="schedule-day-name">
-                                    {{ $dayLabels[$day] ?? $day }}
+                                    {{ $dayLabels[$displayDate->format('D')] ?? $displayDate->translatedFormat('l') }}
                                 </div>
 
-                                @php
-                                    $first = $daySchedules->sortBy('start_date')->first();
-                                    $last = $daySchedules->sortByDesc('end_date')->first();
-                                @endphp
-
                                 <div class="schedule-day-date">
-                                    Áp dụng:
-                                    {{ \Carbon\Carbon::parse($first->start_date)->format('d/m/Y') }}
-                                    -
-                                    {{ \Carbon\Carbon::parse($last->end_date)->format('d/m/Y') }}
+                                    {{ $displayDate->format('d/m/Y') }}
                                 </div>
                             </div>
 
                             <div class="slot-list">
-                                @foreach($daySchedules->take(3) as $slot)
+                                @foreach($daySlots as $slot)
                                     @php
-                                        $slotValue = $slot->id . '|' . ($slot->display_day ?? $slot->days);
+                                        $inputId = 'slot_' . $slot['schedule_id'] . '_' . $slot['date']->format('Ymd');
                                     @endphp
 
                                     <div class="slot-option">
                                         <input
                                             type="radio"
                                             name="selected_slot"
-                                            id="slot_{{ $slot->id }}_{{ $loop->parent->index ?? 0 }}_{{ $loop->index }}"
-                                            value="{{ $slotValue }}"
-                                            required
+                                            id="{{ $inputId }}"
+                                            value="{{ $slot['value'] }}"
+                                            {{ $slot['is_full'] ? 'disabled' : 'required' }}
                                         >
-                                        <label for="slot_{{ $slot->id }}_{{ $loop->parent->index ?? 0 }}_{{ $loop->index }}">
-                                            {{ \Carbon\Carbon::parse($slot->start_time)->format('H:i') }}
-                                            -
-                                            {{ \Carbon\Carbon::parse($slot->end_time)->format('H:i') }}
+                                        <label for="{{ $inputId }}">
+                                            {{ $slot['start_time']->format('H:i') }} - {{ $slot['end_time']->format('H:i') }}
 
                                             <span class="slot-sub">
-                                                {{ $slot->type === 'online' ? 'Khám online' : 'Khám trực tiếp' }}
-                                                @if($slot->location)
-                                                    • {{ $slot->location }}
+                                                {{ $slot['type'] === 'online' ? 'Khám online' : 'Khám trực tiếp' }}
+                                                @if($slot['location'])
+                                                    • {{ $slot['location'] }}
                                                 @endif
                                             </span>
+
+                                            @if(! is_null($slot['remaining_slots']))
+                                                <span class="slot-capacity {{ $slot['is_full'] ? 'slot-full' : '' }}">
+                                                    {{ $slot['is_full'] ? 'Đã đầy' : 'Còn ' . $slot['remaining_slots'] . ' chỗ' }}
+                                                </span>
+                                            @endif
                                         </label>
                                     </div>
                                 @endforeach
@@ -376,16 +374,16 @@
                         </div>
                     @empty
                         <div class="empty-slot">
-                            Bác sĩ chưa cập nhật lịch làm việc nên hiện chưa thể đặt hẹn.
+                            Bác sĩ chưa có khung giờ hợp lệ trong 7 ngày tới nên hiện chưa thể đặt hẹn.
                         </div>
                     @endforelse
 
                     <div class="booking-submit-box">
-                        <button type="submit" class="booking-submit-btn">
+                        <button type="submit" class="booking-submit-btn" {{ ! $hasAvailableBookingSlot ? 'disabled' : '' }}>
                             Đặt lịch hẹn
                         </button>
                         <div class="booking-warning">
-                            Vui lòng chọn 1 khung giờ trước khi đặt lịch.
+                            {{ $hasAvailableBookingSlot ? 'Vui lòng chọn 1 khung giờ trước khi đặt lịch.' : 'Hiện không còn chỗ trống để đặt lịch trong 7 ngày tới.' }}
                         </div>
                     </div>
                 </form>
