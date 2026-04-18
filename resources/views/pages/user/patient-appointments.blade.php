@@ -2,7 +2,8 @@
 
 @section('content')
 <div style="max-width: 1200px; margin: 40px auto; padding: 0 20px;">
-    <h2 style="margin-bottom: 20px; font-weight: 800; color: #1d4ed8;">Lịch hẹn và toa thuốc của tôi</h2>
+    <h2 style="margin-bottom: 12px; font-weight: 800; color: #1d4ed8;">Lịch hẹn và toa thuốc của tôi</h2>
+    <p style="margin:0 0 20px;color:#6b7280;">Chỉ hiển thị các lịch hẹn còn hiệu lực từ hiện tại đến 7 ngày tới. Các lịch hẹn đã hoàn tất bạn có thể xem lại trong hồ sơ cá nhân.</p>
     <div style="display:flex;flex-direction:column;gap:20px;">
         @forelse($appointments as $appointment)
             <div style="background:#fff;border-radius:20px;padding:24px;box-shadow:0 10px 26px rgba(0,0,0,.05);">

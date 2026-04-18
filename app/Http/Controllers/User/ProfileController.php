@@ -18,6 +18,8 @@ class ProfileController extends Controller
 {
     public function index()
     {
+        Appointment::purgeExpired();
+
         $user = Auth::user();
 
         $locations = config('locations');
@@ -25,11 +27,17 @@ class ProfileController extends Controller
 
         $appointments = Appointment::with(['doctor.user', 'doctor.specialty', 'prescriptions.items.medication.medicineType', 'review.patient'])
             ->where('patient_id', $user->id)
+            ->visibleInCurrentWeek()
+            ->orderBy('appointment_date')
+            ->orderBy('start_time')
+            ->get();
+
+        $completedAppointments = Appointment::with(['doctor.user', 'doctor.specialty', 'prescriptions.items.medication.medicineType', 'review.patient'])
+            ->where('patient_id', $user->id)
+            ->where('status', 'completed')
             ->latest('appointment_date')
             ->latest('start_time')
             ->get();
-
-        $completedAppointments = $appointments->where('status', 'completed')->values();
 
         $specialties = Specialty::query()
             ->active()

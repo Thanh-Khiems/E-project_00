@@ -24,8 +24,8 @@
         <main>
             <div style="display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:16px;margin-bottom:20px;">
                 @foreach([
-                    ['Tổng lịch hẹn', $stats['total'], '#1d4ed8'],
-                    ['Hôm nay', $stats['today'], '#0f766e'],
+                    ['7 ngày tới', $stats['total'], '#1d4ed8'],
+                    ['Còn lại hôm nay', $stats['today'], '#0f766e'],
                     ['Chờ xác nhận', $stats['pending'], '#d97706'],
                     ['Đã xác nhận', $stats['confirmed'], '#2563eb'],
                     ['Hoàn tất', $stats['completed'], '#059669'],
@@ -52,7 +52,7 @@
                 <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px;">
                     <div>
                         <h3 style="margin:0;color:#111827;">Danh sách lịch hẹn</h3>
-                        <p style="margin:6px 0 0;color:#6b7280;">Bác sĩ xác nhận lịch, hoàn tất buổi khám và theo dõi đánh giá từ bệnh nhân.</p>
+                        <p style="margin:6px 0 0;color:#6b7280;">Chỉ hiển thị lịch hẹn còn hiệu lực từ hiện tại đến 7 ngày tới để bác sĩ dễ theo dõi.</p>
                     </div>
                 </div>
 

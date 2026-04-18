@@ -42,7 +42,7 @@
                         </select>
                     </div>
                     <div class="col-md-3">
-                        <label class="form-label">Ngày đăng</label>
+                        <label class="form-label">Ngày đăng <small class="text-muted">(để trống hoặc chọn tương lai sẽ đăng ngay)</small></label>
                         <input type="datetime-local" name="published_at" class="form-control" value="{{ old('published_at') }}">
                     </div>
                     <div class="col-12">
@@ -135,7 +135,7 @@
                                         </select>
                                     </div>
                                     <div class="col-md-6">
-                                        <label class="form-label">Ngày đăng</label>
+                                        <label class="form-label">Ngày đăng <small class="text-muted">(nếu để tương lai hệ thống sẽ đổi thành hiện tại để bài hiện ngay)</small></label>
                                         <input type="datetime-local" name="published_at" class="form-control" value="{{ $blog->published_at ? $blog->published_at->format('Y-m-d\TH:i') : '' }}">
                                     </div>
                                     <div class="col-12">

@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Carbon;
 
 class BlogController extends Controller
 {
@@ -46,9 +47,7 @@ class BlogController extends Controller
             $validated['thumbnail'] = $request->file('thumbnail')->store('blogs', 'public');
         }
 
-        if ($validated['status'] === Blog::STATUS_PUBLISHED && blank($validated['published_at'])) {
-            $validated['published_at'] = now();
-        }
+        $validated = $this->normalizePublishPayload($validated);
 
         Blog::create($validated);
 
@@ -67,13 +66,7 @@ class BlogController extends Controller
             $validated['thumbnail'] = $request->file('thumbnail')->store('blogs', 'public');
         }
 
-        if ($validated['status'] === Blog::STATUS_PUBLISHED && blank($validated['published_at'])) {
-            $validated['published_at'] = $blog->published_at ?? now();
-        }
-
-        if ($validated['status'] === Blog::STATUS_DRAFT) {
-            $validated['published_at'] = null;
-        }
+        $validated = $this->normalizePublishPayload($validated, $blog);
 
         $blog->update($validated);
 
@@ -113,5 +106,26 @@ class BlogController extends Controller
             'is_featured' => (bool) ($validated['is_featured'] ?? false),
             'published_at' => $validated['published_at'] ?? null,
         ];
+    }
+
+    protected function normalizePublishPayload(array $validated, ?Blog $blog = null): array
+    {
+        if ($validated['status'] === Blog::STATUS_DRAFT) {
+            $validated['published_at'] = null;
+
+            return $validated;
+        }
+
+        $publishedAt = isset($validated['published_at']) && filled($validated['published_at'])
+            ? Carbon::parse($validated['published_at'])
+            : ($blog?->published_at ?? now());
+
+        if ($publishedAt->isFuture()) {
+            $publishedAt = now();
+        }
+
+        $validated['published_at'] = $publishedAt;
+
+        return $validated;
     }
 }
