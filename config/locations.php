@@ -1,85 +1,85 @@
 <?php
 
 return [
-    'Cần Thơ' => [
-        'Ninh Kiều' => [
-            'Cái Khế',
-            'An Hòa',
-            'An Bình',
-            'Tân An',
+    'Can Tho' => [
+        'Ninh Kieu' => [
+            'Cai Khe',
+            'An Hoa',
+            'An Binh',
+            'Tan An',
         ],
-        'Cái Răng' => [
-            'Lê Bình',
-            'Ba Láng',
-            'Hưng Phú',
-            'Phú Thứ',
+        'Cai Rang' => [
+            'Le Binh',
+            'Ba Lang',
+            'Hung Phu',
+            'Phu Thu',
         ],
-        'Bình Thủy' => [
-            'Bình Thủy',
-            'Long Tuyền',
-            'Trà An',
+        'Binh Thuy' => [
+            'Binh Thuy',
+            'Long Tuyen',
+            'Tra An',
         ],
     ],
 
-    'Hồ Chí Minh' => [
-        'Quận 1' => [
-            'Bến Nghé',
-            'Bến Thành',
-            'Đa Kao',
-            'Nguyễn Cư Trinh',
+    'Ho Chi Minh City' => [
+        'District 1' => [
+            'Ben Nghe',
+            'Ben Thanh',
+            'Da Kao',
+            'Nguyen Cu Trinh',
         ],
-        'Quận 7' => [
-            'Tân Phú',
-            'Tân Phong',
-            'Phú Mỹ',
-            'Tân Hưng',
+        'District 7' => [
+            'Tan Phu',
+            'Tan Phong',
+            'Phu My',
+            'Tan Hung',
         ],
-        'Thủ Đức' => [
+        'Thu Duc' => [
             'Linh Trung',
-            'Linh Xuân',
-            'Hiệp Bình Chánh',
-            'Trường Thọ',
+            'Linh Xuan',
+            'Hiep Binh Chanh',
+            'Truong Tho',
         ],
     ],
 
-    'Hà Nội' => [
-        'Ba Đình' => [
-            'Điện Biên',
-            'Kim Mã',
-            'Ngọc Hà',
+    'Hanoi' => [
+        'Ba Dinh' => [
+            'Dien Bien',
+            'Kim Ma',
+            'Ngoc Ha',
         ],
-        'Cầu Giấy' => [
-            'Dịch Vọng',
-            'Dịch Vọng Hậu',
-            'Mai Dịch',
-            'Nghĩa Tân',
+        'Cau Giay' => [
+            'Dich Vong',
+            'Dich Vong Hau',
+            'Mai Dich',
+            'Nghia Tan',
         ],
-        'Hoàng Mai' => [
-            'Đại Kim',
-            'Định Công',
-            'Hoàng Liệt',
-            'Lĩnh Nam',
+        'Hoang Mai' => [
+            'Dai Kim',
+            'Dinh Cong',
+            'Hoang Liet',
+            'Linh Nam',
         ],
     ],
 
-    'Đà Nẵng' => [
-        'Hải Châu' => [
-            'Hải Châu I',
-            'Hải Châu II',
-            'Phước Ninh',
-            'Thanh Bình',
+    'Da Nang' => [
+        'Hai Chau' => [
+            'Hai Chau I',
+            'Hai Chau II',
+            'Phuoc Ninh',
+            'Thanh Binh',
         ],
-        'Thanh Khê' => [
-            'An Khê',
-            'Chính Gián',
-            'Tam Thuận',
-            'Thạc Gián',
+        'Thanh Khe' => [
+            'An Khe',
+            'Chinh Gian',
+            'Tam Thuan',
+            'Thac Gian',
         ],
-        'Sơn Trà' => [
-            'An Hải Bắc',
-            'An Hải Đông',
-            'Mân Thái',
-            'Phước Mỹ',
+        'Son Tra' => [
+            'An Hai Bac',
+            'An Hai Dong',
+            'Man Thai',
+            'Phuoc My',
         ],
     ],
 ];

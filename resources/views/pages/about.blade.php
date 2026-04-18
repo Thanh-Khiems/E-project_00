@@ -3,55 +3,63 @@
 @section('title', 'About MediConnect')
 
 @section('content')
-<section class="about-page-hero">
-    <div class="about-page-bg about-page-bg-one"></div>
-    <div class="about-page-bg about-page-bg-two"></div>
+@php
+    $aboutDisplayName = auth()->check()
+        ? (auth()->user()->full_name ?? 'MediConnect User')
+        : 'Lê Hiếu Nghĩa';
 
+    if (auth()->check()) {
+        $aboutEditUrl = auth()->user()->role === 'doctor'
+            ? route('doctor.dashboard')
+            : route('user.profile');
+    } else {
+        $aboutEditUrl = route('login');
+    }
+@endphp
+
+<section class="about-page-hero">
     <div class="container about-page-hero-inner">
         <div class="about-page-copy reveal-up delay-2">
             <div class="about-page-badges reveal-up delay-3">
-                <span>Nền tảng y tế đáng tin cậy</span>
-                <span>Đặt lịch nhanh chóng</span>
-                <span>Hỗ trợ tận tâm</span>
+                <span>Reliable Healthcare Ecosystem</span>
+                <span>Swift &amp; Easy Booking</span>
+                <span>Compassionate Care &amp; Support</span>
             </div>
 
             <h1 class="about-page-title reveal-up delay-4">
-                Về <span>MediConnect</span> —
-                kết nối chăm sóc sức khỏe hiện đại, tin cậy và gần gũi.
+                <span>MediConnect</span> – Your modern, reliable, and person-centered healthcare connection.
             </h1>
 
             <p class="about-page-lead reveal-up delay-5">
-                MediConnect là nền tảng giúp bệnh nhân kết nối với bác sĩ và dịch vụ y tế một cách nhanh chóng,
-                minh bạch và thuận tiện. Chúng tôi tin rằng chăm sóc sức khỏe chất lượng không chỉ đến từ chuyên môn,
-                mà còn từ một trải nghiệm đơn giản, thân thiện và luôn sẵn sàng đồng hành cùng người bệnh.
-            </p>
-
-            <p class="about-page-sub reveal-up delay-5">
-                Với định hướng lấy con người làm trung tâm, MediConnect xây dựng cầu nối giữa công nghệ và y tế,
-                giúp việc tìm kiếm thông tin, đặt lịch khám và tiếp cận đội ngũ chuyên gia trở nên dễ dàng hơn bao giờ hết.
+                MediConnect is a premier platform designed to seamlessly connect patients with healthcare professionals
+                and medical services in a rapid, transparent, and convenient manner. We believe that quality healthcare
+                stems not only from clinical expertise but also from a simplified, intuitive experience that stays by the
+                patient's side every step of the way. With a human-centric approach, MediConnect bridges the gap between
+                technology and medicine, making information discovery, appointment scheduling, and expert consultations
+                more accessible than ever before.
             </p>
 
             <div class="about-page-actions reveal-up delay-6">
-                <a href="{{ url('/doctor-list') }}" class="btn btn-primary">Tìm bác sĩ phù hợp</a>
-                <a href="#about-story" class="btn btn-outline">Câu chuyện thương hiệu</a>
+                <a href="{{ route('doctor-list') }}" class="btn btn-primary">Find the Right Doctor</a>
+                <a href="#about-story" class="btn btn-outline">Brand Story</a>
             </div>
 
             <div class="about-page-stats reveal-up delay-6">
                 <div class="about-page-stat-card">
                     <h3>15+</h3>
-                    <p>Năm kinh nghiệm</p>
+                    <p>Years of Expertise</p>
                 </div>
                 <div class="about-page-stat-card">
                     <h3>5000+</h3>
-                    <p>Bệnh nhân đã hỗ trợ</p>
+                    <p>Successful Consultations</p>
                 </div>
                 <div class="about-page-stat-card">
                     <h3>50+</h3>
-                    <p>Bác sĩ & chuyên gia</p>
+                    <p>Medical Specialists</p>
                 </div>
                 <div class="about-page-stat-card">
                     <h3>24/7</h3>
-                    <p>Hỗ trợ đặt lịch</p>
+                    <p>Concierge Scheduling</p>
                 </div>
             </div>
         </div>
@@ -60,35 +68,36 @@
             <div class="about-page-panel">
                 <div class="about-page-panel-top">
                     <div>
-                        <small>Welcome back</small>
-                        <h2>Lê hiếu nghĩa<span>.</span></h2>
+                        <small>Welcome back !</small>
+                        <h2>{{ $aboutDisplayName }}</h2>
                     </div>
-                    <div class="about-page-chip">About MediConnect</div>
+
+                    <a href="{{ $aboutEditUrl }}" class="about-page-panel-action">Edit Information</a>
                 </div>
 
                 <div class="about-page-panel-body">
                     <div class="about-page-panel-text">
-                        <h3>
-                            Connecting Patients to
-                            <span>Trusted Care</span>, Anytime Anywhere
-                        </h3>
+                        <h3>Connecting you to <span>Trusted Healthcare</span>—anytime, anywhere.</h3>
                         <p>
-                            Chúng tôi tạo nên một hành trình y tế số liền mạch, nơi người bệnh có thể tìm bác sĩ phù hợp,
-                            đặt lịch thuận tiện và an tâm hơn trong từng quyết định chăm sóc sức khỏe.
+                            At MediConnect, we envision a future where technology and humanity converge to redefine the
+                            healthcare experience. Our mission is to build the leading digital healthcare ecosystem that
+                            breaks down traditional barriers, providing everyone with seamless, transparent, and
+                            high-quality medical access. By empowering patients with intuitive tools and connecting them
+                            to a dedicated network of specialists, we strive to make every healthcare journey more
+                            personalized, efficient, and reliable than ever before.
                         </p>
 
                         <div class="about-page-vision-box">
-                            <small>Tầm nhìn</small>
+                            <small>Our Vision &amp; Mission</small>
                             <strong>
-                                Trở thành nền tảng kết nối y tế số đáng tin cậy hàng đầu,
-                                giúp mọi người tiếp cận dịch vụ chăm sóc chất lượng dễ dàng hơn.
+                                To be the most trusted digital healthcare bridge, making care more accessible, convenient,
+                                and human for all.
                             </strong>
                         </div>
                     </div>
 
                     <div class="about-page-doctor-wrap">
-                        <div class="about-page-doctor-glow"></div>
-                        <img src="{{ asset('images/about/about-doctor.png') }}" alt="Doctor avatar" class="about-page-doctor-image">
+                        <img src="{{ asset('images/about/about-den.png') }}" alt="Doctor avatar" class="about-page-doctor-image">
                     </div>
                 </div>
             </div>
@@ -99,40 +108,42 @@
 <section class="about-story" id="about-story">
     <div class="container about-story-inner">
         <div class="about-story-copy reveal-up delay-2">
-            <span class="about-story-label">Câu chuyện thương hiệu</span>
-            <h2>Connecting Care, Advancing Health</h2>
+            <span class="about-story-label">Reliable Healthcare Ecosystem</span>
+            <h2>Connecting Care,<br>Advancing Health</h2>
             <p>
-                MediConnect ra đời với mong muốn thu hẹp khoảng cách giữa người bệnh và dịch vụ y tế chất lượng.
-                Trong một thế giới ngày càng số hóa, chúng tôi tin rằng việc chăm sóc sức khỏe cũng cần trở nên nhanh hơn,
-                dễ tiếp cận hơn và nhân văn hơn.
+                MediConnect was established with a heartfelt mission: to bridge the gap between patients and premium
+                medical services. In an increasingly digitized world, we believe that healthcare must evolve to be
+                faster, more accessible, and above all, more human-centric.
             </p>
             <p>
-                Bằng cách kết hợp công nghệ hiện đại với sự thấu hiểu hành trình của bệnh nhân, MediConnect xây dựng một không gian
-                nơi mọi nhu cầu từ tìm kiếm bác sĩ, xem thông tin chuyên khoa đến đặt lịch khám đều diễn ra mượt mà trong một nền tảng thống nhất.
+                By harmonizing cutting-edge technology with a profound empathy for the patient journey, MediConnect
+                offers a unified ecosystem. Within this space, every stage—from discovering the right specialists to
+                scheduling appointments effortlessly—is meticulously crafted to be seamless, intuitive, and dedicated to
+                your lifelong wellbeing.
             </p>
         </div>
 
         <div class="about-story-media reveal-up delay-4">
             <div class="about-story-image-box">
-                <img src="{{ asset('images/about/hospital-room.webp') }}" alt="Hospital reception" class="about-story-image">
+                <img src="{{ asset('images/about/BG.png') }}" alt="Hospital reception" class="about-story-image">
             </div>
 
             <div class="about-story-steps">
                 <div class="about-story-step">
                     <span>01</span>
-                    <p>Khởi tạo nền tảng kết nối bệnh nhân với đội ngũ bác sĩ uy tín.</p>
+                    <p>Connecting patients with a network of reputable specialists.</p>
                 </div>
                 <div class="about-story-step">
                     <span>02</span>
-                    <p>Chuẩn hóa quy trình đặt lịch trực tuyến nhanh, rõ ràng và thân thiện.</p>
+                    <p>Streamlining a fast, transparent, and intuitive booking process.</p>
                 </div>
                 <div class="about-story-step">
                     <span>03</span>
-                    <p>Mở rộng mạng lưới chuyên khoa và nâng cao trải nghiệm hỗ trợ 24/7.</p>
+                    <p>Providing round-the-clock service with 24/7 dedicated support.</p>
                 </div>
                 <div class="about-story-step">
                     <span>04</span>
-                    <p>Phát triển hệ sinh thái chăm sóc sức khỏe số toàn diện và gần gũi hơn mỗi ngày.</p>
+                    <p>Building a comprehensive and human-centered healthcare ecosystem.</p>
                 </div>
             </div>
         </div>
@@ -142,37 +153,37 @@
 <section class="about-values">
     <div class="container">
         <div class="about-values-head reveal-up delay-2">
-            <span>Giá trị cốt lõi</span>
-            <h2>Điều làm nên sự khác biệt của MediConnect</h2>
+            <span>Core Values</span>
+            <h2>What Makes MediConnect Different !</h2>
             <p>
-                Không chỉ là một nền tảng đặt lịch, MediConnect hướng đến việc tạo nên một trải nghiệm chăm sóc sức khỏe trọn vẹn,
-                nơi sự tin cậy, tiện lợi và tận tâm luôn song hành.
+                More than just a booking platform, MediConnect strives to create a holistic healthcare experience
+                where trust, convenience, and dedication go hand in hand.
             </p>
         </div>
 
         <div class="about-values-grid">
             <article class="about-value-card reveal-up delay-2">
-                <div class="about-value-icon">✦</div>
-                <h3>Lấy bệnh nhân làm trung tâm</h3>
-                <p>Mọi trải nghiệm trên MediConnect đều được thiết kế để giúp người bệnh tìm đúng bác sĩ, đúng chuyên khoa và đặt lịch nhanh nhất.</p>
+                <div class="about-value-icon">+</div>
+                <h3>Patient-Centric Approach</h3>
+                <p>Every experience in MediConnect is designed to help patients find the right doctor, book fast, and feel supported with dignity.</p>
             </article>
 
             <article class="about-value-card reveal-up delay-3">
-                <div class="about-value-icon">✦</div>
-                <h3>Kết nối đáng tin cậy</h3>
-                <p>Chúng tôi xây dựng một hệ sinh thái nơi bệnh nhân, bác sĩ và cơ sở y tế có thể kết nối minh bạch, an toàn và hiệu quả.</p>
+                <div class="about-value-icon">+</div>
+                <h3>Trusted Connections</h3>
+                <p>We build an ecosystem where patients, doctors, and healthcare facilities connect with transparency, safety, and confidence.</p>
             </article>
 
             <article class="about-value-card reveal-up delay-4">
-                <div class="about-value-icon">✦</div>
-                <h3>Công nghệ phục vụ chăm sóc</h3>
-                <p>Từ tra cứu thông tin, đặt lịch trực tuyến đến quản lý hành trình khám bệnh, công nghệ được dùng để đơn giản hóa mọi bước.</p>
+                <div class="about-value-icon">+</div>
+                <h3>Technology for Care</h3>
+                <p>From information lookup and online booking to follow-up support, technology is used to simplify every single step.</p>
             </article>
 
             <article class="about-value-card reveal-up delay-5">
-                <div class="about-value-icon">✦</div>
-                <h3>Đồng hành dài lâu</h3>
-                <p>MediConnect không chỉ giúp đặt lịch một lần, mà còn hướng tới trải nghiệm chăm sóc sức khỏe liên tục và bền vững.</p>
+                <div class="about-value-icon">+</div>
+                <h3>Long-term Partnership</h3>
+                <p>MediConnect goes beyond one-time appointments to build a continuous, sustainable, and reassuring care journey.</p>
             </article>
         </div>
     </div>
@@ -182,16 +193,19 @@
     <div class="container">
         <div class="about-cta-box reveal-up delay-2">
             <div class="about-cta-copy">
-                <small>MediConnect</small>
-                <h2>Chúng tôi không chỉ kết nối cuộc hẹn, chúng tôi kết nối sự an tâm.</h2>
-                <p>Hãy để MediConnect trở thành người bạn đồng hành đáng tin cậy trên hành trình chăm sóc sức khỏe của bạn và gia đình.</p>
+                <small>MEDICONNECT</small>
+                <h2>Beyond Appointments<br>– We Connect You to<br>Peace of Mind</h2>
+                <p>
+                    At MediConnect, we bridge the gap between technology and compassion, ensuring a seamless healthcare
+                    experience for you and your loved ones.
+                </p>
             </div>
 
             <div class="about-cta-contact">
-                <span>Hotline hỗ trợ</span>
+                <span>Support Hotline</span>
                 <h3>1900 115 115</h3>
                 <p>Email: mediconnect@gmail.com</p>
-                <a href="{{ url('/contact') }}" class="about-cta-button">Liên hệ với chúng tôi</a>
+                <a href="{{ route('contact') }}" class="about-cta-button">Connect with Us</a>
             </div>
         </div>
     </div>

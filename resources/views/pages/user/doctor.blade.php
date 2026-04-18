@@ -6,7 +6,7 @@
 
 {{-- SECTION: HERO & BREADCRUMB --}}
 <section class="doctors-hero bg-white border-bottom">
-    {{-- 1. PHẦN TIÊU ĐỀ & MÔ TẢ (HERO) --}}
+    {{-- 1. TITLE & DESCRIPTION SECTION (HERO) --}}
     <div class="container py-5 mt-4">
         <div class="row justify-content-center text-center">
             <div class="col-lg-8 col-md-10">
@@ -114,6 +114,6 @@
 @section('content')
     <div class="container mx-auto py-10">
         <h1 class="text-3xl font-bold">Doctor Page</h1>
-        <p>Đây là trang giao diện doctor.</p>
+        <p>This is the doctor interface page.</p>
     </div>
 @endsection

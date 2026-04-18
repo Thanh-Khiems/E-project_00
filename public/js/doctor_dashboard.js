@@ -1,4 +1,4 @@
-// DATA giả
+// Mock data
 const appointments = [
     { time: "09:30", name: "Eleanor", status: "green" },
     { time: "10:15", name: "Chidi", status: "blue" },
@@ -22,7 +22,7 @@ appointments.forEach(a => {
     scheduleDiv.appendChild(div);
 });
 
-// calendar đơn giản
+// simple calendar
 const calendar = document.getElementById("calendar");
 
 for (let i = 1; i <= 30; i++) {

@@ -37,7 +37,7 @@ class DoctorController extends Controller
         $doctors = $query->latest()->paginate(10)->withQueryString();
 
         return view('admin.doctors.index', [
-            'pageTitle' => 'Quản lý bác sĩ',
+            'pageTitle' => 'Doctor management',
             'doctors' => $doctors,
             'specialties' => Specialty::orderBy('name')->get(),
             'stats' => $this->stats(),
@@ -66,7 +66,7 @@ class DoctorController extends Controller
         $doctors = $query->latest()->paginate(10)->withQueryString();
 
         return view('admin.doctors.approvals', [
-            'pageTitle' => 'Duyệt bác sĩ',
+            'pageTitle' => 'Doctor approvals',
             'doctors' => $doctors,
             'stats' => $this->stats(),
             'approvalStatus' => $approvalStatus,
@@ -93,7 +93,7 @@ class DoctorController extends Controller
             ]);
         }
 
-        return back()->with('success', 'Đã duyệt bác sĩ thành công.');
+        return back()->with('success', 'Doctor approved successfully.');
     }
 
     public function reject(Request $request, Doctor $doctor)
@@ -118,7 +118,7 @@ class DoctorController extends Controller
             ]);
         }
 
-        return back()->with('success', 'Đã từ chối hồ sơ bác sĩ.');
+        return back()->with('success', 'Doctor application rejected.');
     }
 
     protected function stats(): array
@@ -155,7 +155,7 @@ class DoctorController extends Controller
             ->values();
 
         return view('admin.doctors.show', [
-            'pageTitle' => 'Hồ sơ bác sĩ',
+            'pageTitle' => 'Doctor profile',
             'doctor' => $doctor,
             'reviewStats' => $reviewStats,
             'recentReviews' => $recentReviews,
@@ -173,8 +173,8 @@ class DoctorController extends Controller
         return redirect()->back()->with(
             'success',
             $newStatus === 'inactive'
-                ? 'Đã khóa bác sĩ thành công.'
-                : 'Đã mở khóa bác sĩ thành công.'
+                ? 'Doctor locked successfully.'
+                : 'Doctor unlocked successfully.'
         );
     }
 
@@ -193,6 +193,6 @@ class DoctorController extends Controller
 
         return redirect()
             ->route('admin.doctors.index')
-            ->with('success', 'Đã xóa hồ sơ bác sĩ.');
+            ->with('success', 'Doctor profile deleted.');
     }
 }

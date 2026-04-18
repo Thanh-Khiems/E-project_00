@@ -7,7 +7,7 @@
         <button
             type="button"
             class="nav-toggle"
-            aria-label="Mở menu điều hướng"
+            aria-label="Open navigation menu"
             aria-expanded="false"
             aria-controls="doctor-nav-menu"
             data-nav-toggle
@@ -26,7 +26,7 @@
             <a href="{{ route('contact') }}" class="{{ request()->routeIs('contact') ? 'active' : '' }}">Contact</a>
 
             <div class="nav-menu-mobile-extra">
-                <span class="nav-mobile-label">Tài khoản</span>
+                <span class="nav-mobile-label">Account</span>
 
                 <a href="{{ route('doctor.dashboard') }}"
                    class="nav-mobile-action {{ request()->routeIs('doctor.dashboard', 'doctor.manage') ? 'active' : '' }}">

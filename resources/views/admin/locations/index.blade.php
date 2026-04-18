@@ -4,13 +4,13 @@
 <div class="container-fluid py-4">
     @if(!$tableReady)
         <div class="alert alert-warning">
-            Bảng khu vực chưa được tạo. Hãy chạy <code>php artisan migrate</code> rồi tải lại trang này.
+            The locations table has not been created yet. Please run <code>php artisan migrate</code> and reload this page.
         </div>
     @endif
 
     @if($errors->any())
         <div class="alert alert-danger">
-            <strong>Có lỗi xảy ra:</strong>
+            <strong>An error occurred:</strong>
             <ul class="mb-0 mt-2">
                 @foreach($errors->all() as $error)
                     <li>{{ $error }}</li>
@@ -23,14 +23,14 @@
         <div class="col-12 col-xl-5">
             <div class="card shadow-sm border-0 rounded-4">
                 <div class="card-body p-4">
-                    <h4 class="mb-3">Thêm thành phố mới</h4>
-                    <p class="text-muted mb-4">Nhập thành phố, rồi thêm các quận/huyện và danh sách phường/xã. Sau khi lưu, dữ liệu sẽ tự động hiện ở form đăng ký và chỉnh sửa hồ sơ.</p>
+                    <h4 class="mb-3">Add new city</h4>
+                    <p class="text-muted mb-4">Enter the city, then add districts and the list of wards/communes. After saving, the data will automatically appear in the registration and profile edit forms.</p>
 
                     <form method="POST" action="{{ route('admin.locations.store') }}" class="location-form" data-form-type="create">
                         @csrf
                         <div class="mb-3">
-                            <label class="form-label">Tên thành phố</label>
-                            <input type="text" name="name" class="form-control" value="{{ old('name') }}" placeholder="Ví dụ: Hải Phòng" {{ !$tableReady ? 'disabled' : '' }}>
+                            <label class="form-label">City name</label>
+                            <input type="text" name="name" class="form-control" value="{{ old('name') }}" placeholder="Example: Hai Phong" {{ !$tableReady ? 'disabled' : '' }}>
                         </div>
 
                         <div class="district-list" data-district-list>
@@ -40,18 +40,18 @@
                             @foreach($oldDistricts as $index => $district)
                                 <div class="border rounded-4 p-3 mb-3 district-item" data-district-item>
                                     <div class="d-flex justify-content-between align-items-center mb-3">
-                                        <strong>Quận/Huyện {{ $loop->iteration }}</strong>
-                                        <button type="button" class="btn btn-sm btn-outline-danger" data-remove-district>Xóa</button>
+                                        <strong>District {{ $loop->iteration }}</strong>
+                                        <button type="button" class="btn btn-sm btn-outline-danger" data-remove-district>Delete</button>
                                     </div>
 
                                     <div class="mb-3">
-                                        <label class="form-label">Tên quận/huyện</label>
-                                        <input type="text" class="form-control" name="districts[{{ $index }}][name]" value="{{ $district['name'] ?? '' }}" placeholder="Ví dụ: Lê Chân" {{ !$tableReady ? 'disabled' : '' }}>
+                                        <label class="form-label">District name</label>
+                                        <input type="text" class="form-control" name="districts[{{ $index }}][name]" value="{{ $district['name'] ?? '' }}" placeholder="Example: Le Chan" {{ !$tableReady ? 'disabled' : '' }}>
                                     </div>
 
                                     <div>
-                                        <label class="form-label">Phường/Xã</label>
-                                        <textarea class="form-control" rows="4" name="districts[{{ $index }}][wards]" placeholder="Mỗi phường/xã cách nhau bằng dấu phẩy hoặc xuống dòng" {{ !$tableReady ? 'disabled' : '' }}>{{ $district['wards'] ?? '' }}</textarea>
+                                        <label class="form-label">Ward/Commune</label>
+                                        <textarea class="form-control" rows="4" name="districts[{{ $index }}][wards]" placeholder="Separate wards/communes with commas or line breaks" {{ !$tableReady ? 'disabled' : '' }}>{{ $district['wards'] ?? '' }}</textarea>
                                     </div>
                                 </div>
                             @endforeach
@@ -59,10 +59,10 @@
 
                         <div class="d-flex gap-2">
                             <button type="button" class="btn btn-outline-primary" data-add-district {{ !$tableReady ? 'disabled' : '' }}>
-                                <i class="bi bi-plus-circle me-1"></i>Thêm quận/huyện
+                                <i class="bi bi-plus-circle me-1"></i>Add district
                             </button>
                             <button type="submit" class="btn btn-primary" {{ !$tableReady ? 'disabled' : '' }}>
-                                <i class="bi bi-save me-1"></i>Lưu thành phố
+                                <i class="bi bi-save me-1"></i>Save city
                             </button>
                         </div>
                     </form>
@@ -74,8 +74,8 @@
             <div class="card shadow-sm border-0 rounded-4">
                 <div class="card-body p-4">
                     <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h4 class="mb-0">Danh sách thành phố</h4>
-                        <span class="badge text-bg-primary">{{ $cities->count() }} thành phố</span>
+                        <h4 class="mb-0">City list</h4>
+                        <span class="badge text-bg-primary">{{ $cities->count() }} cities</span>
                     </div>
 
                     @forelse($cities as $city)
@@ -84,16 +84,16 @@
                                 <div>
                                     <h5 class="mb-1">{{ $city->name }}</h5>
                                     <div class="text-muted small">
-                                        {{ count($city->districts ?? []) }} quận/huyện
+                                        {{ count($city->districts ?? []) }} districts
                                         •
-                                        {{ collect($city->districts ?? [])->flatten()->count() }} phường/xã
+                                        {{ collect($city->districts ?? [])->flatten()->count() }} wards/communes
                                     </div>
                                 </div>
-                                <form action="{{ route('admin.locations.destroy', $city) }}" method="POST" onsubmit="return confirm('Bạn có chắc muốn xóa thành phố này?')">
+                                <form action="{{ route('admin.locations.destroy', $city) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this city?')">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-outline-danger btn-sm">
-                                        <i class="bi bi-trash me-1"></i>Xóa
+                                        <i class="bi bi-trash me-1"></i>Delete
                                     </button>
                                 </form>
                             </div>
@@ -102,7 +102,7 @@
                                 @csrf
                                 @method('PUT')
                                 <div class="mb-3">
-                                    <label class="form-label">Tên thành phố</label>
+                                    <label class="form-label">City name</label>
                                     <input type="text" name="name" class="form-control" value="{{ old('name') === $city->name ? old('name') : $city->name }}">
                                 </div>
 
@@ -111,17 +111,17 @@
                                         <div class="border rounded-4 p-3 mb-3 district-item" data-district-item>
                                             <div class="d-flex justify-content-between align-items-center mb-3">
                                                 <strong>{{ $districtName }}</strong>
-                                                <button type="button" class="btn btn-sm btn-outline-danger" data-remove-district>Xóa</button>
+                                                <button type="button" class="btn btn-sm btn-outline-danger" data-remove-district>Delete</button>
                                             </div>
 
                                             <div class="mb-3">
-                                                <label class="form-label">Tên quận/huyện</label>
+                                                <label class="form-label">District name</label>
                                                 <input type="text" class="form-control" name="districts[{{ $loop->index }}][name]" value="{{ $districtName }}">
                                             </div>
 
                                             <div>
-                                                <label class="form-label">Phường/Xã</label>
-                                                <textarea class="form-control" rows="4" name="districts[{{ $loop->index }}][wards]" placeholder="Mỗi phường/xã cách nhau bằng dấu phẩy hoặc xuống dòng">{{ implode(', ', $wards) }}</textarea>
+                                                <label class="form-label">Ward/Commune</label>
+                                                <textarea class="form-control" rows="4" name="districts[{{ $loop->index }}][wards]" placeholder="Separate wards/communes with commas or line breaks">{{ implode(', ', $wards) }}</textarea>
                                             </div>
                                         </div>
                                     @endforeach
@@ -129,16 +129,16 @@
 
                                 <div class="d-flex gap-2">
                                     <button type="button" class="btn btn-outline-primary" data-add-district>
-                                        <i class="bi bi-plus-circle me-1"></i>Thêm quận/huyện
+                                        <i class="bi bi-plus-circle me-1"></i>Add district
                                     </button>
                                     <button type="submit" class="btn btn-success">
-                                        <i class="bi bi-check2-circle me-1"></i>Cập nhật
+                                        <i class="bi bi-check2-circle me-1"></i>Update
                                     </button>
                                 </div>
                             </form>
                         </div>
                     @empty
-                        <div class="text-muted">Chưa có thành phố nào trong hệ thống.</div>
+                        <div class="text-muted">There are no cities in the system yet.</div>
                     @endforelse
                 </div>
             </div>
@@ -149,18 +149,18 @@
 <template id="district-template">
     <div class="border rounded-4 p-3 mb-3 district-item" data-district-item>
         <div class="d-flex justify-content-between align-items-center mb-3">
-            <strong class="district-title">Quận/Huyện mới</strong>
-            <button type="button" class="btn btn-sm btn-outline-danger" data-remove-district>Xóa</button>
+            <strong class="district-title">New district</strong>
+            <button type="button" class="btn btn-sm btn-outline-danger" data-remove-district>Delete</button>
         </div>
 
         <div class="mb-3">
-            <label class="form-label">Tên quận/huyện</label>
-            <input type="text" class="form-control" data-name-field placeholder="Ví dụ: Ninh Kiều">
+            <label class="form-label">District name</label>
+            <input type="text" class="form-control" data-name-field placeholder="Example: Ninh Kieu">
         </div>
 
         <div>
-            <label class="form-label">Phường/Xã</label>
-            <textarea class="form-control" rows="4" data-wards-field placeholder="Mỗi phường/xã cách nhau bằng dấu phẩy hoặc xuống dòng"></textarea>
+            <label class="form-label">Ward/Commune</label>
+            <textarea class="form-control" rows="4" data-wards-field placeholder="Separate wards/communes with commas or line breaks"></textarea>
         </div>
     </div>
 </template>
@@ -174,7 +174,7 @@
             items.forEach((item, index) => {
                 const title = item.querySelector('.district-title');
                 if (title && !title.dataset.staticTitle) {
-                    title.textContent = `Quận/Huyện ${index + 1}`;
+                    title.textContent = `District ${index + 1}`;
                 }
 
                 const nameField = item.querySelector('[data-name-field], input[name*="[name]"]');

@@ -36,7 +36,7 @@ class ScheduleController extends Controller
             ->first();
 
         if (!$doctor) {
-            return back()->with('error', 'Bạn chưa được duyệt tài khoản bác sĩ nên chưa thể tạo lịch.');
+            return back()->with('error', 'Your doctor account has not been approved yet, so you cannot create a schedule.');
         }
 
         Schedule::create([
@@ -52,7 +52,7 @@ class ScheduleController extends Controller
             'notes'        => $request->notes,
         ]);
 
-        return back()->with('success', 'Bác sĩ đã lưu lịch làm việc thành công.');
+        return back()->with('success', 'Doctor working schedule saved successfully.');
     }
 
     public function edit($id)
@@ -96,7 +96,7 @@ class ScheduleController extends Controller
             'notes'        => $request->notes,
         ]);
 
-        return redirect()->route('doctor.manage')->with('success', 'Cập nhật lịch làm việc thành công.');
+        return redirect()->route('doctor.manage')->with('success', 'Working schedule updated successfully.');
     }
 
     public function destroy($id)
@@ -108,6 +108,6 @@ class ScheduleController extends Controller
         $schedule->delete();
 
         return redirect()->route('doctor.manage')
-            ->with('success', 'Xóa lịch làm việc thành công.');
+            ->with('success', 'Working schedule deleted successfully.');
     }
 }

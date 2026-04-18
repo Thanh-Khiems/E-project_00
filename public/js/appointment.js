@@ -15,27 +15,27 @@ function submitForm() {
 }
 let meds = [];
 
-// load danh sách thuốc từ DB
+// load medication list from DB
 async function loadMedications() {
     let res = await fetch('/medications');
     meds = await res.json();
 }
 
-// gọi khi load trang
+// call on page load
 loadMedications();
 
 function addRow() {
 
-    // tạo danh sách gợi ý
+    // build suggestion list
     let options = meds.map(m => `<option value="${m.name}">`).join("");
 
-    let medicine = prompt("Nhập tên thuốc (có gợi ý):");
+    let medicine = prompt("Enter medication name (suggestions available):");
 
     if (!medicine) return;
 
     let dosage = prompt("Dosage (vd: 500mg):");
-    let frequency = prompt("Frequency (vd: 1 lần/ngày):");
-    let duration = prompt("Duration (vd: 7 ngày):");
+    let frequency = prompt("Frequency (e.g. once/day):");
+    let duration = prompt("Duration (e.g. 7 days):");
 
     let table = document.getElementById("table");
 

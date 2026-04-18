@@ -24,7 +24,7 @@ class DegreeController extends Controller
         $degrees = $query->latest()->paginate(10)->withQueryString();
 
         return view('admin.degrees.index', [
-            'pageTitle' => 'Quản lý bằng cấp',
+            'pageTitle' => 'Degree management',
             'degrees' => $degrees,
             'stats' => [
                 'total' => Degree::count(),
@@ -45,7 +45,7 @@ class DegreeController extends Controller
 
         Degree::create($validated);
 
-        return redirect()->route('admin.degrees.index')->with('success', 'Đã thêm bằng cấp mới.');
+        return redirect()->route('admin.degrees.index')->with('success', 'New degree added.');
     }
 
     public function update(Request $request, Degree $degree)
@@ -61,7 +61,7 @@ class DegreeController extends Controller
                 ->update(['degree' => $validated['name']]);
         }
 
-        return redirect()->route('admin.degrees.index')->with('success', 'Đã cập nhật bằng cấp thành công.');
+        return redirect()->route('admin.degrees.index')->with('success', 'Degree updated successfully.');
     }
 
     public function destroy(Degree $degree)
@@ -70,13 +70,13 @@ class DegreeController extends Controller
 
         if ($inUseCount > 0) {
             return redirect()->route('admin.degrees.index')
-                ->with('error', "Không thể xóa bằng cấp {$degree->name} vì đang có {$inUseCount} bác sĩ sử dụng.");
+                ->with('error', "Cannot delete degree {$degree->name} because it is currently used by {$inUseCount} doctors.");
         }
 
         $degreeName = $degree->name;
         $degree->delete();
 
-        return redirect()->route('admin.degrees.index')->with('success', "Đã xóa bằng cấp: {$degreeName}.");
+        return redirect()->route('admin.degrees.index')->with('success', "Deleted degree: {$degreeName}.");
     }
 
     protected function validateDegree(Request $request, ?Degree $degree = null): array

@@ -7,7 +7,7 @@
         <button
             type="button"
             class="nav-toggle"
-            aria-label="Mở menu điều hướng"
+            aria-label="Open navigation menu"
             aria-expanded="false"
             aria-controls="main-nav-menu"
             data-nav-toggle

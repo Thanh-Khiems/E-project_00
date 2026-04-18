@@ -2,34 +2,34 @@
 
 @section('content')
     @include('admin.layouts.partials.stats', ['items' => [
-        ['label' => 'Chờ duyệt', 'value' => $stats['pending'], 'icon' => 'bi-hourglass-split'],
-        ['label' => 'Đã duyệt', 'value' => $stats['approved'], 'icon' => 'bi-check2-circle'],
-        ['label' => 'Từ chối', 'value' => $stats['rejected'], 'icon' => 'bi-x-circle'],
-        ['label' => 'Tổng bác sĩ', 'value' => $stats['total'], 'icon' => 'bi-person-badge'],
+        ['label' => 'Pending approval', 'value' => $stats['pending'], 'icon' => 'bi-hourglass-split'],
+        ['label' => 'Approved', 'value' => $stats['approved'], 'icon' => 'bi-check2-circle'],
+        ['label' => 'Decline', 'value' => $stats['rejected'], 'icon' => 'bi-x-circle'],
+        ['label' => 'Total doctors', 'value' => $stats['total'], 'icon' => 'bi-person-badge'],
     ]])
 
     <div class="panel-card mb-4">
         <div class="panel-head">
             <div>
-                <h5>Xác thực / duyệt bác sĩ</h5>
-                <p>Khi có bác sĩ gửi thông tin đăng ký, admin có thể vào đây để đồng ý hoặc từ chối.</p>
+                <h5>Doctor verification / approval</h5>
+                <p>When doctors submit registration information, admins can come here to approve or reject it.</p>
             </div>
         </div>
 
         <form method="GET" class="row g-3 filter-bar">
             <div class="col-md-6">
-                <input type="text" name="keyword" value="{{ request('keyword') }}" class="form-control" placeholder="Tìm theo tên, email, số điện thoại...">
+                <input type="text" name="keyword" value="{{ request('keyword') }}" class="form-control" placeholder="Search by name, email, phone number...">
             </div>
             <div class="col-md-4">
                 <select name="approval_status" class="form-select">
-                    <option value="pending" @selected($approvalStatus === 'pending')>Chờ duyệt</option>
-                    <option value="approved" @selected($approvalStatus === 'approved')>Đã duyệt</option>
-                    <option value="rejected" @selected($approvalStatus === 'rejected')>Từ chối</option>
-                    <option value="all" @selected($approvalStatus === 'all')>Tất cả</option>
+                    <option value="pending" @selected($approvalStatus === 'pending')>Pending approval</option>
+                    <option value="approved" @selected($approvalStatus === 'approved')>Approved</option>
+                    <option value="rejected" @selected($approvalStatus === 'rejected')>Decline</option>
+                    <option value="all" @selected($approvalStatus === 'all')>All</option>
                 </select>
             </div>
             <div class="col-md-2 d-grid">
-                <button class="btn btn-outline-primary">Lọc dữ liệu</button>
+                <button class="btn btn-outline-primary">Filter data</button>
             </div>
         </form>
 
@@ -39,27 +39,27 @@
                     <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
                         <div>
                             <h5 class="mb-1">{{ $doctor->name }}</h5>
-                            <div class="text-muted small">{{ $doctor->email ?: 'Chưa có email' }} · {{ $doctor->phone ?: 'Chưa có số điện thoại' }}</div>
+                            <div class="text-muted small">{{ $doctor->email ?: 'No email yet' }} · {{ $doctor->phone ?: 'No phone number yet' }}</div>
                             <div class="mt-2 small">
-                                <strong>Chuyên khoa:</strong> {{ $doctor->specialty->name ?? '—' }}<br>
-                                <strong>Kinh nghiệm:</strong> {{ $doctor->experience_years ?? 0 }} năm<br>
-                                <strong>Lịch làm việc:</strong> {{ $doctor->schedule_text ?? 'Chưa cập nhật' }}
+                                <strong>Specialty:</strong> {{ $doctor->specialty->name ?? '—' }}<br>
+                                <strong>Experience:</strong> {{ $doctor->experience_years ?? 0 }} years<br>
+                                <strong>Working schedule:</strong> {{ $doctor->schedule_text ?? 'Not updated' }}
                             </div>
                         </div>
                         <div>
                             @if($doctor->approval_status === 'approved')
-                                <span class="badge text-bg-success">Đã duyệt</span>
+                                <span class="badge text-bg-success">Approved</span>
                             @elseif($doctor->approval_status === 'rejected')
-                                <span class="badge text-bg-danger">Từ chối</span>
+                                <span class="badge text-bg-danger">Decline</span>
                             @else
-                                <span class="badge text-bg-warning">Chờ duyệt</span>
+                                <span class="badge text-bg-warning">Pending approval</span>
                             @endif
                         </div>
                     </div>
 
                     @if($doctor->approval_note)
                         <div class="alert alert-light border mt-3 mb-0">
-                            <strong>Ghi chú từ chối:</strong> {{ $doctor->approval_note }}
+                            <strong>Rejection note:</strong> {{ $doctor->approval_note }}
                         </div>
                     @endif
 
@@ -67,23 +67,23 @@
                         <div class="col-lg-8">
                             <form method="POST" action="{{ route('admin.doctors.reject', $doctor) }}">
                                 @csrf
-                                <label class="form-label">Lý do từ chối</label>
+                                <label class="form-label">Reason for rejection</label>
                                 <div class="input-group">
-                                    <input type="text" name="approval_note" class="form-control" placeholder="Nhập lý do nếu từ chối hồ sơ..." value="{{ old('approval_note') }}">
-                                    <button type="submit" class="btn btn-outline-danger">Từ chối</button>
+                                    <input type="text" name="approval_note" class="form-control" placeholder="Enter a reason if rejecting the application..." value="{{ old('approval_note') }}">
+                                    <button type="submit" class="btn btn-outline-danger">Decline</button>
                                 </div>
                             </form>
                         </div>
                         <div class="col-lg-4 text-lg-end">
                             <form method="POST" action="{{ route('admin.doctors.approve', $doctor) }}">
                                 @csrf
-                                <button type="submit" class="btn btn-success">Đồng ý duyệt</button>
+                                <button type="submit" class="btn btn-success">Approve</button>
                             </form>
                         </div>
                     </div>
                 </div>
             @empty
-                <div class="text-center py-5 text-muted">Không có hồ sơ bác sĩ nào trong mục này.</div>
+                <div class="text-center py-5 text-muted">There are no doctor applications in this section.</div>
             @endforelse
         </div>
 

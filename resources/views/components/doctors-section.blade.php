@@ -21,15 +21,15 @@
                 @php
                     $avatar = $doctor->user?->avatar_url ?? asset('images/default-avatar.png');
 
-                    $doctorName = $doctor->name ?: ($doctor->user->full_name ?? 'Bác sĩ');
+                    $doctorName = $doctor->name ?: ($doctor->user->full_name ?? 'Doctor');
                     $doctorName = str_starts_with(strtolower($doctorName), 'dr') ? $doctorName : 'Dr. ' . $doctorName;
-                    $specialty = optional($doctor->specialty)->name ?? 'Chưa cập nhật chuyên khoa';
+                    $specialty = optional($doctor->specialty)->name ?? 'Specialty not updated';
                     $bio = $doctor->bio
                         ? \Illuminate\Support\Str::limit(strip_tags($doctor->bio), 120)
-                        : 'Bác sĩ đang hoạt động trên hệ thống MediConnect và sẵn sàng hỗ trợ bệnh nhân đặt lịch khám nhanh chóng.';
+                        : 'The doctor is active on the MediConnect system and ready to help patients book appointments quickly.';
                     $experience = $doctor->experience_years
-                        ? $doctor->experience_years . '+ năm kinh nghiệm'
-                        : 'Chưa cập nhật kinh nghiệm';
+                        ? $doctor->experience_years . '+ years of experience'
+                        : 'Experience not updated';
                     $averageRating = round((float) ($doctor->reviews_avg_rating ?? 0), 1);
                     $reviewsCount = (int) ($doctor->reviews_count ?? 0);
                 @endphp
@@ -62,27 +62,27 @@
                         <div class="doctor-score">
                             @if($reviewsCount > 0)
                                 <strong>{{ number_format($averageRating, 1) }}</strong>
-                                <span>{{ $reviewsCount }} đánh giá</span>
+                                <span>{{ $reviewsCount }} reviews</span>
                             @else
-                                <strong>Mới</strong>
-                                <span>Chưa có đánh giá</span>
+                                <strong>New</strong>
+                                <span>No reviews yet</span>
                             @endif
                         </div>
                     </div>
 
                     <div class="doctor-actions">
                         @auth
-                            <a href="{{ route('doctor.booking', $doctor->id) }}" class="doctor-btn doctor-btn-light">Xem lịch khám</a>
-                            <a href="{{ route('doctor.booking', $doctor->id) }}" class="doctor-btn doctor-btn-primary">Đặt lịch</a>
+                            <a href="{{ route('doctor.booking', $doctor->id) }}" class="doctor-btn doctor-btn-light">View schedule</a>
+                            <a href="{{ route('doctor.booking', $doctor->id) }}" class="doctor-btn doctor-btn-primary">Book appointment</a>
                         @else
-                            <span class="doctor-btn doctor-btn-light auth-locked" aria-disabled="true" title="Vui lòng đăng nhập hoặc đăng ký để tiếp tục">Xem lịch khám</span>
-                            <span class="doctor-btn doctor-btn-primary auth-locked" aria-disabled="true" title="Vui lòng đăng nhập hoặc đăng ký để tiếp tục">Đặt lịch</span>
+                            <span class="doctor-btn doctor-btn-light auth-locked" aria-disabled="true" title="Please log in or register to continue">View schedule</span>
+                            <span class="doctor-btn doctor-btn-primary auth-locked" aria-disabled="true" title="Please log in or register to continue">Book appointment</span>
                         @endauth
                     </div>
                 </article>
             @empty
                 <div style="grid-column:1 / -1;background:#fff;border:1px dashed #d9e3f0;border-radius:18px;padding:28px 24px;text-align:center;color:#6b7280;">
-                    Hiện chưa có bác sĩ nào đủ điều kiện hiển thị ở trang chủ.
+                    There are currently no doctors eligible to be displayed on the homepage.
                 </div>
             @endforelse
         </div>

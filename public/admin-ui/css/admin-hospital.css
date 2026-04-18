@@ -35,9 +35,9 @@ body {
     top: 0;
     height: 100vh;
 }
-/* SIDEBAR nền trắng */
+/* White sidebar */
 .content-wrapper {
-    margin-left: 240px; /* 👈 phải bằng width sidebar */
+    margin-left: 240px; /* 👈 must match the sidebar width */
 }
 /* TEXT menu */
 .sidebar .nav-link {
@@ -50,7 +50,7 @@ body {
     color: #0d6efd !important;
 }
 
-/* LABEL (Quản trị hệ thống) */
+/* LABEL (System administration) */
 .menu-label {
     color: #1e3a8a !important;
 }

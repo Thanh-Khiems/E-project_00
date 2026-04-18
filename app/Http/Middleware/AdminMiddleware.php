@@ -12,11 +12,11 @@ class AdminMiddleware
     public function handle(Request $request, Closure $next): Response
     {
         if (! Auth::check()) {
-            return redirect()->route('login')->with('error', 'Vui lòng đăng nhập bằng tài khoản admin.');
+            return redirect()->route('login')->with('error', 'Please log in with an admin account.');
         }
 
         if (Auth::user()?->role !== 'admin') {
-            return redirect()->route('user.dashboard')->with('error', 'Bạn không có quyền truy cập trang admin.');
+            return redirect()->route('user.dashboard')->with('error', 'You do not have permission to access the admin page.');
         }
 
         return $next($request);

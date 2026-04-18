@@ -43,7 +43,7 @@ class PatientController extends Controller
         $patients = $query->latest()->paginate(10)->withQueryString();
 
         return view('admin.patients.index', [
-            'pageTitle' => 'Quản lý bệnh nhân',
+            'pageTitle' => 'Patient management',
             'patients' => $patients,
             'stats' => $this->stats(),
         ]);
@@ -54,7 +54,7 @@ class PatientController extends Controller
         $patient->load(['user', 'appointments']);
 
         return view('admin.patients.show', [
-            'pageTitle' => 'Chi tiết bệnh nhân',
+            'pageTitle' => 'Patient details',
             'patient' => $patient,
         ]);
     }
@@ -64,7 +64,7 @@ class PatientController extends Controller
         $patient->load('user');
 
         return view('admin.patients.edit', [
-            'pageTitle' => 'Cập nhật bệnh nhân',
+            'pageTitle' => 'Update patient',
             'patient' => $patient,
             'locations' => $locationService->getStructuredLocations(),
             'provinces' => array_keys($locationService->getStructuredLocations()),
@@ -89,13 +89,13 @@ class PatientController extends Controller
         if (($validated['province'] ?? null) || ($validated['district'] ?? null) || ($validated['ward'] ?? null)) {
             if (! ($validated['province'] ?? null) || ! ($validated['district'] ?? null) || ! ($validated['ward'] ?? null)) {
                 return back()->withErrors([
-                    'province' => 'Vui lòng chọn đầy đủ tỉnh/thành phố, quận/huyện và phường/xã.',
+                    'province' => 'Please select the full province/city, district, and ward/commune.',
                 ])->withInput();
             }
 
             if (! $locationService->isValidSelection($validated['province'], $validated['district'], $validated['ward'])) {
                 return back()->withErrors([
-                    'province' => 'Khu vực đã chọn không hợp lệ hoặc đã thay đổi. Vui lòng chọn lại.',
+                    'province' => 'The selected location is invalid or has changed. Please choose again.',
                 ])->withInput();
             }
         }
@@ -127,8 +127,8 @@ class PatientController extends Controller
                             'email' => $user->email,
                             'phone' => $user->phone,
                             'role' => 'admin',
-                            'department' => 'Quản trị viên',
-                            'shift' => 'Hành chính',
+                            'department' => 'Administrator',
+                            'shift' => 'Office hours',
                             'status' => 'working',
                         ]
                     );
@@ -157,7 +157,7 @@ class PatientController extends Controller
             ]);
         });
 
-        return redirect()->route('admin.patients.index')->with('success', 'Đã cập nhật thông tin bệnh nhân.');
+        return redirect()->route('admin.patients.index')->with('success', 'Patient information updated.');
     }
 
     public function destroy(Patient $patient)
@@ -171,7 +171,7 @@ class PatientController extends Controller
             $patient->delete();
         });
 
-        return redirect()->route('admin.patients.index')->with('success', 'Đã xóa tài khoản bệnh nhân.');
+        return redirect()->route('admin.patients.index')->with('success', 'Patient account deleted.');
     }
 
     protected function syncMissingPatients(): void
@@ -198,8 +198,8 @@ class PatientController extends Controller
                         'email' => $user->email,
                         'phone' => $user->phone,
                         'role' => 'admin',
-                        'department' => 'Quản trị viên',
-                        'shift' => 'Hành chính',
+                        'department' => 'Administrator',
+                        'shift' => 'Office hours',
                         'status' => 'working',
                     ]
                 );

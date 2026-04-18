@@ -1,17 +1,17 @@
 @extends('layouts.app')
 
-@section('title', 'Danh sách bác sĩ')
+@section('title', 'Doctor List')
 
 @section('content')
 @php
     $dayLabels = [
-        'Mon' => 'Thứ 2',
-        'Tue' => 'Thứ 3',
-        'Wed' => 'Thứ 4',
-        'Thu' => 'Thứ 5',
-        'Fri' => 'Thứ 6',
-        'Sat' => 'Thứ 7',
-        'Sun' => 'Chủ nhật',
+        'Mon' => 'Monday',
+        'Tue' => 'Tuesday',
+        'Wed' => 'Wednesday',
+        'Thu' => 'Thursday',
+        'Fri' => 'Friday',
+        'Sat' => 'Saturday',
+        'Sun' => 'Sunday',
     ];
 
     $renderStars = function ($rating) {
@@ -475,28 +475,28 @@
         <div class="doctor-directory-hero">
             <span class="doctor-directory-badge">
                 <i class="fa-solid fa-user-doctor"></i>
-                Danh sách bác sĩ trên hệ thống
+                Doctors available on the platform
             </span>
 
             <div class="doctor-directory-hero-grid">
                 <div>
                     <h1 class="doctor-directory-title">
-                        Kết nối với <span>bác sĩ phù hợp</span> để đặt lịch khám nhanh chóng
+                        Connect with the <span>right doctor</span> to book an appointment quickly
                     </h1>
                 </div>
 
                 <div class="doctor-directory-summary">
                     <div class="doctor-summary-box">
                         <h3>{{ $doctors->count() }}</h3>
-                        <p>Bác sĩ đang hiển thị</p>
+                        <p>Visible doctors</p>
                     </div>
                     <div class="doctor-summary-box">
                         <h3>{{ $specialties->count() }}</h3>
-                        <p>Chuyên khoa</p>
+                        <p>Specialty</p>
                     </div>
                     <div class="doctor-summary-box">
                         <h3>{{ $cities->count() }}</h3>
-                        <p>Thành phố</p>
+                        <p>City</p>
                     </div>
                 </div>
             </div>
@@ -507,12 +507,12 @@
                 <input
                     type="text"
                     name="keyword"
-                    placeholder="Tìm theo tên bác sĩ, học vị, chuyên khoa..."
+                    placeholder="Search by doctor name, degree, specialty..."
                     value="{{ request('keyword') }}"
                 >
 
                 <select name="specialty">
-                    <option value="">Tất cả chuyên khoa</option>
+                    <option value="">All specialties</option>
                     @foreach($specialties as $specialty)
                         <option value="{{ $specialty->id }}" {{ (string) request('specialty') === (string) $specialty->id ? 'selected' : '' }}>
                             {{ $specialty->name }}
@@ -521,7 +521,7 @@
                 </select>
 
                 <select name="city">
-                    <option value="">Tất cả thành phố</option>
+                    <option value="">All cities</option>
                     @foreach($cities as $city)
                         <option value="{{ $city }}" {{ request('city') == $city ? 'selected' : '' }}>
                             {{ $city }}
@@ -529,11 +529,11 @@
                     @endforeach
                 </select>
 
-                <button type="submit" class="doctor-filter-submit">Tìm kiếm</button>
+                <button type="submit" class="doctor-filter-submit">Search</button>
             </form>
 
             <div class="doctor-toolbar-meta">
-                Tìm thấy <strong>{{ $doctors->count() }}</strong> bác sĩ phù hợp.
+                Found <strong>{{ $doctors->count() }}</strong> matching doctors.
             </div>
         </div>
 
@@ -542,17 +542,17 @@
                 @php
                     $avatar = $doctor->user?->avatar_url ?? asset('images/default-avatar.png');
 
-                    $doctorName = $doctor->name ?: ($doctor->user->full_name ?? 'Bác sĩ');
+                    $doctorName = $doctor->name ?: ($doctor->user->full_name ?? 'Doctor');
                     $doctorName = str_starts_with(strtolower($doctorName), 'dr') ? $doctorName : 'Dr. ' . $doctorName;
-                    $specialty = optional($doctor->specialty)->name ?? 'Chưa cập nhật chuyên khoa';
+                    $specialty = optional($doctor->specialty)->name ?? 'Specialty not updated';
                     $experience = $doctor->experience_years
-                        ? $doctor->experience_years . '+ năm kinh nghiệm'
-                        : 'Chưa cập nhật kinh nghiệm';
-                    $city = $doctor->city ?: 'Chưa cập nhật thành phố';
+                        ? $doctor->experience_years . '+ years of experience'
+                        : 'Experience not updated';
+                    $city = $doctor->city ?: 'City not updated';
                     $hospital = $doctor->hospital ?: 'MediConnect Clinic';
                     $bio = $doctor->bio
                         ? \Illuminate\Support\Str::limit(strip_tags($doctor->bio), 110)
-                        : 'Bác sĩ đang hoạt động trên hệ thống MediConnect, sẵn sàng hỗ trợ tư vấn và khám chữa bệnh cho bệnh nhân.';
+                        : 'The doctor is active on the MediConnect platform and ready to provide consultation and care for patients.';
                     $averageRating = round((float) ($doctor->reviews_avg_rating ?? 0), 1);
                     $reviewsCount = (int) ($doctor->reviews_count ?? 0);
 
@@ -590,7 +590,7 @@
                                 $upcomingOccurrences->push([
                                     'date_key' => $date->format('Y-m-d'),
                                     'date_label' => $date->isSameDay($now)
-                                        ? 'Hôm nay'
+                                        ? 'Today'
                                         : (($dayLabels[$date->format('D')] ?? $date->translatedFormat('l')) . ' · ' . $date->format('d/m')),
                                     'start_time' => \Carbon\Carbon::parse($schedule->start_time),
                                     'end_time' => \Carbon\Carbon::parse($schedule->end_time),
@@ -636,10 +636,10 @@
                         <div class="doctor-rating-text">
                             @if($reviewsCount > 0)
                                 <strong>{{ number_format($averageRating, 1) }}</strong>
-                                {{ $reviewsCount }} đánh giá
+                                {{ $reviewsCount }} reviews
                             @else
-                                <strong>Mới</strong>
-                                Chưa có đánh giá
+                                <strong>New</strong>
+                                No reviews yet
                             @endif
                         </div>
                     </div>
@@ -647,7 +647,7 @@
                     <div class="doctor-schedule-box">
                         <div class="doctor-schedule-title">
                             <i class="fa-regular fa-clock"></i>
-                            Lịch khám
+                            Schedule
                         </div>
 
                         @if($groupedSchedules->isNotEmpty())
@@ -664,24 +664,24 @@
                                 </div>
                             @endforeach
                         @else
-                            <p class="doctor-schedule-empty">Bác sĩ chưa cập nhật lịch làm việc.</p>
+                            <p class="doctor-schedule-empty">The doctor has not updated their working schedule yet.</p>
                         @endif
                     </div>
 
                     <div class="doctor-directory-actions">
                         @auth
                             <a href="{{ route('doctor.booking', $doctor->id) }}" class="doctor-directory-btn doctor-directory-btn-outline">
-                                Xem lịch khám
+                                View schedule
                             </a>
                             <a href="{{ route('doctor.booking', $doctor->id) }}" class="doctor-directory-btn doctor-directory-btn-primary">
-                                Đặt lịch
+                                Book appointment
                             </a>
                         @else
-                            <span class="doctor-directory-btn doctor-directory-btn-outline auth-locked" aria-disabled="true" title="Vui lòng đăng nhập hoặc đăng ký để tiếp tục">
-                                Xem lịch khám
+                            <span class="doctor-directory-btn doctor-directory-btn-outline auth-locked" aria-disabled="true" title="Please log in or register to continue">
+                                View schedule
                             </span>
-                            <span class="doctor-directory-btn doctor-directory-btn-primary auth-locked" aria-disabled="true" title="Vui lòng đăng nhập hoặc đăng ký để tiếp tục">
-                                Đặt lịch
+                            <span class="doctor-directory-btn doctor-directory-btn-primary auth-locked" aria-disabled="true" title="Please log in or register to continue">
+                                Book appointment
                             </span>
                         @endauth
                     </div>
@@ -689,8 +689,8 @@
             @empty
                 <div class="doctor-empty-state">
                     <i class="fa-solid fa-user-doctor"></i>
-                    <h3 style="margin-bottom:10px;color:#111827;font-size:22px;font-weight:800;">Chưa có bác sĩ phù hợp</h3>
-                    <p style="margin:0;font-size:15px;line-height:1.7;">Hiện tại chưa có bác sĩ nào khớp với bộ lọc bạn chọn. Vui lòng thử lại với từ khóa hoặc chuyên khoa khác.</p>
+                    <h3 style="margin-bottom:10px;color:#111827;font-size:22px;font-weight:800;">No matching doctors found</h3>
+                    <p style="margin:0;font-size:15px;line-height:1.7;">There are currently no doctors matching your selected filters. Please try again with a different keyword or specialty.</p>
                 </div>
             @endforelse
         </div>

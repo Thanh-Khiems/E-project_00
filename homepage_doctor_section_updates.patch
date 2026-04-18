@@ -35,7 +35,7 @@ return view('pages.home', compact('homeDoctors', 'featuredBlogs'));
                     $avatar = ($doctor->user && $doctor->user->avatar)
                         ? asset('storage/avatars/' . $doctor->user->avatar)
                         : asset('images/default-avatar.png');
-                    $doctorName = $doctor->name ?: ($doctor->user->full_name ?? 'Bác sĩ');
+                    $doctorName = $doctor->name ?: ($doctor->user->full_name ?? 'Doctor');
                 @endphp
                 <div class="doctor-item">
                     <img src="{{ $avatar }}" alt="{{ $doctorName }}">

@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Dịch vụ - MediConnect')
+@section('title', 'Services - MediConnect')
 
 @section('content')
 <section class="services-page-hero">
@@ -10,42 +10,42 @@
     <div class="container services-page-hero-inner">
         <div class="services-page-copy reveal-up delay-2">
             <div class="services-page-badges reveal-up delay-3">
-                <span>Đặt lịch nhanh chóng</span>
-                <span>Hỗ trợ nhiều chuyên khoa</span>
-                <span>Đồng hành 24/7</span>
+                <span>Fast appointment booking</span>
+                <span>Support for multiple specialties</span>
+                <span>24/7 support</span>
             </div>
 
             <h1 class="services-page-title reveal-up delay-4">
-                Dịch vụ y tế số toàn diện từ <span>MediConnect</span>
+                Comprehensive digital healthcare services from <span>MediConnect</span>
             </h1>
 
             <p class="services-page-lead reveal-up delay-5">
-                MediConnect mang đến hệ sinh thái chăm sóc sức khỏe hiện đại, nơi người bệnh có thể dễ dàng
-                tìm đúng bác sĩ, đặt đúng lịch hẹn và nhận được sự hỗ trợ nhanh chóng trong suốt hành trình khám chữa bệnh.
+                MediConnect offers a modern healthcare ecosystem where patients can easily
+                find the right doctor, book the right appointment, and receive timely support throughout their care journey.
             </p>
 
             <p class="services-page-sub reveal-up delay-5">
-                Chúng tôi kết hợp công nghệ, trải nghiệm người dùng và đội ngũ chuyên môn để giúp mỗi lần tiếp cận dịch vụ y tế
-                trở nên rõ ràng hơn, thuận tiện hơn và an tâm hơn.
+                We combine technology, user experience, and professional expertise to make every healthcare interaction
+                clearer, more convenient, and more reassuring.
             </p>
 
             <div class="services-page-actions reveal-up delay-6">
-                <a href="{{ route('doctors.index') }}" class="btn btn-primary">Tìm bác sĩ ngay</a>
-                <a href="#services-list" class="btn btn-outline">Khám phá dịch vụ</a>
+                <a href="{{ route('doctors.index') }}" class="btn btn-primary">Find a doctor now</a>
+                <a href="#services-list" class="btn btn-outline">Explore services</a>
             </div>
 
             <div class="services-page-stats reveal-up delay-6">
                 <div class="services-page-stat-card">
                     <h3>10+</h3>
-                    <p>Dịch vụ chăm sóc nổi bật</p>
+                    <p>Featured care services</p>
                 </div>
                 <div class="services-page-stat-card">
                     <h3>24/7</h3>
-                    <p>Hỗ trợ đặt lịch & tư vấn</p>
+                    <p>Booking support & consultation</p>
                 </div>
                 <div class="services-page-stat-card">
                     <h3>100%</h3>
-                    <p>Tập trung vào trải nghiệm bệnh nhân</p>
+                    <p>Focused on the patient experience</p>
                 </div>
             </div>
         </div>
@@ -65,30 +65,30 @@
                         <img src="{{ asset('images/services/service-main.webp') }}" alt="MediConnect services" class="services-page-image">
                         <div class="services-page-floating-card">
                             <strong>Trusted Care</strong>
-                            <p>Đồng bộ đặt lịch, tư vấn và theo dõi dễ dàng trong một nền tảng duy nhất.</p>
+                            <p>Sync booking, consultation, and follow-up easily in one single platform.</p>
                         </div>
                     </div>
 
                     <div class="services-page-panel-grid">
                         <div class="services-page-mini-card">
                             <span>01</span>
-                            <h3>Khám tổng quát</h3>
-                            <p>Đặt lịch nhanh với quy trình minh bạch, dễ theo dõi.</p>
+                            <h3>General checkup</h3>
+                            <p>Book appointments quickly with a transparent and easy-to-follow process.</p>
                         </div>
                         <div class="services-page-mini-card">
                             <span>02</span>
-                            <h3>Chuyên khoa</h3>
-                            <p>Kết nối bác sĩ phù hợp theo nhu cầu điều trị cụ thể.</p>
+                            <h3>Specialty</h3>
+                            <p>Connect with the right doctor based on specific treatment needs.</p>
                         </div>
                         <div class="services-page-mini-card">
                             <span>03</span>
-                            <h3>Theo dõi lịch hẹn</h3>
-                            <p>Nhắc lịch, quản lý trạng thái và cập nhật thuận tiện.</p>
+                            <h3>Track appointments</h3>
+                            <p>Receive reminders, manage statuses, and get convenient updates.</p>
                         </div>
                         <div class="services-page-mini-card">
                             <span>04</span>
-                            <h3>Hỗ trợ tận tâm</h3>
-                            <p>Đồng hành giải đáp trước, trong và sau khi đặt lịch.</p>
+                            <h3>Dedicated support</h3>
+                            <p>Support before, during, and after booking.</p>
                         </div>
                     </div>
                 </div>
@@ -100,78 +100,78 @@
 <section class="services-page-section" id="services-list">
     <div class="container">
         <div class="services-page-section-head reveal-up delay-2">
-            <span class="services-page-label">Danh mục dịch vụ</span>
-            <h2>Những dịch vụ nổi bật trên MediConnect</h2>
+            <span class="services-page-label">Service categories</span>
+            <h2>Featured services on MediConnect</h2>
             <p>
-                Mỗi dịch vụ được thiết kế để giúp người bệnh tiếp cận chăm sóc sức khỏe thuận tiện hơn,
-                đồng thời tối ưu trải nghiệm từ bước tìm hiểu thông tin cho đến khi hoàn tất lịch khám.
+                Each service is designed to help patients access healthcare more conveniently,
+                while optimizing the experience from information lookup to appointment completion.
             </p>
         </div>
 
         <div class="services-page-grid">
             <article class="services-page-card reveal-up delay-2">
                 <div class="services-page-card-icon">✚</div>
-                <h3>Đặt lịch khám trực tuyến</h3>
-                <p>Chọn bác sĩ, khung giờ phù hợp và xác nhận lịch hẹn chỉ trong vài bước đơn giản.</p>
+                <h3>Book an appointment online</h3>
+                <p>Choose a doctor, select a suitable time slot, and confirm the appointment in just a few simple steps.</p>
                 <ul>
-                    <li>Quy trình rõ ràng</li>
-                    <li>Tiết kiệm thời gian chờ</li>
-                    <li>Dễ quản lý lịch sử đặt hẹn</li>
+                    <li>Clear process</li>
+                    <li>Save waiting time</li>
+                    <li>Easy booking history management</li>
                 </ul>
             </article>
 
             <article class="services-page-card reveal-up delay-3">
                 <div class="services-page-card-icon">✚</div>
-                <h3>Tư vấn chuyên khoa</h3>
-                <p>Kết nối với đội ngũ bác sĩ theo từng chuyên khoa để nhận định hướng phù hợp với tình trạng sức khỏe.</p>
+                <h3>Specialty consultation</h3>
+                <p>Connect with doctors by specialty to receive guidance suited to your condition.</p>
                 <ul>
-                    <li>Nhiều chuyên khoa hỗ trợ</li>
-                    <li>Thông tin bác sĩ minh bạch</li>
-                    <li>Dễ lựa chọn theo nhu cầu</li>
+                    <li>Support for many specialties</li>
+                    <li>Transparent doctor information</li>
+                    <li>Easy to choose based on your needs</li>
                 </ul>
             </article>
 
             <article class="services-page-card reveal-up delay-4">
                 <div class="services-page-card-icon">✚</div>
-                <h3>Theo dõi cuộc hẹn</h3>
-                <p>Kiểm tra trạng thái lịch khám, nhận nhắc nhở và chủ động sắp xếp thời gian hiệu quả hơn.</p>
+                <h3>Track visits</h3>
+                <p>Check appointment status, receive reminders, and proactively manage your time more effectively.</p>
                 <ul>
-                    <li>Nhắc lịch thông minh</li>
-                    <li>Thông tin lịch hẹn tập trung</li>
-                    <li>Giảm thiếu sót khi tái khám</li>
+                    <li>Smart reminders</li>
+                    <li>Centralized appointment information</li>
+                    <li>Reduce missed follow-up visits</li>
                 </ul>
             </article>
 
             <article class="services-page-card reveal-up delay-5">
                 <div class="services-page-card-icon">✚</div>
-                <h3>Hồ sơ bệnh nhân tiện lợi</h3>
-                <p>Quản lý thông tin cá nhân và lịch sử tương tác trong giao diện thân thiện, dễ sử dụng.</p>
+                <h3>Convenient patient profile</h3>
+                <p>Manage personal information and interaction history in a friendly, easy-to-use interface.</p>
                 <ul>
-                    <li>Cập nhật hồ sơ nhanh</li>
-                    <li>Tăng tính liên tục điều trị</li>
-                    <li>Thao tác trực quan</li>
+                    <li>Quick profile updates</li>
+                    <li>Improve continuity of care</li>
+                    <li>Intuitive actions</li>
                 </ul>
             </article>
 
             <article class="services-page-card reveal-up delay-6">
                 <div class="services-page-card-icon">✚</div>
-                <h3>Hỗ trợ bác sĩ & điều phối</h3>
-                <p>Hỗ trợ quản lý lịch làm việc, tối ưu quy trình tiếp nhận và nâng cao trải nghiệm phục vụ bệnh nhân.</p>
+                <h3>Doctor & coordination support</h3>
+                <p>Support working schedule management, optimize intake workflows, and improve the patient service experience.</p>
                 <ul>
-                    <li>Tổ chức lịch hiệu quả</li>
-                    <li>Giảm thao tác thủ công</li>
-                    <li>Tăng tính phối hợp nội bộ</li>
+                    <li>Efficient schedule organization</li>
+                    <li>Reduce manual work</li>
+                    <li>Improve internal coordination</li>
                 </ul>
             </article>
 
             <article class="services-page-card reveal-up delay-7">
                 <div class="services-page-card-icon">✚</div>
-                <h3>Chăm sóc sau đặt lịch</h3>
-                <p>MediConnect không dừng ở việc tạo cuộc hẹn mà còn tiếp tục đồng hành trong suốt hành trình chăm sóc.</p>
+                <h3>Post-booking support</h3>
+                <p>MediConnect does not stop at creating appointments, but continues to support patients throughout the care journey.</p>
                 <ul>
-                    <li>Hỗ trợ sau xác nhận</li>
-                    <li>Thông tin rõ ràng, dễ tra cứu</li>
-                    <li>Tăng sự an tâm cho bệnh nhân</li>
+                    <li>Post-confirmation support</li>
+                    <li>Clear, easy-to-find information</li>
+                    <li>Increase patient confidence</li>
                 </ul>
             </article>
         </div>
@@ -181,11 +181,11 @@
 <section class="services-process">
     <div class="container services-process-inner">
         <div class="services-process-copy reveal-up delay-2">
-            <span class="services-page-label">Quy trình trải nghiệm</span>
-            <h2>Hành trình sử dụng dịch vụ đơn giản, nhanh và chuyên nghiệp</h2>
+            <span class="services-page-label">Experience flow</span>
+            <h2>A simple, fast, and professional service journey</h2>
             <p>
-                Chúng tôi thiết kế quy trình theo hướng tinh gọn để bệnh nhân dễ dàng tiếp cận dịch vụ,
-                đồng thời vẫn đảm bảo sự rõ ràng, chủ động và đáng tin cậy ở từng bước.
+                We designed the process to be streamlined so patients can access services easily,
+                while still ensuring clarity, control, and reliability at every step.
             </p>
         </div>
 
@@ -193,29 +193,29 @@
             <div class="services-process-step reveal-up delay-3">
                 <span>01</span>
                 <div>
-                    <h3>Tìm dịch vụ phù hợp</h3>
-                    <p>Khám phá chuyên khoa, bác sĩ và lựa chọn dịch vụ phù hợp với nhu cầu hiện tại.</p>
+                    <h3>Find the right service</h3>
+                    <p>Explore specialties, doctors, and choose services that match your current needs.</p>
                 </div>
             </div>
             <div class="services-process-step reveal-up delay-4">
                 <span>02</span>
                 <div>
-                    <h3>Đặt lịch linh hoạt</h3>
-                    <p>Chọn thời gian phù hợp, xác nhận nhanh và nhận thông tin chi tiết ngay trên hệ thống.</p>
+                    <h3>Flexible appointment booking</h3>
+                    <p>Choose a suitable time, confirm quickly, and receive detailed information right in the system.</p>
                 </div>
             </div>
             <div class="services-process-step reveal-up delay-5">
                 <span>03</span>
                 <div>
-                    <h3>Theo dõi & cập nhật</h3>
-                    <p>Quản lý lịch hẹn, cập nhật trạng thái và chủ động điều chỉnh khi cần thiết.</p>
+                    <h3>Track & update</h3>
+                    <p>Manage appointments, update statuses, and make changes proactively when needed.</p>
                 </div>
             </div>
             <div class="services-process-step reveal-up delay-6">
                 <span>04</span>
                 <div>
-                    <h3>Nhận hỗ trợ liên tục</h3>
-                    <p>Đội ngũ MediConnect luôn sẵn sàng đồng hành để trải nghiệm chăm sóc trở nên trọn vẹn hơn.</p>
+                    <h3>Receive continuous support</h3>
+                    <p>The MediConnect team is always ready to support you so the care experience feels more complete.</p>
                 </div>
             </div>
         </div>
@@ -225,30 +225,30 @@
 <section class="services-advantages">
     <div class="container">
         <div class="services-page-section-head reveal-up delay-2">
-            <span class="services-page-label">Lợi thế MediConnect</span>
-            <h2>Vì sao người dùng tin tưởng lựa chọn chúng tôi?</h2>
+            <span class="services-page-label">MediConnect advantages</span>
+            <h2>Why do users trust and choose us?</h2>
             <p>
-                Không chỉ cung cấp chức năng, MediConnect còn chú trọng cảm giác an tâm, tính minh bạch
-                và sự mượt mà trong toàn bộ trải nghiệm sử dụng.
+                Beyond providing features, MediConnect also focuses on peace of mind and transparency
+                as well as a smooth overall user experience.
             </p>
         </div>
 
         <div class="services-advantages-grid">
             <div class="services-advantage-item reveal-up delay-2">
-                <h3>Giao diện thân thiện</h3>
-                <p>Dễ thao tác cho cả người dùng mới, hỗ trợ truy cập nhanh các thông tin quan trọng.</p>
+                <h3>User-friendly interface</h3>
+                <p>Easy to use even for new users, with quick access to important information.</p>
             </div>
             <div class="services-advantage-item reveal-up delay-3">
-                <h3>Thông tin minh bạch</h3>
-                <p>Người bệnh dễ theo dõi lịch hẹn, trạng thái xử lý và lựa chọn dịch vụ phù hợp hơn.</p>
+                <h3>Transparent information</h3>
+                <p>Patients can easily track appointments, processing statuses, and choose more suitable services.</p>
             </div>
             <div class="services-advantage-item reveal-up delay-4">
-                <h3>Định hướng chuyên nghiệp</h3>
-                <p>Thiết kế lấy y tế làm trọng tâm, tạo cảm giác tin cậy và hiện đại cho toàn bộ nền tảng.</p>
+                <h3>Professional direction</h3>
+                <p>Designed around healthcare, creating a trustworthy and modern feel across the platform.</p>
             </div>
             <div class="services-advantage-item reveal-up delay-5">
-                <h3>Khả năng mở rộng</h3>
-                <p>Sẵn sàng phát triển thêm chuyên khoa, tính năng và quy trình hỗ trợ trong tương lai.</p>
+                <h3>Scalability</h3>
+                <p>Ready to expand with more specialties, features, and support workflows in the future.</p>
             </div>
         </div>
     </div>
@@ -259,15 +259,15 @@
         <div class="services-page-cta-box reveal-up delay-2">
             <div class="services-page-cta-copy">
                 <small>MediConnect Services</small>
-                <h2>Sẵn sàng bắt đầu hành trình chăm sóc sức khỏe thuận tiện hơn?</h2>
+                <h2>Ready to start a more convenient healthcare journey?</h2>
                 <p>
-                    Hãy khám phá đội ngũ bác sĩ và dịch vụ nổi bật của MediConnect để tìm ra lựa chọn phù hợp nhất cho bạn.
+                    Explore MediConnect's doctors and featured services to find the best option for you.
                 </p>
             </div>
 
             <div class="services-page-cta-actions">
-                <a href="{{ route('doctors.index') }}" class="services-page-cta-primary">Xem danh sách bác sĩ</a>
-                <a href="{{ url('/about') }}" class="services-page-cta-secondary">Tìm hiểu về MediConnect</a>
+                <a href="{{ route('doctors.index') }}" class="services-page-cta-primary">View doctor list</a>
+                <a href="{{ url('/about') }}" class="services-page-cta-secondary">Learn about MediConnect</a>
             </div>
         </div>
     </div>

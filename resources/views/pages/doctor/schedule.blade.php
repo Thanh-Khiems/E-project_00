@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quản lý lịch làm việc - MediConnect</title>
+    <title>Working Schedule Management - MediConnect</title>
     <style>
         :root {
             --primary-color: #0ea5e9;
@@ -406,7 +406,7 @@
         @endif
 
         <div id="editModeBanner" class="edit-mode-banner">
-            Bạn đang chỉnh sửa lịch làm việc. Sau khi sửa xong, bấm "Update Schedule" để lưu.
+            You are editing a working schedule. After finishing, click "Update Schedule" to save.
         </div>
 
         <form method="POST" action="{{ route('schedule.store') }}" id="scheduleForm">
@@ -518,7 +518,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="6" class="empty-text">Hôm nay chưa có lịch khám nào được áp dụng.</td>
+                        <td colspan="6" class="empty-text">No appointment schedule applies today yet.</td>
                     </tr>
                     @endforelse
                 </tbody>
@@ -579,20 +579,20 @@
                                     data-location="{{ $s->location }}"
                                     data-notes="{{ $s->notes }}"
                                 >
-                                    Sửa
+                                    Edit
                                 </button>
 
-                                <form action="{{ route('schedule.destroy', $s->id) }}" method="POST" class="inline-form" onsubmit="return confirm('Bạn có chắc muốn xóa lịch này?');">
+                                <form action="{{ route('schedule.destroy', $s->id) }}" method="POST" class="inline-form" onsubmit="return confirm('Are you sure you want to delete this schedule?');">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="btn btn-danger">Xóa</button>
+                                    <button type="submit" class="btn btn-danger">Delete</button>
                                 </form>
                             </div>
                         </td>
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="8" class="empty-text">Bác sĩ chưa tạo lịch làm việc nào.</td>
+                        <td colspan="8" class="empty-text">The doctor has not created any working schedules yet.</td>
                     </tr>
                     @endforelse
                 </tbody>

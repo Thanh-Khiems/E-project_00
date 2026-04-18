@@ -11,10 +11,10 @@
 <section class="news-section">
     <div class="container">
         <div class="section-heading" data-reveal="zoom" data-delay="0">
-            <h2>Tin nổi bật tại MediConnect</h2>
+            <h2>Featured News at MediConnect</h2>
             <span class="section-line"></span>
             <p class="news-subtitle">
-                Những bài blog nổi bật do admin đăng sẽ hiển thị ở đây để mọi người đều có thể theo dõi nhanh.
+                Featured blog posts published by the admin will appear here for everyone to follow quickly.
             </p>
         </div>
 
@@ -31,14 +31,14 @@
                         </div>
 
                         <div class="news-content">
-                            <div class="blog-meta">{{ $blog->published_at?->format('d/m/Y') ?? 'Mới cập nhật' }}</div>
+                            <div class="blog-meta">{{ $blog->published_at?->format('d/m/Y') ?? 'Recently updated' }}</div>
                             <h3>{{ $blog->title }}</h3>
                             <p>{{ $blog->excerpt_text }}</p>
 
                             @auth
-                                <a href="{{ route('blog.show', $blog->slug) }}" class="news-btn">Xem bài viết</a>
+                                <a href="{{ route('blog.show', $blog->slug) }}" class="news-btn">View article</a>
                             @else
-                                <span class="news-btn auth-locked" aria-disabled="true" title="Vui lòng đăng nhập hoặc đăng ký để tiếp tục">Xem bài viết</span>
+                                <span class="news-btn auth-locked" aria-disabled="true" title="Please log in or register to continue">View article</span>
                             @endauth
                         </div>
                     </article>
@@ -46,10 +46,10 @@
             </div>
 
             <div class="blog-more-wrap">
-                <a href="{{ route('blog.index') }}" class="blog-outline-btn">Xem tất cả blog</a>
+                <a href="{{ route('blog.index') }}" class="blog-outline-btn">View all blogs</a>
             </div>
         @else
-            <div class="empty-blog-state">Hiện chưa có bài blog nổi bật nào được đăng.</div>
+            <div class="empty-blog-state">There are no featured blog posts yet.</div>
         @endif
     </div>
 </section>

@@ -25,7 +25,7 @@ class LocationController extends Controller
             : collect();
 
         return view('admin.locations.index', [
-            'pageTitle' => 'Quản lý khu vực',
+            'pageTitle' => 'Location management',
             'cities' => $cities,
             'tableReady' => $tableReady,
         ]);
@@ -34,14 +34,14 @@ class LocationController extends Controller
     public function store(Request $request): RedirectResponse
     {
         if (!Schema::hasTable('location_cities')) {
-            return back()->with('error', 'Cần chạy php artisan migrate trước khi thêm khu vực.');
+            return back()->with('error', 'You need to run php artisan migrate before adding locations.');
         }
 
         $validated = $this->validateLocationRequest($request, true);
 
         $districtPayload = $this->buildDistrictPayload($validated['districts']);
         if ($districtPayload === []) {
-            return back()->withErrors(['districts' => 'Vui lòng nhập ít nhất một quận/huyện kèm phường/xã hợp lệ.'])->withInput();
+            return back()->withErrors(['districts' => 'Please enter at least one valid district with wards/communes.'])->withInput();
         }
 
         LocationCity::create([
@@ -49,20 +49,20 @@ class LocationController extends Controller
             'districts' => $districtPayload,
         ]);
 
-        return redirect()->route('admin.locations.index')->with('success', 'Đã thêm thành phố mới.');
+        return redirect()->route('admin.locations.index')->with('success', 'New city added.');
     }
 
     public function update(Request $request, LocationCity $location): RedirectResponse
     {
         if (!Schema::hasTable('location_cities')) {
-            return back()->with('error', 'Cần chạy php artisan migrate trước khi cập nhật khu vực.');
+            return back()->with('error', 'You need to run php artisan migrate before updating locations.');
         }
 
         $validated = $this->validateLocationRequest($request, false, $location->id);
 
         $districtPayload = $this->buildDistrictPayload($validated['districts']);
         if ($districtPayload === []) {
-            return back()->withErrors(['districts' => 'Vui lòng nhập ít nhất một quận/huyện kèm phường/xã hợp lệ.'])->withInput();
+            return back()->withErrors(['districts' => 'Please enter at least one valid district with wards/communes.'])->withInput();
         }
 
         $location->update([
@@ -70,18 +70,18 @@ class LocationController extends Controller
             'districts' => $districtPayload,
         ]);
 
-        return redirect()->route('admin.locations.index')->with('success', 'Đã cập nhật thành phố.');
+        return redirect()->route('admin.locations.index')->with('success', 'City updated.');
     }
 
     public function destroy(LocationCity $location): RedirectResponse
     {
         if (!Schema::hasTable('location_cities')) {
-            return back()->with('error', 'Cần chạy php artisan migrate trước khi xóa khu vực.');
+            return back()->with('error', 'You need to run php artisan migrate before deleting locations.');
         }
 
         $location->delete();
 
-        return redirect()->route('admin.locations.index')->with('success', 'Đã xóa thành phố.');
+        return redirect()->route('admin.locations.index')->with('success', 'City deleted.');
     }
 
     private function validateLocationRequest(Request $request, bool $isCreate, ?int $ignoreId = null): array
@@ -97,12 +97,12 @@ class LocationController extends Controller
             'districts.*.name' => ['required', 'string', 'max:255'],
             'districts.*.wards' => ['required', 'string'],
         ], [
-            'name.required' => 'Vui lòng nhập tên thành phố.',
-            'name.unique' => 'Thành phố này đã tồn tại.',
-            'districts.required' => 'Vui lòng thêm ít nhất một quận/huyện.',
-            'districts.min' => 'Vui lòng thêm ít nhất một quận/huyện.',
-            'districts.*.name.required' => 'Tên quận/huyện không được để trống.',
-            'districts.*.wards.required' => 'Vui lòng nhập danh sách phường/xã.',
+            'name.required' => 'Please enter a city name.',
+            'name.unique' => 'This city already exists.',
+            'districts.required' => 'Please add at least one district.',
+            'districts.min' => 'Please add at least one district.',
+            'districts.*.name.required' => 'District name cannot be empty.',
+            'districts.*.wards.required' => 'Please enter the list of wards/communes.',
         ]);
     }
 

@@ -32,7 +32,7 @@ class StaffController extends Controller
         $staffs = $query->latest()->paginate(10)->withQueryString();
 
         return view('admin.staffs.index', [
-            'pageTitle' => 'Quản lý nhân viên',
+            'pageTitle' => 'Staff management',
             'staffs' => $staffs,
             'stats' => [
                 'total' => Staff::count(),
@@ -56,8 +56,8 @@ class StaffController extends Controller
                         'email' => $user->email,
                         'phone' => $user->phone,
                         'role' => 'admin',
-                        'department' => 'Quản trị viên',
-                        'shift' => 'Hành chính',
+                        'department' => 'Administrator',
+                        'shift' => 'Office hours',
                         'status' => 'working',
                     ]
                 );

@@ -4,10 +4,10 @@
     <div class="panel-card mb-4">
         <div class="panel-head">
             <div>
-                <h5>Chỉnh sửa bệnh nhân</h5>
-                <p>Cập nhật thông tin hồ sơ bệnh nhân và tài khoản liên kết.</p>
+                <h5>Edit patient</h5>
+                <p>Update the patient profile information and linked account.</p>
             </div>
-            <a href="{{ route('admin.patients.index') }}" class="btn btn-outline-primary">Quay lại</a>
+            <a href="{{ route('admin.patients.index') }}" class="btn btn-outline-primary">Back</a>
         </div>
 
         @if ($errors->any())
@@ -37,7 +37,7 @@
 
             <div class="row g-3">
                 <div class="col-md-6">
-                    <label class="form-label">Họ và tên</label>
+                    <label class="form-label">Full name</label>
                     <input type="text" name="full_name" class="form-control"
                         value="{{ old('full_name', $patient->user?->full_name ?? $patient->name) }}" required>
                 </div>
@@ -49,42 +49,42 @@
                 </div>
 
                 <div class="col-md-4">
-                    <label class="form-label">Số điện thoại</label>
+                    <label class="form-label">Phone number</label>
                     <input type="text" name="phone" class="form-control"
                         value="{{ old('phone', $patient->user?->phone ?? $patient->phone) }}">
                 </div>
 
                 <div class="col-md-4">
-                    <label class="form-label">Giới tính</label>
+                    <label class="form-label">Gender</label>
                     @php($selectedGender = old('gender', $patient->gender))
                     <select name="gender" class="form-select">
-                        <option value="">Chọn giới tính</option>
+                        <option value="">Select gender</option>
                         <option value="male" @selected($selectedGender === 'male')>Nam</option>
-                        <option value="female" @selected($selectedGender === 'female')>Nữ</option>
-                        <option value="other" @selected($selectedGender === 'other')>Khác</option>
+                        <option value="female" @selected($selectedGender === 'female')>Female</option>
+                        <option value="other" @selected($selectedGender === 'other')>Other</option>
                     </select>
                 </div>
 
                 <div class="col-md-4">
-                    <label class="form-label">Ngày sinh</label>
+                    <label class="form-label">Date of birth</label>
                     <input type="date" name="dob" class="form-control"
                         value="{{ old('dob', optional($patient->date_of_birth)->format('Y-m-d')) }}">
                 </div>
 
                 <div class="col-md-4">
-                    <label class="form-label">Vai trò tài khoản</label>
+                    <label class="form-label">Account role</label>
                     @php($selectedRole = old('role', $patient->user?->role ?? 'user'))
                     <select name="role" class="form-select">
                         <option value="user" @selected($selectedRole === 'user')>User</option>
                         <option value="admin" @selected($selectedRole === 'admin')>Admin</option>
                     </select>
-                    <small class="text-muted">Đổi sang admin sẽ chuyển dữ liệu tài khoản này sang bảng staff.</small>
+                    <small class="text-muted">Changing to admin will move this account data to the staff table.</small>
                 </div>
 
                 <div class="col-md-4">
-                    <label class="form-label">Tỉnh/Thành phố</label>
+                    <label class="form-label">Province/City</label>
                     <select name="province" id="province" class="form-select">
-                        <option value="">Chọn tỉnh/thành phố</option>
+                        <option value="">Select province/city</option>
                         @foreach ($provinces as $province)
                             <option value="{{ $province }}" @selected($currentProvince === $province)>
                                 {{ $province }}
@@ -94,9 +94,9 @@
                 </div>
 
                 <div class="col-md-4">
-                    <label class="form-label">Quận/Huyện</label>
+                    <label class="form-label">District</label>
                     <select name="district" id="district" class="form-select">
-                        <option value="">Chọn quận/huyện</option>
+                        <option value="">Select district</option>
                         @foreach ($districtOptions as $district)
                             <option value="{{ $district }}" @selected($currentDistrict === $district)>
                                 {{ $district }}
@@ -106,9 +106,9 @@
                 </div>
 
                 <div class="col-md-4">
-                    <label class="form-label">Phường/Xã</label>
+                    <label class="form-label">Ward/Commune</label>
                     <select name="ward" id="ward" class="form-select">
-                        <option value="">Chọn phường/xã</option>
+                        <option value="">Select ward/commune</option>
                         @foreach ($wardOptions as $ward)
                             <option value="{{ $ward }}" @selected($currentWard === $ward)>
                                 {{ $ward }}
@@ -118,16 +118,16 @@
                 </div>
 
                 <div class="col-12">
-                    <label class="form-label">Địa chỉ chi tiết</label>
+                    <label class="form-label">Detailed address</label>
                     <input type="text" name="address_detail" class="form-control"
                         value="{{ old('address_detail', $patient->user?->address_detail) }}"
-                        placeholder="Số nhà, tên đường...">
+                        placeholder="House number, street name...">
                 </div>
             </div>
 
             <div class="mt-4 d-flex gap-3">
-                <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
-                <a href="{{ route('admin.patients.show', $patient) }}" class="btn btn-light">Xem hồ sơ</a>
+                <button type="submit" class="btn btn-primary">Save changes</button>
+                <a href="{{ route('admin.patients.show', $patient) }}" class="btn btn-light">View profile</a>
             </div>
         </form>
     </div>
@@ -157,20 +157,20 @@
 
         provinceSelect.addEventListener('change', function () {
             const districts = Object.keys(locations[this.value] || {});
-            fillSelect(districtSelect, districts, 'Chọn quận/huyện');
-            fillSelect(wardSelect, [], 'Chọn phường/xã');
+            fillSelect(districtSelect, districts, 'Select district');
+            fillSelect(wardSelect, [], 'Select ward/commune');
         });
 
         districtSelect.addEventListener('change', function () {
             const wards = locations[provinceSelect.value]?.[this.value] || [];
-            fillSelect(wardSelect, wards, 'Chọn phường/xã');
+            fillSelect(wardSelect, wards, 'Select ward/commune');
         });
 
         if (selectedProvince) {
             fillSelect(
                 districtSelect,
                 Object.keys(locations[selectedProvince] || {}),
-                'Chọn quận/huyện',
+                'Select district',
                 selectedDistrict
             );
 
@@ -178,7 +178,7 @@
                 fillSelect(
                     wardSelect,
                     locations[selectedProvince]?.[selectedDistrict] || [],
-                    'Chọn phường/xã',
+                    'Select ward/commune',
                     selectedWard
                 );
             }

@@ -11,7 +11,7 @@
                 </div>
 
                 <div class="blog-detail-body">
-                    <div class="blog-meta">{{ $blog->published_at?->format('d/m/Y H:i') ?? 'Mới cập nhật' }}</div>
+                    <div class="blog-meta">{{ $blog->published_at?->format('d/m/Y H:i') ?? 'Recently updated' }}</div>
                     <h1>{{ $blog->title }}</h1>
                     @if($blog->excerpt)
                         <p class="blog-detail-excerpt">{{ $blog->excerpt }}</p>
@@ -24,18 +24,18 @@
             </article>
 
             <aside class="blog-sidebar-card">
-                <h3>Bài viết liên quan</h3>
+                <h3>Related articles</h3>
                 <div class="blog-sidebar-list">
                     @forelse($relatedBlogs as $related)
                         <a href="{{ route('blog.show', $related->slug) }}" class="blog-side-item">
                             <img src="{{ $related->thumbnail_url }}" alt="{{ $related->title }}">
                             <div>
                                 <strong>{{ $related->title }}</strong>
-                                <span>{{ $related->published_at?->format('d/m/Y') ?? 'Mới cập nhật' }}</span>
+                                <span>{{ $related->published_at?->format('d/m/Y') ?? 'Recently updated' }}</span>
                             </div>
                         </a>
                     @empty
-                        <p>Chưa có bài viết liên quan.</p>
+                        <p>There are no related articles.</p>
                     @endforelse
                 </div>
             </aside>

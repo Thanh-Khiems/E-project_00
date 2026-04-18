@@ -23,7 +23,7 @@ return new class extends Migration
         $table->string('location')->nullable();
         $table->text('notes')->nullable();
 
-        $table->timestamps(); // 👈 QUAN TRỌNG
+        $table->timestamps(); // 👈 IMPORTANT
     });
 }
 

@@ -2,26 +2,26 @@
 
 @section('content')
     @include('admin.layouts.partials.stats', ['items' => [
-        ['label' => 'Tổng bác sĩ', 'value' => $stats['total'], 'icon' => 'bi-person-badge'],
-        ['label' => 'Đang hoạt động', 'value' => $stats['active'], 'icon' => 'bi-check-circle'],
-        ['label' => 'Tạm khóa', 'value' => $stats['inactive'], 'icon' => 'bi-pause-circle'],
-        ['label' => 'Chờ duyệt', 'value' => $stats['pending'], 'icon' => 'bi-hourglass-split'],
+        ['label' => 'Total doctors', 'value' => $stats['total'], 'icon' => 'bi-person-badge'],
+        ['label' => 'Active', 'value' => $stats['active'], 'icon' => 'bi-check-circle'],
+        ['label' => 'Temporarily locked', 'value' => $stats['inactive'], 'icon' => 'bi-pause-circle'],
+        ['label' => 'Pending approval', 'value' => $stats['pending'], 'icon' => 'bi-hourglass-split'],
     ]])
 
     <div class="panel-card mb-4">
         <div class="panel-head">
             <div>
-                <h5>Danh sách bác sĩ</h5>
-                <p>Quản lý hồ sơ, chuyên khoa, lịch làm việc và trạng thái xét duyệt.</p>
+                <h5>Doctor List</h5>
+                <p>Manage profiles, specialties, working schedules, and approval status.</p>
             </div>
-            <a href="{{ route('admin.doctors.approvals') }}" class="btn btn-primary">Xem duyệt bác sĩ</a>
+            <a href="{{ route('admin.doctors.approvals') }}" class="btn btn-primary">View doctor approvals</a>
         </div>
 
         <form method="GET" class="row g-3 filter-bar">
-            <div class="col-md-3"><input type="text" name="keyword" value="{{ request('keyword') }}" class="form-control" placeholder="Tên, email, số điện thoại..."></div>
+            <div class="col-md-3"><input type="text" name="keyword" value="{{ request('keyword') }}" class="form-control" placeholder="Name, email, phone number..."></div>
             <div class="col-md-3">
                 <select name="specialty_id" class="form-select">
-                    <option value="">Tất cả chuyên khoa</option>
+                    <option value="">All specialties</option>
                     @foreach($specialties as $specialty)
                         <option value="{{ $specialty->id }}" @selected(request('specialty_id') == $specialty->id)>{{ $specialty->name }}</option>
                     @endforeach
@@ -29,33 +29,33 @@
             </div>
             <div class="col-md-2">
                 <select name="status" class="form-select">
-                    <option value="">Tất cả trạng thái</option>
-                    <option value="active" @selected(request('status') == 'active')>Hoạt động</option>
-                    <option value="inactive" @selected(request('status') == 'inactive')>Tạm khóa</option>
+                    <option value="">All statuses</option>
+                    <option value="active" @selected(request('status') == 'active')>Active</option>
+                    <option value="inactive" @selected(request('status') == 'inactive')>Temporarily locked</option>
                 </select>
             </div>
             <div class="col-md-2">
                 <select name="approval_status" class="form-select">
-                    <option value="">Tất cả duyệt</option>
-                    <option value="pending" @selected(request('approval_status') == 'pending')>Chờ duyệt</option>
-                    <option value="approved" @selected(request('approval_status') == 'approved')>Đã duyệt</option>
-                    <option value="rejected" @selected(request('approval_status') == 'rejected')>Từ chối</option>
+                    <option value="">All approvals</option>
+                    <option value="pending" @selected(request('approval_status') == 'pending')>Pending approval</option>
+                    <option value="approved" @selected(request('approval_status') == 'approved')>Approved</option>
+                    <option value="rejected" @selected(request('approval_status') == 'rejected')>Decline</option>
                 </select>
             </div>
-            <div class="col-md-2 d-grid"><button class="btn btn-outline-primary">Lọc dữ liệu</button></div>
+            <div class="col-md-2 d-grid"><button class="btn btn-outline-primary">Filter data</button></div>
         </form>
 
         <div class="table-responsive mt-4">
             <table class="table admin-table align-middle">
                 <thead>
                     <tr>
-                        <th>Bác sĩ</th>
-                        <th>Chuyên khoa</th>
-                        <th>Kinh nghiệm</th>
-                        <th>Lịch làm việc</th>
-                        <th>Trạng thái</th>
-                        <th>Xét duyệt</th>
-                        <th class="text-end">Thao tác</th>
+                        <th>Doctor</th>
+                        <th>Specialty</th>
+                        <th>Experience</th>
+                        <th>Working schedule</th>
+                        <th>Status</th>
+                        <th>Approval</th>
+                        <th class="text-end">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -71,28 +71,28 @@
                                 </div>
                             </td>
                             <td>{{ $doctor->specialty->name ?? '—' }}</td>
-                            <td>{{ $doctor->experience_years ?? 0 }} năm</td>
-                            <td>{{ $doctor->schedule_text ?? 'Thứ 2 - Thứ 7' }}</td>
-                            <td><span class="status-badge {{ $doctor->status }}">{{ $doctor->status === 'active' ? 'Hoạt động' : 'Tạm khóa' }}</span></td>
+                            <td>{{ $doctor->experience_years ?? 0 }} years</td>
+                            <td>{{ $doctor->schedule_text ?? 'Monday - Saturday' }}</td>
+                            <td><span class="status-badge {{ $doctor->status }}">{{ $doctor->status === 'active' ? 'Active' : 'Temporarily locked' }}</span></td>
                             <td>
                                 @if($doctor->approval_status === 'approved')
-                                    <span class="badge text-bg-success">Đã duyệt</span>
+                                    <span class="badge text-bg-success">Approved</span>
                                 @elseif($doctor->approval_status === 'rejected')
-                                    <span class="badge text-bg-danger">Từ chối</span>
+                                    <span class="badge text-bg-danger">Decline</span>
                                 @else
-                                    <span class="badge text-bg-warning">Chờ duyệt</span>
+                                    <span class="badge text-bg-warning">Pending approval</span>
                                 @endif
                             </td>
                             <td class="text-end table-actions">
                                 @if($doctor->approval_status === 'pending')
-                                    <a href="{{ route('admin.doctors.approvals', ['keyword' => $doctor->name, 'approval_status' => 'pending']) }}">Xét duyệt</a>
+                                    <a href="{{ route('admin.doctors.approvals', ['keyword' => $doctor->name, 'approval_status' => 'pending']) }}">Approval</a>
                                 @else
-                                    <a href="{{ route('admin.doctors.show', $doctor) }}">Xem hồ sơ</a>
+                                    <a href="{{ route('admin.doctors.show', $doctor) }}">View profile</a>
                                 @endif
                             </td>
                         </tr>
                     @empty
-                        <tr><td colspan="7" class="text-center py-4">Chưa có dữ liệu bác sĩ.</td></tr>
+                        <tr><td colspan="7" class="text-center py-4">No doctor data yet.</td></tr>
                     @endforelse
                 </tbody>
             </table>

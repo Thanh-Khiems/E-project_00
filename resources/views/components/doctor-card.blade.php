@@ -1,5 +1,5 @@
 <div class="card doctor-card border-0 shadow-sm text-center py-5 px-4 position-relative mx-auto">
-    {{-- Thêm mx-auto để card luôn tự căn giữa trong cột của nó --}}
+    {{-- Add mx-auto so the card is always centered within its column --}}
     
     <div class="doctor-avatar-wrapper mx-auto mb-4">
         <div class="avatar-container rounded-circle overflow-hidden shadow-sm border border-4 border-white">
@@ -30,7 +30,7 @@
                 Book Appointment
             </button>
         @else
-            <button class="btn btn-primary w-100 rounded-pill py-2 fw-bold shadow-sm transition-all appointment-btn auth-locked" type="button" disabled title="Vui lòng đăng nhập hoặc đăng ký để tiếp tục">
+            <button class="btn btn-primary w-100 rounded-pill py-2 fw-bold shadow-sm transition-all appointment-btn auth-locked" type="button" disabled title="Please log in or register to continue">
                 Book Appointment
             </button>
         @endauth
@@ -41,8 +41,8 @@
     .doctor-card {
         border-radius: 30px !important;
         transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-        max-width: 300px; /* Ép tất cả 8 card có cùng độ rộng tối đa */
-        height: 100%; /* Cho card cao bằng nhau trong cùng 1 hàng */
+        max-width: 300px; /* Force all 8 cards to share the same maximum width */
+        height: 100%; /* Make cards equal height within the same row */
     }
 
     .doctor-card:hover {

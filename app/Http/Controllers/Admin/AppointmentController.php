@@ -69,7 +69,7 @@ class AppointmentController extends Controller
         if ($appointment->isExpired()) {
             $appointment->delete();
 
-            return redirect()->route('admin.appointments.index')->with('error', 'Lịch hẹn đã quá hạn nên đã được xóa khỏi hệ thống.');
+            return redirect()->route('admin.appointments.index')->with('error', 'The expired appointment has been removed from the system.');
         }
 
         $appointment->load([

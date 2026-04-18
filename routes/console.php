@@ -11,5 +11,5 @@ Artisan::command('inspire', function () {
 Artisan::command('appointments:cleanup-expired', function () {
     $deletedCount = Appointment::purgeExpired();
 
-    $this->info("Đã dọn {$deletedCount} lịch hẹn quá hạn.");
+    $this->info("Cleaned up {$deletedCount} expired appointments.");
 })->purpose('Delete expired appointments that are no longer valid');

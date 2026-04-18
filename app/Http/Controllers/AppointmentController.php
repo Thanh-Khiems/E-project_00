@@ -24,7 +24,7 @@ class AppointmentController extends Controller
 
         $parts = explode('|', (string) $request->selected_slot, 2);
         if (count($parts) !== 2) {
-            return back()->with('error', 'Khung giờ đã chọn không hợp lệ.');
+            return back()->with('error', 'The selected time slot is invalid.');
         }
 
         [$scheduleId, $selectedValue] = $parts;
@@ -41,12 +41,12 @@ class AppointmentController extends Controller
         $appointmentDate = $this->resolveAppointmentDate($schedule, $selectedValue);
 
         if (! $appointmentDate) {
-            return back()->with('error', 'Không thể tạo lịch hẹn cho ngày hoặc giờ đã qua. Vui lòng chọn khung giờ khác.');
+            return back()->with('error', 'Cannot create an appointment for a past date or time. Please choose another time slot.');
 <<<<<<< HEAD
         }
 
         if ($appointmentDate->gt(now()->copy()->addWeek())) {
-            return back()->with('error', 'Chỉ được đặt lịch trong vòng 7 ngày tới.');
+            return back()->with('error', 'Appointments can only be booked within the next 7 days.');
 =======
 >>>>>>> 68df70511387ac0b922fb64132c9a8932ec7b98b
         }
@@ -68,7 +68,7 @@ class AppointmentController extends Controller
             ->exists();
 
         if ($duplicate) {
-            return back()->with('error', 'Bạn đã có lịch hẹn trùng với khung giờ này.');
+            return back()->with('error', 'You already have an appointment in this time slot.');
         }
 
         $bookedCount = Appointment::query()
@@ -78,7 +78,7 @@ class AppointmentController extends Controller
             ->count();
 
         if ($schedule->max_patients && $bookedCount >= $schedule->max_patients) {
-            return back()->with('error', 'Khung giờ này đã đủ số lượng bệnh nhân.');
+            return back()->with('error', 'This time slot has reached its patient capacity.');
         }
 
         Appointment::create([
@@ -98,7 +98,7 @@ class AppointmentController extends Controller
 
         return redirect()
             ->route('user.profile', ['tab' => 'appointments'])
-            ->with('success', 'Đặt lịch hẹn thành công.');
+            ->with('success', 'Appointment booked successfully.');
     }
 
     public function patientIndex()
@@ -161,22 +161,22 @@ class AppointmentController extends Controller
         if ($appointment->isExpired()) {
             $appointment->delete();
 
-            return back()->with('error', 'Lịch hẹn đã quá hạn nên đã được xóa khỏi hệ thống.');
+            return back()->with('error', 'The expired appointment has been removed from the system.');
         }
 
         if (! $this->canManageAppointment($appointment)) {
-            return back()->with('error', 'Bạn không có quyền xác nhận lịch hẹn này.');
+            return back()->with('error', 'You do not have permission to confirm this appointment.');
         }
 
         if (! in_array($appointment->status, ['pending', 'confirmed'], true)) {
-            return back()->with('error', 'Lịch hẹn này không thể xác nhận ở trạng thái hiện tại.');
+            return back()->with('error', 'This appointment cannot be confirmed in its current status.');
         }
 
         $appointment->update([
             'status' => 'confirmed',
         ]);
 
-        return back()->with('success', 'Xác nhận lịch hẹn thành công.');
+        return back()->with('success', 'Appointment confirmed successfully.');
     }
 
     public function cancel(Appointment $appointment): RedirectResponse
@@ -184,41 +184,41 @@ class AppointmentController extends Controller
         if ($appointment->isExpired()) {
             $appointment->delete();
 
-            return back()->with('error', 'Lịch hẹn đã quá hạn nên đã được xóa khỏi hệ thống.');
+            return back()->with('error', 'The expired appointment has been removed from the system.');
         }
 
         if (! $this->canManageAppointment($appointment)) {
-            return back()->with('error', 'Bạn không có quyền hủy lịch hẹn này.');
+            return back()->with('error', 'You do not have permission to cancel this appointment.');
         }
 
         if ($appointment->status === 'cancelled') {
-            return back()->with('error', 'Lịch hẹn này đã được hủy trước đó.');
+            return back()->with('error', 'This appointment was already cancelled earlier.');
         }
 
         if ($appointment->status === 'completed') {
-            return back()->with('error', 'Không thể hủy lịch hẹn đã hoàn tất.');
+            return back()->with('error', 'Cannot cancel a completed appointment.');
         }
 
         $appointment->update([
             'status' => 'cancelled',
         ]);
 
-        return back()->with('success', 'Đã hủy lịch hẹn thành công.');
+        return back()->with('success', 'Appointment cancelled successfully.');
     }
 
 
     public function storeReview(Request $request, Appointment $appointment): RedirectResponse
     {
         if ((int) $appointment->patient_id !== (int) Auth::id()) {
-            return back()->with('error', 'Bạn không có quyền đánh giá lịch hẹn này.');
+            return back()->with('error', 'You do not have permission to review this appointment.');
         }
 
         if ($appointment->status !== 'completed') {
-            return back()->with('error', 'Chỉ có thể đánh giá sau khi lịch hẹn đã hoàn tất.');
+            return back()->with('error', 'You can only submit a review after the appointment is completed.');
         }
 
         if ($appointment->review()->exists()) {
-            return back()->with('error', 'Bạn đã đánh giá lịch hẹn này rồi.');
+            return back()->with('error', 'You have already reviewed this appointment.');
         }
 
         $validated = $request->validate([
@@ -234,7 +234,7 @@ class AppointmentController extends Controller
             'reviewed_at' => now(),
         ]);
 
-        return back()->with('success', 'Đánh giá bác sĩ thành công.');
+        return back()->with('success', 'Doctor review submitted successfully.');
     }
 
     public function complete(Appointment $appointment): RedirectResponse
@@ -242,15 +242,15 @@ class AppointmentController extends Controller
         if ($appointment->isExpired()) {
             $appointment->delete();
 
-            return back()->with('error', 'Lịch hẹn đã quá hạn nên đã được xóa khỏi hệ thống.');
+            return back()->with('error', 'The expired appointment has been removed from the system.');
         }
 
         if (! $this->canManageAppointment($appointment)) {
-            return back()->with('error', 'Bạn không có quyền hoàn tất lịch hẹn này.');
+            return back()->with('error', 'You do not have permission to complete this appointment.');
         }
 
         if ($appointment->status === 'cancelled') {
-            return back()->with('error', 'Không thể hoàn tất lịch hẹn đã bị hủy.');
+            return back()->with('error', 'Cannot complete a cancelled appointment.');
         }
 
         return redirect()->route('doctor.appointments.prescriptions.create', $appointment);

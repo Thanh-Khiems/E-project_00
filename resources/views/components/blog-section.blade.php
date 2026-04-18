@@ -1,10 +1,10 @@
 <section class="news-section">
     <div class="container">
         <div class="section-heading" data-reveal="zoom" data-delay="0">
-            <h2>Blog sức khỏe mới nhất</h2>
+            <h2>Latest Health Blog Posts</h2>
             <span class="section-line"></span>
             <p class="news-subtitle">
-                Những bài viết, kiến thức và cập nhật nổi bật từ MediConnect dành cho bệnh nhân và gia đình.
+                Featured articles, insights, and updates from MediConnect for patients and families.
             </p>
         </div>
 
@@ -16,23 +16,23 @@
                             <img src="{{ $blog->thumbnail_url }}" alt="{{ $blog->title }}" class="news-image">
                         </div>
                         <div class="news-content">
-                            <div class="blog-meta">{{ $blog->published_at?->format('d/m/Y') ?? 'Mới cập nhật' }}</div>
+                            <div class="blog-meta">{{ $blog->published_at?->format('d/m/Y') ?? 'Recently updated' }}</div>
                             <h3>{{ $blog->title }}</h3>
                             <p>{{ $blog->excerpt_text }}</p>
                             @auth
-                                <a href="{{ route('blog.show', $blog->slug) }}" class="news-btn">Đọc thêm</a>
+                                <a href="{{ route('blog.show', $blog->slug) }}" class="news-btn">Read more</a>
                             @else
-                                <span class="news-btn auth-locked" aria-disabled="true" title="Vui lòng đăng nhập hoặc đăng ký để tiếp tục">Đọc thêm</span>
+                                <span class="news-btn auth-locked" aria-disabled="true" title="Please log in or register to continue">Read more</span>
                             @endauth
                         </div>
                     </article>
                 @endforeach
             </div>
             <div class="blog-more-wrap">
-                <a href="{{ route('blog.index') }}" class="blog-outline-btn">Xem tất cả blog</a>
+                <a href="{{ route('blog.index') }}" class="blog-outline-btn">View all blogs</a>
             </div>
         @else
-            <div class="empty-blog-state">Hiện chưa có bài blog nào được đăng.</div>
+            <div class="empty-blog-state">There are no published blog posts yet.</div>
         @endif
     </div>
 </section>

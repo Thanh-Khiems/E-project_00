@@ -23,7 +23,7 @@ class SpecialtyController extends Controller
         $specialties = $query->latest()->paginate(10)->withQueryString();
 
         return view('admin.specialties.index', [
-            'pageTitle' => 'Quản lý chuyên khoa',
+            'pageTitle' => 'Specialty management',
             'specialties' => $specialties,
             'stats' => [
                 'total' => Specialty::count(),
@@ -40,7 +40,7 @@ class SpecialtyController extends Controller
 
         Specialty::create($validated);
 
-        return redirect()->route('admin.specialties.index')->with('success', 'Đã thêm chuyên khoa mới.');
+        return redirect()->route('admin.specialties.index')->with('success', 'New specialty added.');
     }
 
     public function update(Request $request, Specialty $specialty)
@@ -49,7 +49,7 @@ class SpecialtyController extends Controller
 
         $specialty->update($validated);
 
-        return redirect()->route('admin.specialties.index')->with('success', 'Đã cập nhật chuyên khoa thành công.');
+        return redirect()->route('admin.specialties.index')->with('success', 'Specialty updated successfully.');
     }
 
     public function destroy(Specialty $specialty)
@@ -57,7 +57,7 @@ class SpecialtyController extends Controller
         $specialtyName = $specialty->name;
         $specialty->delete();
 
-        return redirect()->route('admin.specialties.index')->with('success', "Đã xóa chuyên khoa: {$specialtyName}.");
+        return redirect()->route('admin.specialties.index')->with('success', "Deleted specialty: {$specialtyName}.");
     }
 
     protected function validateSpecialty(Request $request, ?Specialty $specialty = null): array

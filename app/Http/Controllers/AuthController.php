@@ -37,7 +37,7 @@ class AuthController extends Controller
 
         if (! $locationService->isValidSelection($validated['province'], $validated['district'], $validated['ward'])) {
             return back()->withErrors([
-                'province' => 'Khu vực đã chọn không hợp lệ hoặc đã thay đổi. Vui lòng chọn lại.',
+                'province' => 'The selected location is invalid or has changed. Please choose again.',
             ])->withInput();
         }
 
@@ -59,7 +59,7 @@ class AuthController extends Controller
 
         Auth::login($user);
 
-        return redirect()->route('user.dashboard')->with('success', 'Đăng ký tài khoản thành công');
+        return redirect()->route('user.dashboard')->with('success', 'Account registered successfully');
     }
 
     public function showLogin()
@@ -107,7 +107,7 @@ class AuthController extends Controller
         $validated = $request->validate([
             'email' => 'required|email|exists:users,email',
         ], [
-            'email.exists' => 'Email này chưa được đăng ký trong hệ thống.',
+            'email.exists' => 'This email is not registered in the system.',
         ]);
 
         $otp = (string) random_int(100000, 999999);
@@ -118,7 +118,7 @@ class AuthController extends Controller
         $request->session()->put('password_reset.sent_at', now()->timestamp);
 
         return redirect()->route('password.otp')
-            ->with('success', 'Mã xác thực đã được tạo. Mã demo: ' . $otp);
+            ->with('success', 'Verification code created. Demo code: ' . $otp);
     }
 
     public function showOtpForm(Request $request)
@@ -135,18 +135,18 @@ class AuthController extends Controller
         $request->validate([
             'otp' => 'required|digits:6',
         ], [
-            'otp.digits' => 'Mã xác thực phải gồm đúng 6 số.',
+            'otp.digits' => 'The verification code must contain exactly 6 digits.',
         ]);
 
         if (! $request->session()->has('password_reset.otp')) {
             return redirect()->route('password.request')->withErrors([
-                'email' => 'Phiên đặt lại mật khẩu đã hết hạn. Vui lòng thử lại.',
+                'email' => 'The password reset session has expired. Please try again.',
             ]);
         }
 
         if ($request->otp !== $request->session()->get('password_reset.otp')) {
             return back()->withErrors([
-                'otp' => 'Mã xác thực không đúng.',
+                'otp' => 'The verification code is incorrect.',
             ])->withInput();
         }
 
@@ -180,7 +180,7 @@ class AuthController extends Controller
 
         $request->session()->forget('password_reset');
 
-        return redirect()->route('login')->with('success', 'Mật khẩu mới đã được cập nhật. Vui lòng đăng nhập lại.');
+        return redirect()->route('login')->with('success', 'The new password has been updated. Please log in again.');
     }
 
     public function logout(Request $request)

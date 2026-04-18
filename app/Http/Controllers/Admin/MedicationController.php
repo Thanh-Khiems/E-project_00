@@ -29,7 +29,7 @@ class MedicationController extends Controller
 
         Medication::create($validated);
 
-        return back()->with('success', 'Đã thêm thuốc mới vào danh mục.');
+        return back()->with('success', 'New medication added to the catalog.');
     }
 
     public function update(Request $request, Medication $medication): RedirectResponse
@@ -43,13 +43,13 @@ class MedicationController extends Controller
 
         $medication->update($validated);
 
-        return back()->with('success', 'Đã cập nhật thông tin thuốc.');
+        return back()->with('success', 'Medication information updated.');
     }
 
     public function destroy(Medication $medication): RedirectResponse
     {
         $medication->delete();
 
-        return back()->with('success', 'Đã xóa thuốc khỏi danh mục.');
+        return back()->with('success', 'Medication removed from the catalog.');
     }
 }

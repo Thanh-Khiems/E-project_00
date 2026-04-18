@@ -76,7 +76,7 @@ class ProfileController extends Controller
         $user->update($validated);
         Patient::syncFromUser($user);
 
-        return back()->with('success', 'Cập nhật tài khoản thành công.');
+        return back()->with('success', 'Account updated successfully.');
     }
 
     public function updatePassword(Request $request)
@@ -89,12 +89,12 @@ class ProfileController extends Controller
         $user = Auth::user();
 
         if (! Hash::check($request->current_password, $user->password)) {
-            return back()->withErrors(['current_password' => 'Mật khẩu hiện tại không chính xác.']);
+            return back()->withErrors(['current_password' => 'The current password is incorrect.']);
         }
 
         $user->update(['password' => bcrypt($request->password)]);
 
-        return back()->with('success', 'Đổi mật khẩu thành công.');
+        return back()->with('success', 'Password changed successfully.');
     }
 
     public function updateAvatar(Request $request)
@@ -107,28 +107,28 @@ class ProfileController extends Controller
         $avatarFile = $request->file('avatar');
 
         if (! $avatarFile || ! $avatarFile->isValid()) {
-            return back()->withErrors(['avatar' => 'Ảnh tải lên không hợp lệ, vui lòng thử lại.']);
+            return back()->withErrors(['avatar' => 'The uploaded image is invalid. Please try again.']);
         }
 
-        // Xóa avatar cũ nếu có
+        // Delete the old avatar if it exists
         $this->deletePreviousAvatar($user->avatar);
 
-        // Tạo thư mục lưu ảnh nếu chưa có
+        // Create the image storage directory if it does not exist
         $directory = public_path('uploads/avatars');
         if (! is_dir($directory)) {
             mkdir($directory, 0755, true);
         }
 
-        // Tạo tên file avatar mới
+        // Generate the new avatar filename
         $filename = 'avatar_' . $user->id . '_' . now()->format('YmdHis') . '_' . Str::random(8) . '.' . $avatarFile->getClientOriginalExtension();
         $avatarFile->move($directory, $filename);
 
-        // Cập nhật avatar mới vào database
+        // Update the new avatar in the database
         $user->update([
             'avatar' => 'uploads/avatars/' . $filename,
         ]);
 
-        return back()->with('success', 'Cập nhật ảnh đại diện thành công.');
+        return back()->with('success', 'Profile picture updated successfully.');
     }
 
     protected function deletePreviousAvatar(?string $avatarPath): void
@@ -190,7 +190,7 @@ class ProfileController extends Controller
             ->first();
 
         if ($existingPending) {
-            return back()->with('error', 'Bạn đã có yêu cầu xác thực đang chờ duyệt.');
+            return back()->with('error', 'You already have a pending verification request.');
         }
 
         $specialty = Specialty::firstOrCreate(
@@ -239,6 +239,6 @@ class ProfileController extends Controller
             'doctor_rejection_reason' => null,
         ]);
 
-        return back()->with('success', 'Đã gửi yêu cầu xác thực bác sĩ, vui lòng chờ admin duyệt.');
+        return back()->with('success', 'Doctor verification request submitted. Please wait for admin approval.');
     }
 }

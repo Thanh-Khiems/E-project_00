@@ -17,6 +17,6 @@ class MedicineTypeController extends Controller
 
         MedicineType::create($validated);
 
-        return back()->with('success', 'Đã thêm nhóm thuốc mới.');
+        return back()->with('success', 'New medication group added.');
     }
 }

@@ -511,7 +511,7 @@
                                         <div class="schedule-status status-confirmed">Active</div>
                                     </div>
                                 @empty
-                                    <div class="mini-item">Hôm nay chưa có lịch làm việc nào được áp dụng.</div>
+                                    <div class="mini-item">No working schedule applies today yet.</div>
                                 @endforelse
                             </div>
                         </div>
@@ -532,14 +532,14 @@
                                     @forelse($allDays as $day)
                                         <div class="mini-item">{{ $day }}</div>
                                     @empty
-                                        <div class="mini-item">Chưa có ngày làm việc nào được tạo</div>
+                                        <div class="mini-item">No working days have been created yet</div>
                                     @endforelse
                                 </div>
                             </div>
 
                             <div class="doctor-card capacity-card">
-                                <h3>{{ $schedules->count() }} lịch đã tạo</h3>
-                                <p>Quản lý lịch làm việc, chỉnh sửa hoặc xóa trực tiếp ngay trong Schedule Settings.</p>
+                                <h3>{{ $schedules->count() }} schedules created</h3>
+                                <p>Manage working schedules, edit, or delete them directly in Schedule Settings.</p>
                                 <button type="button" onclick="switchTab('schedule')">Update Slots</button>
                             </div>
                         </div>
@@ -549,10 +549,10 @@
                         <div class="doctor-card">
                             <h4>Recent Activity</h4>
                             <ul class="activity-list">
-                                <li>{{ $schedules->count() }} lịch đã được tạo.</li>
-                                <li>{{ $todaySchedules->count() }} lịch đang áp dụng hôm nay.</li>
-                                <li>Bạn có thể chỉnh sửa trực tiếp ở mục Schedule Settings.</li>
-                                <li>Thông báo sẽ tự ẩn sau 3 giây.</li>
+                                <li>{{ $schedules->count() }} schedules have been created.</li>
+                                <li>{{ $todaySchedules->count() }} schedules active today.</li>
+                                <li>You can edit them directly in the Schedule Settings section.</li>
+                                <li>The notification will disappear automatically after 3 seconds.</li>
                             </ul>
                         </div>
                         <div class="doctor-card">
@@ -590,7 +590,7 @@
                 @endif
 
                 <div id="editModeBox" class="edit-mode-box">
-                    Bạn đang chỉnh sửa lịch làm việc. Sau khi sửa xong, bấm "Update Schedule".
+                    You are editing a working schedule. After finishing, click "Update Schedule".
                 </div>
 
                 <div class="doctor-card">
@@ -646,10 +646,10 @@
                             </div>
 
                             <div class="form-group full-width">
-                                <label>Location (Khu vực làm việc)</label>
+                                <label>Location (Work location)</label>
                                 <input type="text"
                                     class="form-control"
-                                    value="{{ Auth::user()->province ?? 'Chưa cập nhật địa điểm' }}"
+                                    value="{{ Auth::user()->province ?? 'Location not updated' }}"
                                     readonly
                                     style="background-color: #f3f4f6; cursor: not-allowed; color: #6b7280; border-color: #e5e7eb;">
                                 <input type="hidden" name="location" id="location" value="{{ Auth::user()->province }}">
@@ -704,7 +704,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="6">Hôm nay chưa có lịch khám nào được áp dụng.</td>
+                                        <td colspan="6">No appointment schedule applies today yet.</td>
                                     </tr>
                                 @endforelse
                             </tbody>
@@ -766,20 +766,20 @@
                                                     data-location="{{ $s->location }}"
                                                     data-notes="{{ $s->notes }}"
                                                 >
-                                                    Sửa
+                                                    Edit
                                                 </button>
 
-                                                <form action="{{ url('/schedule/' . $s->id) }}" method="POST" style="display:inline-block;" onsubmit="return confirm('Bạn có chắc muốn xóa lịch này?');">
+                                                <form action="{{ url('/schedule/' . $s->id) }}" method="POST" style="display:inline-block;" onsubmit="return confirm('Are you sure you want to delete this schedule?');">
                                                     @csrf
                                                     <input type="hidden" name="_method" value="DELETE">
-                                                    <button type="submit" class="btn-delete-row">Xóa</button>
+                                                    <button type="submit" class="btn-delete-row">Delete</button>
                                                 </form>
                                             </div>
                                         </td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="8">Bác sĩ chưa tạo lịch làm việc nào.</td>
+                                        <td colspan="8">The doctor has not created any working schedules yet.</td>
                                     </tr>
                                 @endforelse
                             </tbody>

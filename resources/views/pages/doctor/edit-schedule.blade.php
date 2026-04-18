@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chỉnh sửa lịch làm việc - MediConnect</title>
+    <title>Edit Working Schedule - MediConnect</title>
     <style>
         :root {
             --primary-color: #0ea5e9;
@@ -268,7 +268,7 @@
     </div>
 
     <div class="main">
-        <h1>Chỉnh sửa lịch làm việc</h1>
+        <h1>Edit working schedule</h1>
 
         @if($errors->any())
             <div class="alert-danger">
@@ -356,8 +356,8 @@
                 </div>
 
                 <div class="btn-group">
-                    <button type="submit" class="btn btn-primary">Cập nhật lịch</button>
-                    <a href="{{ route('schedule.index') }}" class="btn btn-secondary">Quay lại</a>
+                    <button type="submit" class="btn btn-primary">Update schedule</button>
+                    <a href="{{ route('schedule.index') }}" class="btn btn-secondary">Back</a>
                 </div>
             </div>
         </form>

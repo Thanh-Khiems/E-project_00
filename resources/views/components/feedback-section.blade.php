@@ -22,8 +22,8 @@
                     $patient = $feedback->patient;
                     $doctor = $feedback->doctor;
 
-                    $patientName = $patient?->full_name ?: 'Bệnh nhân MediConnect';
-                    $doctorName = $doctor?->name ?: ($doctor?->user?->full_name ?? 'Bác sĩ');
+                    $patientName = $patient?->full_name ?: 'MediConnect patient';
+                    $doctorName = $doctor?->name ?: ($doctor?->user?->full_name ?? 'Doctor');
                     $doctorName = str_starts_with(strtolower($doctorName), 'dr') ? $doctorName : 'Dr. ' . $doctorName;
                     $specialty = $doctor?->specialty?->name;
 
@@ -31,7 +31,7 @@
 
                     $reviewText = trim((string) $feedback->review);
                     if ($reviewText === '') {
-                        $reviewText = 'Bệnh nhân đã chấm ' . (int) $feedback->rating . '/5 sao cho ' . $doctorName . '.';
+                        $reviewText = 'The patient rated ' . (int) $feedback->rating . '/5 stars for ' . $doctorName . '.';
                     }
                 @endphp
 
@@ -50,7 +50,7 @@
                         <div style="color:#f5b400;font-size:16px;letter-spacing:2px;margin-bottom:10px;">{{ $renderStars($feedback->rating) }}</div>
                         <p style="margin-bottom:12px;">“{{ \Illuminate\Support\Str::limit($reviewText, 140) }}”</p>
                         <div style="font-size:13px;line-height:1.6;color:#6b7280;">
-                            Đánh giá cho <strong style="color:#1668e8;">{{ $doctorName }}</strong>
+                            Review for <strong style="color:#1668e8;">{{ $doctorName }}</strong>
                             @if($specialty)
                                 <br><span>{{ $specialty }}</span>
                             @endif
@@ -59,7 +59,7 @@
                 </article>
             @empty
                 <div style="grid-column:1 / -1;background:#fff;border:1px dashed #d9e3f0;border-radius:18px;padding:28px 24px;text-align:center;color:#6b7280;">
-                    Chưa có đánh giá nào từ bệnh nhân dành cho bác sĩ trên hệ thống.
+                    There are no patient reviews for doctors in the system yet.
                 </div>
             @endforelse
         </div>

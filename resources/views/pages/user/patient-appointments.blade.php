@@ -2,8 +2,8 @@
 
 @section('content')
 <div style="max-width: 1200px; margin: 40px auto; padding: 0 20px;">
-    <h2 style="margin-bottom: 12px; font-weight: 800; color: #1d4ed8;">Lịch hẹn và toa thuốc của tôi</h2>
-    <p style="margin:0 0 20px;color:#6b7280;">Chỉ hiển thị các lịch hẹn còn hiệu lực từ hiện tại đến 7 ngày tới. Các lịch hẹn đã hoàn tất bạn có thể xem lại trong hồ sơ cá nhân.</p>
+    <h2 style="margin-bottom: 12px; font-weight: 800; color: #1d4ed8;">My appointments and prescriptions</h2>
+    <p style="margin:0 0 20px;color:#6b7280;">Only currently valid appointments within the next 7 days are shown. Completed appointments can be reviewed in your profile.</p>
     <div style="display:flex;flex-direction:column;gap:20px;">
         @forelse($appointments as $appointment)
             <div style="background:#fff;border-radius:20px;padding:24px;box-shadow:0 10px 26px rgba(0,0,0,.05);">
@@ -14,23 +14,23 @@
                         <div style="color:#6b7280;">{{ optional($appointment->doctor->specialty)->name ?? 'N/A' }}</div>
                     </div>
                     <div>
-                        <div><strong>Ngày khám:</strong> {{ optional($appointment->appointment_date)->format('d/m/Y') ?? 'N/A' }}</div>
-                        <div><strong>Giờ:</strong> {{ \Carbon\Carbon::parse($appointment->start_time)->format('H:i') }} - {{ \Carbon\Carbon::parse($appointment->end_time)->format('H:i') }}</div>
-                        <div><strong>Trạng thái:</strong> {{ ucfirst($appointment->status ?? 'pending') }}</div>
+                        <div><strong>Appointment date:</strong> {{ optional($appointment->appointment_date)->format('d/m/Y') ?? 'N/A' }}</div>
+                        <div><strong>Time:</strong> {{ \Carbon\Carbon::parse($appointment->start_time)->format('H:i') }} - {{ \Carbon\Carbon::parse($appointment->end_time)->format('H:i') }}</div>
+                        <div><strong>Status:</strong> {{ ucfirst($appointment->status ?? 'pending') }}</div>
                     </div>
                 </div>
 
                 @if($appointment->status === 'completed')
                     <div style="margin-top:18px;padding:16px;border-radius:16px;background:#f8fafc;">
-                        <div style="margin-bottom:8px;"><strong>Chẩn đoán:</strong> {{ $appointment->diagnosis ?: 'Chưa có chẩn đoán.' }}</div>
-                        <div><strong>Lời dặn của bác sĩ:</strong> {{ $appointment->doctor_advice ?: 'Chưa có lời dặn.' }}</div>
+                        <div style="margin-bottom:8px;"><strong>Diagnosis:</strong> {{ $appointment->diagnosis ?: 'No diagnosis yet.' }}</div>
+                        <div><strong>Doctor's advice:</strong> {{ $appointment->doctor_advice ?: 'No advice yet.' }}</div>
                     </div>
 
                     <div style="margin-top:18px;padding:18px;border-radius:16px;background:#fff7ed;border:1px solid #fed7aa;">
                         <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center;">
                             <div>
-                                <h4 style="margin:0 0 6px;color:#9a3412;">Đánh giá bác sĩ</h4>
-                                <div style="color:#7c2d12;font-size:14px;">Sau khi gửi, bác sĩ và admin đều có thể xem đánh giá này.</div>
+                                <h4 style="margin:0 0 6px;color:#9a3412;">Doctor review</h4>
+                                <div style="color:#7c2d12;font-size:14px;">After submission, both the doctor and admin can view this review.</div>
                             </div>
                         </div>
 
@@ -39,19 +39,19 @@
                                 <div style="font-weight:800;color:#ea580c;font-size:18px;">
                                     {{ str_repeat('★', (int) $appointment->review->rating) }}{{ str_repeat('☆', 5 - (int) $appointment->review->rating) }}
                                 </div>
-                                <div style="margin-top:8px;"><strong>Số điểm:</strong> {{ $appointment->review->rating }}/5</div>
-                                <div style="margin-top:6px;"><strong>Nhận xét:</strong> {{ $appointment->review->review ?: 'Không có nhận xét thêm.' }}</div>
+                                <div style="margin-top:8px;"><strong>Rating:</strong> {{ $appointment->review->rating }}/5</div>
+                                <div style="margin-top:6px;"><strong>Comment:</strong> {{ $appointment->review->review ?: 'No additional comments.' }}</div>
                                 <div style="margin-top:6px;color:#6b7280;font-size:13px;">
-                                    Đã gửi lúc {{ optional($appointment->review->reviewed_at)->format('d/m/Y H:i') ?? '—' }}
+                                    Submitted at {{ optional($appointment->review->reviewed_at)->format('d/m/Y H:i') ?? '—' }}
                                 </div>
                             </div>
                         @else
                             <form method="POST" action="{{ route('appointments.review', $appointment) }}" style="margin-top:14px;">
                                 @csrf
                                 <div style="margin-bottom:12px;">
-                                    <label for="rating-{{ $appointment->id }}" style="display:block;margin-bottom:6px;font-weight:700;">Chấm điểm</label>
+                                    <label for="rating-{{ $appointment->id }}" style="display:block;margin-bottom:6px;font-weight:700;">Rate</label>
                                     <select id="rating-{{ $appointment->id }}" name="rating" style="width:100%;padding:12px 14px;border-radius:12px;border:1px solid #d1d5db;" required>
-                                        <option value="">-- Chọn số điểm --</option>
+                                        <option value="">-- Select rating --</option>
                                         @for($i = 5; $i >= 1; $i--)
                                             <option value="{{ $i }}">{{ $i }}/5 {{ str_repeat('★', $i) }}</option>
                                         @endfor
@@ -59,12 +59,12 @@
                                 </div>
 
                                 <div style="margin-bottom:12px;">
-                                    <label for="review-{{ $appointment->id }}" style="display:block;margin-bottom:6px;font-weight:700;">Nhận xét</label>
-                                    <textarea id="review-{{ $appointment->id }}" name="review" rows="4" placeholder="Nhập cảm nhận của bạn về bác sĩ..." style="width:100%;padding:12px 14px;border-radius:12px;border:1px solid #d1d5db;resize:vertical;"></textarea>
+                                    <label for="review-{{ $appointment->id }}" style="display:block;margin-bottom:6px;font-weight:700;">Comment</label>
+                                    <textarea id="review-{{ $appointment->id }}" name="review" rows="4" placeholder="Share your experience with the doctor..." style="width:100%;padding:12px 14px;border-radius:12px;border:1px solid #d1d5db;resize:vertical;"></textarea>
                                 </div>
 
                                 <button type="submit" style="padding:12px 16px;border:none;border-radius:12px;background:#ea580c;color:#fff;font-weight:800;cursor:pointer;">
-                                    Gửi đánh giá
+                                    Submit review
                                 </button>
                             </form>
                         @endif
@@ -73,25 +73,25 @@
 
                 @if($appointment->prescriptions->count())
                     <div style="margin-top:18px;">
-                        <h4 style="margin:0 0 12px;">Toa thuốc</h4>
+                        <h4 style="margin:0 0 12px;">Prescription</h4>
                         @foreach($appointment->prescriptions as $prescription)
                             <div style="border:1px solid #e5e7eb;border-radius:16px;padding:16px;margin-bottom:12px;">
                                 <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;">
                                     <div style="font-weight:800;color:#1d4ed8;">{{ $prescription->prescription_code }}</div>
                                     <div style="color:#6b7280;">{{ optional($prescription->issued_at)->format('d/m/Y H:i') ?? '—' }}</div>
                                 </div>
-                                <div style="margin-top:8px;"><strong>Chẩn đoán:</strong> {{ $prescription->diagnosis ?: '—' }}</div>
-                                <div style="margin-top:6px;"><strong>Ghi chú:</strong> {{ $prescription->notes ?: '—' }}</div>
+                                <div style="margin-top:8px;"><strong>Diagnosis:</strong> {{ $prescription->diagnosis ?: '—' }}</div>
+                                <div style="margin-top:6px;"><strong>Notes:</strong> {{ $prescription->notes ?: '—' }}</div>
                                 <div style="margin-top:12px;overflow:auto;">
                                     <table style="width:100%;border-collapse:collapse;min-width:760px;">
                                         <thead>
                                             <tr style="background:#eff6ff;">
-                                                <th style="padding:10px;text-align:left;">Thuốc</th>
-                                                <th style="padding:10px;text-align:left;">Liều dùng</th>
-                                                <th style="padding:10px;text-align:left;">Tần suất</th>
-                                                <th style="padding:10px;text-align:left;">Thời gian</th>
-                                                <th style="padding:10px;text-align:left;">Số lượng</th>
-                                                <th style="padding:10px;text-align:left;">Hướng dẫn</th>
+                                                <th style="padding:10px;text-align:left;">Medication</th>
+                                                <th style="padding:10px;text-align:left;">Dosage</th>
+                                                <th style="padding:10px;text-align:left;">Frequency</th>
+                                                <th style="padding:10px;text-align:left;">Time</th>
+                                                <th style="padding:10px;text-align:left;">Quantity</th>
+                                                <th style="padding:10px;text-align:left;">Instructions</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -115,7 +115,7 @@
             </div>
         @empty
             <div style="background:#fff;border-radius:20px;padding:24px;box-shadow:0 10px 26px rgba(0,0,0,.05);text-align:center;color:#6b7280;">
-                Bạn chưa có lịch hẹn nào.
+                You do not have any appointments yet.
             </div>
         @endforelse
     </div>

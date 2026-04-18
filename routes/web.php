@@ -47,7 +47,7 @@ Route::post('/contact', function (Request $request) {
     ]);
 
     return back()
-        ->with('success', 'Cảm ơn bạn đã liên hệ MediConnect. Chúng tôi đã nhận được yêu cầu và sẽ phản hồi sớm nhất.')
+        ->with('success', 'Thank you for contacting MediConnect. We have received your request and will respond as soon as possible.')
         ->withInput();
 })->name('contact.submit');
 Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');

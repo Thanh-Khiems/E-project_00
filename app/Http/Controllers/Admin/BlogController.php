@@ -28,7 +28,7 @@ class BlogController extends Controller
         $blogs = $query->latest()->paginate(9)->withQueryString();
 
         return view('admin.blogs.index', [
-            'pageTitle' => 'Quản lý blog',
+            'pageTitle' => 'Blog management',
             'blogs' => $blogs,
             'stats' => [
                 'total' => Blog::count(),
@@ -51,7 +51,7 @@ class BlogController extends Controller
 
         Blog::create($validated);
 
-        return redirect()->route('admin.blogs.index')->with('success', 'Đã tạo blog mới thành công.');
+        return redirect()->route('admin.blogs.index')->with('success', 'New blog created successfully.');
     }
 
     public function update(Request $request, Blog $blog)
@@ -70,7 +70,7 @@ class BlogController extends Controller
 
         $blog->update($validated);
 
-        return redirect()->route('admin.blogs.index')->with('success', 'Đã cập nhật blog thành công.');
+        return redirect()->route('admin.blogs.index')->with('success', 'Blog updated successfully.');
     }
 
     public function destroy(Blog $blog)
@@ -81,7 +81,7 @@ class BlogController extends Controller
 
         $blog->delete();
 
-        return redirect()->route('admin.blogs.index')->with('success', 'Đã xóa blog.');
+        return redirect()->route('admin.blogs.index')->with('success', 'Blog deleted.');
     }
 
     protected function validateBlog(Request $request, ?Blog $blog = null): array

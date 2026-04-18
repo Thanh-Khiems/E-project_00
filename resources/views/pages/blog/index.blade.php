@@ -7,8 +7,8 @@
         <div class="container blog-page-hero-inner">
             <div>
                 <span class="blog-kicker">MediConnect Blog</span>
-                <h1>Cẩm nang sức khỏe &amp; tin tức y tế</h1>
-                <p>Khám phá những bài viết mới nhất về chăm sóc sức khỏe, mẹo phòng bệnh và cập nhật nổi bật từ đội ngũ MediConnect.</p>
+                <h1>Health Guide &amp; Medical News</h1>
+                <p>Explore the latest articles on healthcare, prevention tips, and notable updates from the MediConnect team.</p>
             </div>
         </div>
     </section>
@@ -19,22 +19,22 @@
                 @auth
                     <a href="{{ route('blog.show', $featuredBlog->slug) }}" class="featured-blog-card">
                         <div class="featured-blog-content">
-                            <span class="featured-badge">Bài viết nổi bật</span>
+                            <span class="featured-badge">Featured article</span>
                             <h2>{{ $featuredBlog->title }}</h2>
                             <p>{{ $featuredBlog->excerpt_text }}</p>
-                            <span class="featured-readmore">Đọc bài viết</span>
+                            <span class="featured-readmore">Read article</span>
                         </div>
                         <div class="featured-blog-image-wrap">
                             <img src="{{ $featuredBlog->thumbnail_url }}" alt="{{ $featuredBlog->title }}" class="featured-blog-image">
                         </div>
                     </a>
                 @else
-                    <div class="featured-blog-card auth-locked" aria-disabled="true" title="Vui lòng đăng nhập hoặc đăng ký để tiếp tục">
+                    <div class="featured-blog-card auth-locked" aria-disabled="true" title="Please log in or register to continue">
                         <div class="featured-blog-content">
-                            <span class="featured-badge">Bài viết nổi bật</span>
+                            <span class="featured-badge">Featured article</span>
                             <h2>{{ $featuredBlog->title }}</h2>
                             <p>{{ $featuredBlog->excerpt_text }}</p>
-                            <span class="featured-readmore">Đọc bài viết</span>
+                            <span class="featured-readmore">Read article</span>
                         </div>
                         <div class="featured-blog-image-wrap">
                             <img src="{{ $featuredBlog->thumbnail_url }}" alt="{{ $featuredBlog->title }}" class="featured-blog-image">
@@ -52,13 +52,13 @@
                         <img src="{{ $blog->thumbnail_url }}" alt="{{ $blog->title }}" class="news-image">
                     </div>
                     <div class="news-content">
-                        <div class="blog-meta">{{ $blog->published_at?->format('d/m/Y') ?? 'Mới cập nhật' }}</div>
+                        <div class="blog-meta">{{ $blog->published_at?->format('d/m/Y') ?? 'Recently updated' }}</div>
                         <h3>{{ $blog->title }}</h3>
                         <p>{{ $blog->excerpt_text }}</p>
                         @auth
-                            <a href="{{ route('blog.show', $blog->slug) }}" class="news-btn">Đọc thêm</a>
+                            <a href="{{ route('blog.show', $blog->slug) }}" class="news-btn">Read more</a>
                         @else
-                            <span class="news-btn auth-locked" aria-disabled="true" title="Vui lòng đăng nhập hoặc đăng ký để tiếp tục">Đọc thêm</span>
+                            <span class="news-btn auth-locked" aria-disabled="true" title="Please log in or register to continue">Read more</span>
                         @endauth
                     </div>
                 </article>
@@ -70,7 +70,7 @@
         </div>
     @endif
 @else
-    <div class="empty-blog-state">Chưa có blog nào được đăng.</div>
+    <div class="empty-blog-state">No blog posts have been published yet.</div>
 @endif
         </div>
     </section>

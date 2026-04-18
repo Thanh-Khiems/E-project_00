@@ -15,7 +15,7 @@
                     <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                         <path d="M12 2C8.1 2 5 5.1 5 9c0 5.1 7 13 7 13s7-7.9 7-13c0-3.9-3.1-7-7-7Zm0 9.5A2.5 2.5 0 1 1 14.5 9 2.5 2.5 0 0 1 12 11.5Z"/>
                     </svg>
-                    <span>123 Nguyễn Văn Cừ, Ninh Kiều, Cần Thơ</span>
+                    <span>123 Nguyen Van Cu, Ninh Kieu, Can Tho</span>
                 </div>
 
                 <div class="footer-contact-item">

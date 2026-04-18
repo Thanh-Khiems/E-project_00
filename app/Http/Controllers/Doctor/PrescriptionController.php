@@ -23,11 +23,11 @@ class PrescriptionController extends Controller
         }
 
         if ($appointment->status === 'cancelled') {
-            return redirect()->route('doctor.appointments')->with('error', 'Không thể kê đơn cho lịch hẹn đã bị hủy.');
+            return redirect()->route('doctor.appointments')->with('error', 'Cannot issue a prescription for a cancelled appointment.');
         }
 
         if (! in_array($appointment->status, ['confirmed', 'completed'], true)) {
-            return redirect()->route('doctor.appointments')->with('error', 'Chỉ có thể hoàn tất khám và kê đơn cho lịch hẹn đã được xác nhận.');
+            return redirect()->route('doctor.appointments')->with('error', 'You can only complete the visit and issue a prescription for a confirmed appointment.');
         }
 
         $appointment->load([
@@ -50,7 +50,7 @@ class PrescriptionController extends Controller
         }
 
         if ($appointment->status === 'cancelled') {
-            return back()->with('error', 'Không thể kê đơn cho lịch hẹn đã bị hủy.');
+            return back()->with('error', 'Cannot issue a prescription for a cancelled appointment.');
         }
 
         $validated = $request->validate([
@@ -99,6 +99,6 @@ class PrescriptionController extends Controller
             }
         });
 
-        return redirect()->route('doctor.appointments')->with('success', 'Đã hoàn tất buổi khám và phát hành đơn thuốc.');
+        return redirect()->route('doctor.appointments')->with('success', 'The visit has been completed and the prescription has been issued.');
     }
 }

@@ -37,7 +37,7 @@ class DoctorController extends Controller
         $doctors = $query->latest()->paginate(10)->withQueryString();
 
         return view('admin.doctors.index', [
-            'pageTitle' => 'Danh sách bác sĩ',
+            'pageTitle' => 'Doctor List',
             'doctors' => $doctors,
             'specialties' => Specialty::orderBy('name')->get(),
             'stats' => $this->stats(),
@@ -66,7 +66,7 @@ class DoctorController extends Controller
         $doctors = $query->latest()->paginate(10)->withQueryString();
 
         return view('admin.doctors.approvals', [
-            'pageTitle' => 'Duyệt bác sĩ',
+            'pageTitle' => 'Doctor approvals',
             'doctors' => $doctors,
             'stats' => $this->stats(),
             'approvalStatus' => $approvalStatus,
@@ -92,7 +92,7 @@ class DoctorController extends Controller
             ]);
         }
 
-        return redirect()->back()->with('success', 'Đã duyệt bác sĩ thành công.');
+        return redirect()->back()->with('success', 'Doctor approved successfully.');
     }
 
     public function reject(Request $request, Doctor $doctor)
@@ -117,7 +117,7 @@ class DoctorController extends Controller
             ]);
         }
 
-        return redirect()->back()->with('success', 'Đã từ chối hồ sơ bác sĩ.');
+        return redirect()->back()->with('success', 'Doctor application rejected.');
     }
 
     protected function stats(): array

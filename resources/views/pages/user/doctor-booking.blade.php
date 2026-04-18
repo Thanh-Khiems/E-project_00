@@ -260,13 +260,13 @@
     $avatar = $doctor->user?->avatar_url ?? asset('images/default-avatar.png');
 
     $dayLabels = [
-        'Mon' => 'Thứ 2',
-        'Tue' => 'Thứ 3',
-        'Wed' => 'Thứ 4',
-        'Thu' => 'Thứ 5',
-        'Fri' => 'Thứ 6',
-        'Sat' => 'Thứ 7',
-        'Sun' => 'Chủ nhật',
+        'Mon' => 'Monday',
+        'Tue' => 'Tuesday',
+        'Wed' => 'Wednesday',
+        'Thu' => 'Thursday',
+        'Fri' => 'Friday',
+        'Sat' => 'Saturday',
+        'Sun' => 'Sunday',
     ];
     $hasAvailableBookingSlot = $bookingSlots->flatten(1)->contains(fn ($slot) => ! $slot['is_full']);
 @endphp
@@ -275,8 +275,8 @@
     <div class="booking-container">
 
         <div class="booking-header">
-            <h2>Đặt lịch khám với bác sĩ</h2>
-            <p>Chọn khung giờ phù hợp trong 7 ngày tới trước khi tiến hành đặt hẹn.</p>
+            <h2>Book an appointment with a doctor</h2>
+            <p>Choose a suitable time slot within the next 7 days before proceeding with the booking.</p>
         </div>
 
         <div class="booking-grid">
@@ -284,38 +284,38 @@
                 <div class="doctor-profile">
                     <img src="{{ $avatar }}" alt="{{ $doctor->name }}" class="doctor-avatar">
 
-                    <div class="doctor-name">{{ $doctor->name ?? 'Chưa cập nhật tên' }}</div>
-                    <div class="doctor-meta">{{ $doctor->degree ?? 'Bác sĩ' }}</div>
-                    <div class="doctor-meta">{{ optional($doctor->specialty)->name ?? 'Chưa cập nhật chuyên khoa' }}</div>
+                    <div class="doctor-name">{{ $doctor->name ?? 'Name not updated' }}</div>
+                    <div class="doctor-meta">{{ $doctor->degree ?? 'Doctor' }}</div>
+                    <div class="doctor-meta">{{ optional($doctor->specialty)->name ?? 'Specialty not updated' }}</div>
                 </div>
 
                 <div class="doctor-info-list">
                     <div class="doctor-info-item">
-                        <strong>Kinh nghiệm</strong>
-                        {{ $doctor->experience_years ? $doctor->experience_years . ' năm kinh nghiệm' : 'Chưa cập nhật' }}
+                        <strong>Experience</strong>
+                        {{ $doctor->experience_years ? $doctor->experience_years . ' years of experience' : 'Not updated' }}
                     </div>
 
                     <div class="doctor-info-item">
-                        <strong>Thành phố</strong>
-                        {{ $doctor->city ?? 'Chưa cập nhật' }}
+                        <strong>City</strong>
+                        {{ $doctor->city ?? 'Not updated' }}
                     </div>
 
                     <div class="doctor-info-item">
                         <strong>Email</strong>
-                        {{ $doctor->user->email ?? 'Chưa cập nhật' }}
+                        {{ $doctor->user->email ?? 'Not updated' }}
                     </div>
 
                     <div class="doctor-info-item">
-                        <strong>Số điện thoại</strong>
-                        {{ $doctor->user->phone ?? 'Chưa cập nhật' }}
+                        <strong>Phone number</strong>
+                        {{ $doctor->user->phone ?? 'Not updated' }}
                     </div>
                 </div>
             </div>
 
             <div class="booking-card">
-                <div class="schedule-section-title">Chọn khung giờ khám</div>
+                <div class="schedule-section-title">Choose an appointment time slot</div>
                 <div class="schedule-note">
-                    Bệnh nhân chọn 1 khung giờ phù hợp từ lịch làm việc mà bác sĩ đã công bố trong 7 ngày tới.
+                    The patient selects one suitable time slot from the doctor's published working schedule for the next 7 days.
                 </div>
 
                 <form action="{{ route('appointments.store') }}" method="POST">
@@ -356,7 +356,7 @@
                                             {{ $slot['start_time']->format('H:i') }} - {{ $slot['end_time']->format('H:i') }}
 
                                             <span class="slot-sub">
-                                                {{ $slot['type'] === 'online' ? 'Khám online' : 'Khám trực tiếp' }}
+                                                {{ $slot['type'] === 'online' ? 'Online consultation' : 'In-person consultation' }}
                                                 @if($slot['location'])
                                                     • {{ $slot['location'] }}
                                                 @endif
@@ -364,7 +364,7 @@
 
                                             @if(! is_null($slot['remaining_slots']))
                                                 <span class="slot-capacity {{ $slot['is_full'] ? 'slot-full' : '' }}">
-                                                    {{ $slot['is_full'] ? 'Đã đầy' : 'Còn ' . $slot['remaining_slots'] . ' chỗ' }}
+                                                    {{ $slot['is_full'] ? 'Full' : '' . $slot['remaining_slots'] . ' slots left' }}
                                                 </span>
                                             @endif
                                         </label>
@@ -374,16 +374,16 @@
                         </div>
                     @empty
                         <div class="empty-slot">
-                            Bác sĩ chưa có khung giờ hợp lệ trong 7 ngày tới nên hiện chưa thể đặt hẹn.
+                            The doctor has no valid time slots in the next 7 days, so booking is currently unavailable.
                         </div>
                     @endforelse
 
                     <div class="booking-submit-box">
                         <button type="submit" class="booking-submit-btn" {{ ! $hasAvailableBookingSlot ? 'disabled' : '' }}>
-                            Đặt lịch hẹn
+                            Book appointment
                         </button>
                         <div class="booking-warning">
-                            {{ $hasAvailableBookingSlot ? 'Vui lòng chọn 1 khung giờ trước khi đặt lịch.' : 'Hiện không còn chỗ trống để đặt lịch trong 7 ngày tới.' }}
+                            {{ $hasAvailableBookingSlot ? 'Please choose one time slot before booking.' : 'There are no available slots left for booking in the next 7 days.' }}
                         </div>
                     </div>
                 </form>
