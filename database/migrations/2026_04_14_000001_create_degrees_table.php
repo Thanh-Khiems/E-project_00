@@ -20,7 +20,7 @@ return new class extends Migration
         DB::table('degrees')->insert([
             [
                 'name' => 'Master',
-                'description' => 'Master's degree in a medical specialty.',
+                'description' => "Master's degree in a medical specialty.",
                 'status' => 'active',
                 'created_at' => now(),
                 'updated_at' => now(),

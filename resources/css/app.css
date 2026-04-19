@@ -1373,6 +1373,8 @@ input {
 .doctor-btn-primary {
     background: #1668e8;
     color: #fff;
+    text-align: center;
+    padding: 6px;
 }
 
 .doctor-btn-primary:hover {

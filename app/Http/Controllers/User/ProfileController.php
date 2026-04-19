@@ -12,7 +12,6 @@ use App\Models\Patient;
 use App\Models\Specialty;
 use App\Models\Appointment;
 use App\Models\Degree;
-use Illuminate\Support\Str;
 
 class ProfileController extends Controller
 {
@@ -39,15 +38,8 @@ class ProfileController extends Controller
             ->latest('start_time')
             ->get();
 
-        $specialties = Specialty::query()
-            ->active()
-            ->orderBy('name')
-            ->get();
-
-        $degrees = Degree::query()
-            ->active()
-            ->orderBy('name')
-            ->get();
+        $specialties = Specialty::query()->active()->orderBy('name')->get();
+        $degrees = Degree::query()->active()->orderBy('name')->get();
 
         return view('pages.user.profile', compact(
             'user',
@@ -63,6 +55,7 @@ class ProfileController extends Controller
     public function update(Request $request)
     {
         $user = Auth::user();
+
         $validated = $request->validate([
             'full_name' => 'required|string|max:255',
             'email' => 'required|email|max:255',
@@ -97,6 +90,7 @@ class ProfileController extends Controller
         return back()->with('success', 'Password changed successfully.');
     }
 
+    // ✅ FIX CHUẨN STORAGE
     public function updateAvatar(Request $request)
     {
         $request->validate([
@@ -104,67 +98,24 @@ class ProfileController extends Controller
         ]);
 
         $user = Auth::user();
-        $avatarFile = $request->file('avatar');
 
-        if (! $avatarFile || ! $avatarFile->isValid()) {
-            return back()->withErrors(['avatar' => 'The uploaded image is invalid. Please try again.']);
+        if ($request->hasFile('avatar')) {
+
+            // Xoá avatar cũ nếu có
+            if ($user->avatar && Storage::disk('public')->exists($user->avatar)) {
+                Storage::disk('public')->delete($user->avatar);
+            }
+
+            // Lưu avatar mới vào storage
+            $path = $request->file('avatar')->store('uploads/avatars', 'public');
+
+            // Lưu DB
+            $user->update([
+                'avatar' => $path,
+            ]);
         }
-
-        // Delete the old avatar if it exists
-        $this->deletePreviousAvatar($user->avatar);
-
-        // Create the image storage directory if it does not exist
-        $directory = public_path('uploads/avatars');
-        if (! is_dir($directory)) {
-            mkdir($directory, 0755, true);
-        }
-
-        // Generate the new avatar filename
-        $filename = 'avatar_' . $user->id . '_' . now()->format('YmdHis') . '_' . Str::random(8) . '.' . $avatarFile->getClientOriginalExtension();
-        $avatarFile->move($directory, $filename);
-
-        // Update the new avatar in the database
-        $user->update([
-            'avatar' => 'uploads/avatars/' . $filename,
-        ]);
 
         return back()->with('success', 'Profile picture updated successfully.');
-    }
-
-    protected function deletePreviousAvatar(?string $avatarPath): void
-    {
-        $avatarPath = trim((string) $avatarPath);
-
-        if ($avatarPath === '') {
-            return;
-        }
-
-        $normalized = ltrim($avatarPath, '/');
-
-        $storageCandidates = array_unique(array_filter([
-            $normalized,
-            Str::startsWith($normalized, 'storage/') ? Str::after($normalized, 'storage/') : null,
-            Str::startsWith($normalized, 'avatars/') ? null : 'avatars/' . $normalized,
-        ]));
-
-        foreach ($storageCandidates as $candidate) {
-            if (Storage::disk('public')->exists($candidate)) {
-                Storage::disk('public')->delete($candidate);
-            }
-        }
-
-        $publicCandidates = array_unique(array_filter([
-            $normalized,
-            Str::startsWith($normalized, 'uploads/') ? null : 'uploads/avatars/' . basename($normalized),
-        ]));
-
-        foreach ($publicCandidates as $candidate) {
-            $fullPath = public_path($candidate);
-
-            if (is_file($fullPath)) {
-                @unlink($fullPath);
-            }
-        }
     }
 
     public function verifyDoctor(Request $request)
@@ -209,26 +160,23 @@ class ProfileController extends Controller
         $doctor = Doctor::firstOrNew(['user_id' => $user->id]);
 
         $doctor->fill([
-            'user_id'             => $user->id,
-            'specialty_id'        => $specialty->id,
-            'name'                => $validated['doctor_full_name'],
-            'email'               => $user->email,
-            'phone'               => $validated['doctor_phone'],
-            'degree'              => $validated['degree'],
-            'doctor_dob'          => $validated['doctor_dob'],
-            'citizen_id'          => $validated['citizen_id'],
-            'citizen_id_front'    => $citizenFrontPath,
-            'citizen_id_back'     => $citizenBackPath,
-            'degree_image'        => $degreeImagePath,
-            'experience_years'    => $validated['experience_years'],
-            'city'                => $validated['doctor_city'] ?? $user->province,
-            'status'              => 'active',
-            'approval_status'     => 'pending',
-            'approval_note'       => null,
-            'approved_at'         => null,
+            'user_id' => $user->id,
+            'specialty_id' => $specialty->id,
+            'name' => $validated['doctor_full_name'],
+            'email' => $user->email,
+            'phone' => $validated['doctor_phone'],
+            'degree' => $validated['degree'],
+            'doctor_dob' => $validated['doctor_dob'],
+            'citizen_id' => $validated['citizen_id'],
+            'citizen_id_front' => $citizenFrontPath,
+            'citizen_id_back' => $citizenBackPath,
+            'degree_image' => $degreeImagePath,
+            'experience_years' => $validated['experience_years'],
+            'city' => $validated['doctor_city'] ?? $user->province,
+            'status' => 'active',
+            'approval_status' => 'pending',
             'verification_status' => 'pending',
-            'submitted_at'        => now(),
-            'rejected_at'         => null,
+            'submitted_at' => now(),
         ]);
 
         $doctor->save();
@@ -239,6 +187,6 @@ class ProfileController extends Controller
             'doctor_rejection_reason' => null,
         ]);
 
-        return back()->with('success', 'Doctor verification request submitted. Please wait for admin approval.');
+        return back()->with('success', 'Doctor verification request submitted.');
     }
 }
