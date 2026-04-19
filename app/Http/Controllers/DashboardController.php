@@ -13,11 +13,7 @@ class DashboardController extends Controller
 {
     public function user()
     {
-        $featuredBlogs = Blog::published()
-            ->where('is_featured', true)
-            ->latest('published_at')
-            ->take(6)
-            ->get();
+        $featuredBlogs = Blog::featuredWithHardcoded(6);
 
         $homeDoctors = Doctor::query()
             ->with(['user', 'specialty'])

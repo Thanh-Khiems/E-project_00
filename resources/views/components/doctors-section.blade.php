@@ -75,8 +75,8 @@
                             <a href="{{ route('doctor.booking', $doctor->id) }}" class="doctor-btn doctor-btn-light">View schedule</a>
                             <a href="{{ route('doctor.booking', $doctor->id) }}" class="doctor-btn doctor-btn-primary">Book appointment</a>
                         @else
-                            <span class="doctor-btn doctor-btn-light auth-locked" aria-disabled="true" title="Please log in or register to continue">View schedule</span>
-                            <span class="doctor-btn doctor-btn-primary auth-locked" aria-disabled="true" title="Please log in or register to continue">Book appointment</span>
+                            <a href="{{ route('login', ['auth_required' => 1, 'redirect' => route('doctor.booking', $doctor->id)]) }}" class="doctor-btn doctor-btn-light auth-locked" title="Please log in or register to continue">View schedule</a>
+                            <a href="{{ route('login', ['auth_required' => 1, 'redirect' => route('doctor.booking', $doctor->id)]) }}" class="doctor-btn doctor-btn-primary auth-locked" title="Please log in or register to continue">Book appointment</a>
                         @endauth
                     </div>
                 </article>

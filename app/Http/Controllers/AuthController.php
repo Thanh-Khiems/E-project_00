@@ -7,7 +7,7 @@ use App\Models\Patient;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Str;
 use App\Services\LocationService;
 
 class AuthController extends Controller
@@ -62,8 +62,10 @@ class AuthController extends Controller
         return redirect()->route('user.dashboard')->with('success', 'Account registered successfully');
     }
 
-    public function showLogin()
+    public function showLogin(Request $request)
     {
+        $this->storeIntendedUrl($request->query('redirect'));
+
         return view('pages.home');
     }
 
@@ -74,27 +76,22 @@ class AuthController extends Controller
             'password' => 'required',
         ]);
 
+        $this->storeIntendedUrl($request->input('redirect'));
+
         $remember = $request->boolean('remember');
 
         if (Auth::attempt($credentials, $remember)) {
             $request->session()->regenerate();
 
             $user = Auth::user();
+            $defaultRedirect = $this->defaultRedirectPathFor($user);
 
-            if ($user->role === 'admin') {
-                return redirect('/admin')->with('success', 'Login successful');
-            }
-
-            if ($user->role === 'doctor') {
-                return redirect()->route('doctor.dashboard')->with('success', 'Login successful');
-            }
-
-            return redirect()->route('user.dashboard')->with('success', 'Login successful');
+            return redirect()->intended($defaultRedirect)->with('success', 'Login successful');
         }
 
         return back()->withErrors([
             'email' => 'Email or password is incorrect.',
-        ])->onlyInput('email');
+        ])->withInput($request->only('email', 'redirect'));
     }
 
     public function showForgotPassword()
@@ -191,6 +188,35 @@ class AuthController extends Controller
         $request->session()->regenerateToken();
 
         return redirect('/');
+    }
+
+    protected function defaultRedirectPathFor(User $user): string
+    {
+        if ($user->role === 'admin') {
+            return '/admin';
+        }
+
+        if ($user->role === 'doctor') {
+            return route('doctor.dashboard');
+        }
+
+        return route('user.dashboard');
+    }
+
+    protected function storeIntendedUrl(?string $redirect): void
+    {
+        $redirect = trim((string) $redirect);
+
+        if ($redirect === '' || ! $this->isSafeRedirectTarget($redirect)) {
+            return;
+        }
+
+        session(['url.intended' => $redirect]);
+    }
+
+    protected function isSafeRedirectTarget(string $redirect): bool
+    {
+        return Str::startsWith($redirect, ['/']) || Str::startsWith($redirect, url('/'));
     }
 
     public function doctor()

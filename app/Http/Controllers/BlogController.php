@@ -8,25 +8,22 @@ class BlogController extends Controller
 {
     public function index()
     {
-        $featuredBlog = Blog::published()->where('is_featured', true)->latest('published_at')->first();
-
-        $blogs = Blog::published()
-            ->when($featuredBlog, fn ($q) => $q->where('id', '!=', $featuredBlog->id))
-            ->latest('published_at')
-            ->paginate(9);
+        $featuredBlog = Blog::featuredWithHardcoded(1)->first();
+        $blogs = Blog::paginatePublishedWithHardcoded(9, $featuredBlog?->slug);
 
         return view('pages.blog.index', compact('blogs', 'featuredBlog'));
     }
 
     public function show(string $slug)
     {
-        $blog = Blog::published()->where('slug', $slug)->firstOrFail();
+        $blog = Blog::findPublishedBySlugWithHardcoded($slug);
 
-        $relatedBlogs = Blog::published()
-            ->where('id', '!=', $blog->id)
-            ->latest('published_at')
+        abort_unless($blog, 404);
+
+        $relatedBlogs = Blog::publishedWithHardcoded()
+            ->reject(fn (Blog $related) => $related->slug === $blog->slug)
             ->take(3)
-            ->get();
+            ->values();
 
         return view('pages.blog.show', compact('blog', 'relatedBlogs'));
     }

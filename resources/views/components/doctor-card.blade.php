@@ -30,9 +30,9 @@
                 Book Appointment
             </button>
         @else
-            <button class="btn btn-primary w-100 rounded-pill py-2 fw-bold shadow-sm transition-all appointment-btn auth-locked" type="button" disabled title="Please log in or register to continue">
+            <a href="{{ route('login', ['auth_required' => 1, 'redirect' => route('doctors.index')]) }}" class="btn btn-primary w-100 rounded-pill py-2 fw-bold shadow-sm transition-all appointment-btn auth-locked" title="Please log in or register to continue">
                 Book Appointment
-            </button>
+            </a>
         @endauth
     </div>
 </div>

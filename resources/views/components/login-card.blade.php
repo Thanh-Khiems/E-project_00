@@ -6,11 +6,26 @@
 
         <h2>Log In</h2>
 
+        @php
+            $authRequiredMessage = (request()->boolean('auth_required') || old('redirect'))
+                ? (request('notice') ?: 'Please log in to continue using this feature.')
+                : null;
+        @endphp
+
         @if (session('success'))
             <div class="auth-recovery-alert mb-3">{{ session('success') }}</div>
         @endif
 
+        @if (session('error'))
+            <div class="auth-recovery-alert mb-3" style="background:#fef2f2;color:#991b1b;border-color:#fecaca;">{{ session('error') }}</div>
+        @endif
+
+        @if ($authRequiredMessage)
+            <div class="auth-recovery-alert mb-3" style="background:#eff6ff;color:#1d4ed8;border-color:#bfdbfe;">{{ $authRequiredMessage }}</div>
+        @endif
+
         <form class="login-form" method="POST" action="{{ route('login.submit') }}">
+            <input type="hidden" name="redirect" value="{{ old('redirect', request('redirect')) }}">
             @csrf
 
             <div class="form-group">

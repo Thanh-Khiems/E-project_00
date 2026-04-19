@@ -20,7 +20,7 @@
         </div>
 
         <div class="topbar-right topbar-account-group">
-            <a href="{{ route('doctor.dashboard') }}" class="topbar-item topbar-link">
+            <a href="{{ route('doctor.manage') }}" class="topbar-item topbar-link {{ request()->routeIs('doctor.manage') ? 'active' : '' }}">
                 <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                     <path d="M4 5a2 2 0 0 1 2-2h9l5 5v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5Zm11 0v4h4"/>
                     <path d="M8 13h8M8 17h5" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/>

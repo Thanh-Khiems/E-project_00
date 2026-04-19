@@ -28,7 +28,7 @@
             <div class="nav-menu-mobile-extra">
                 <span class="nav-mobile-label">Account</span>
 
-                <a href="{{ route('doctor.dashboard') }}"
+                <a href="{{ route('doctor.manage') }}"
                    class="nav-mobile-action {{ request()->routeIs('doctor.dashboard', 'doctor.manage') ? 'active' : '' }}">
                     Manage
                 </a>

@@ -677,12 +677,12 @@
                                 Book appointment
                             </a>
                         @else
-                            <span class="doctor-directory-btn doctor-directory-btn-outline auth-locked" aria-disabled="true" title="Please log in or register to continue">
+                            <a href="{{ route('login', ['auth_required' => 1, 'redirect' => route('doctor.booking', $doctor->id)]) }}" class="doctor-directory-btn doctor-directory-btn-outline auth-locked" title="Please log in or register to continue">
                                 View schedule
-                            </span>
-                            <span class="doctor-directory-btn doctor-directory-btn-primary auth-locked" aria-disabled="true" title="Please log in or register to continue">
+                            </a>
+                            <a href="{{ route('login', ['auth_required' => 1, 'redirect' => route('doctor.booking', $doctor->id)]) }}" class="doctor-directory-btn doctor-directory-btn-primary auth-locked" title="Please log in or register to continue">
                                 Book appointment
-                            </span>
+                            </a>
                         @endauth
                     </div>
                 </article>

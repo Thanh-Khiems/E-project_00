@@ -14,11 +14,7 @@ class HomeController extends Controller
             return redirect()->route('user.dashboard');
         }
 
-        $featuredBlogs = Blog::published()
-            ->where('is_featured', true)
-            ->latest('published_at')
-            ->take(3)
-            ->get();
+        $featuredBlogs = Blog::featuredWithHardcoded(3);
 
         $homeDoctors = Doctor::query()
             ->with(['user', 'specialty'])

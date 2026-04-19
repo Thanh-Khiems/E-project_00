@@ -42,13 +42,10 @@ class AppointmentController extends Controller
 
         if (! $appointmentDate) {
             return back()->with('error', 'Cannot create an appointment for a past date or time. Please choose another time slot.');
-<<<<<<< HEAD
         }
 
         if ($appointmentDate->gt(now()->copy()->addWeek())) {
             return back()->with('error', 'Appointments can only be booked within the next 7 days.');
-=======
->>>>>>> 68df70511387ac0b922fb64132c9a8932ec7b98b
         }
 
         $patientId = Auth::id();

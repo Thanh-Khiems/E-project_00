@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use App\Models\Doctor;
 use App\Models\Patient;
 use App\Models\Specialty;
@@ -90,7 +91,6 @@ class ProfileController extends Controller
         return back()->with('success', 'Password changed successfully.');
     }
 
-    // ✅ FIX CHUẨN STORAGE
     public function updateAvatar(Request $request)
     {
         $request->validate([
@@ -98,22 +98,49 @@ class ProfileController extends Controller
         ]);
 
         $user = Auth::user();
+        $oldAvatar = trim((string) ($user->avatar ?? ''));
 
-        if ($request->hasFile('avatar')) {
+        if (! $request->hasFile('avatar')) {
+            return back()->with('error', 'Please choose an image to upload.');
+        }
 
-            // Xoá avatar cũ nếu có
-            if ($user->avatar && Storage::disk('public')->exists($user->avatar)) {
-                Storage::disk('public')->delete($user->avatar);
+        $file = $request->file('avatar');
+        $filename = 'avatar_' . $user->id . '_' . now()->format('YmdHis') . '_' . Str::random(8) . '.' . strtolower($file->getClientOriginalExtension());
+        $directory = public_path('uploads/avatars');
+
+        if (! is_dir($directory)) {
+            mkdir($directory, 0755, true);
+        }
+
+        $file->move($directory, $filename);
+
+        $relativePath = 'uploads/avatars/' . $filename;
+
+        $deleteCandidates = array_filter(array_unique([
+            $oldAvatar !== '' ? $oldAvatar : null,
+            $oldAvatar !== '' ? ltrim($oldAvatar, '/') : null,
+            $oldAvatar !== '' ? Str::after($oldAvatar, 'storage/') : null,
+            $oldAvatar !== '' ? 'storage/' . ltrim(Str::after($oldAvatar, 'storage/'), '/') : null,
+            $oldAvatar !== '' ? 'uploads/avatars/' . basename($oldAvatar) : null,
+        ]));
+
+        foreach ($deleteCandidates as $candidate) {
+            $publicCandidate = public_path($candidate);
+            if (is_file($publicCandidate)) {
+                @unlink($publicCandidate);
             }
 
-            // Lưu avatar mới vào storage
-            $path = $request->file('avatar')->store('uploads/avatars', 'public');
-
-            // Lưu DB
-            $user->update([
-                'avatar' => $path,
-            ]);
+            $storageCandidate = ltrim(Str::after($candidate, 'storage/'), '/');
+            if ($storageCandidate !== '' && Storage::disk('public')->exists($storageCandidate)) {
+                Storage::disk('public')->delete($storageCandidate);
+            }
         }
+
+        $user->forceFill([
+            'avatar' => $relativePath,
+        ])->save();
+
+        Patient::syncFromUser($user->fresh());
 
         return back()->with('success', 'Profile picture updated successfully.');
     }

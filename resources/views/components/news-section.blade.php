@@ -1,11 +1,7 @@
 @php
     $blogs = $blogs
         ?? $featuredBlogs
-        ?? \App\Models\Blog::published()
-            ->where('is_featured', true)
-            ->latest('published_at')
-            ->take(3)
-            ->get();
+        ?? \App\Models\Blog::featuredWithHardcoded(3);
 @endphp
 
 <section class="news-section">
@@ -38,7 +34,7 @@
                             @auth
                                 <a href="{{ route('blog.show', $blog->slug) }}" class="news-btn">View article</a>
                             @else
-                                <span class="news-btn auth-locked" aria-disabled="true" title="Please log in or register to continue">View article</span>
+                                <a href="{{ route('login', ['auth_required' => 1, 'redirect' => route('blog.show', $blog->slug)]) }}" class="news-btn auth-locked" title="Please log in or register to continue">View article</a>
                             @endauth
                         </div>
                     </article>

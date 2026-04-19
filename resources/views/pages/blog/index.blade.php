@@ -29,7 +29,7 @@
                         </div>
                     </a>
                 @else
-                    <div class="featured-blog-card auth-locked" aria-disabled="true" title="Please log in or register to continue">
+                    <a href="{{ route('login', ['auth_required' => 1, 'redirect' => route('blog.show', $featuredBlog->slug)]) }}" class="featured-blog-card auth-locked" title="Please log in or register to continue">
                         <div class="featured-blog-content">
                             <span class="featured-badge">Featured article</span>
                             <h2>{{ $featuredBlog->title }}</h2>
@@ -39,7 +39,7 @@
                         <div class="featured-blog-image-wrap">
                             <img src="{{ $featuredBlog->thumbnail_url }}" alt="{{ $featuredBlog->title }}" class="featured-blog-image">
                         </div>
-                    </div>
+                    </a>
                 @endauth
             @endif
 
@@ -58,7 +58,7 @@
                         @auth
                             <a href="{{ route('blog.show', $blog->slug) }}" class="news-btn">Read more</a>
                         @else
-                            <span class="news-btn auth-locked" aria-disabled="true" title="Please log in or register to continue">Read more</span>
+                            <a href="{{ route('login', ['auth_required' => 1, 'redirect' => route('blog.show', $blog->slug)]) }}" class="news-btn auth-locked" title="Please log in or register to continue">Read more</a>
                         @endauth
                     </div>
                 </article>

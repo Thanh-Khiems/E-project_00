@@ -74,29 +74,35 @@ class User extends Authenticatable
             return $avatar;
         }
 
-        $normalized = ltrim($avatar, '/');
+        $normalized = str_replace('\\', '/', ltrim($avatar, '/'));
 
-        if (Str::startsWith($normalized, ['storage/', 'uploads/', 'images/'])) {
-            return asset($normalized);
+        $publicCandidates = [
+            $normalized,
+            'uploads/avatars/' . basename($normalized),
+            'storage/' . ltrim(Str::after($normalized, 'storage/'), '/'),
+            'storage/avatars/' . basename($normalized),
+            'images/' . basename($normalized),
+        ];
+
+        foreach (array_unique($publicCandidates) as $relativePath) {
+            $absolutePath = public_path($relativePath);
+
+            if (is_file($absolutePath)) {
+                return asset($relativePath) . '?v=' . filemtime($absolutePath);
+            }
         }
 
-        if (Storage::disk('public')->exists($normalized)) {
-            return Storage::disk('public')->url($normalized);
+        if (Storage::disk('public')->exists($normalized) && is_file(public_path('storage/' . $normalized))) {
+            $relativePath = 'storage/' . $normalized;
+            return asset($relativePath) . '?v=' . filemtime(public_path($relativePath));
         }
 
-        if (Storage::disk('public')->exists('avatars/' . $normalized)) {
-            return Storage::disk('public')->url('avatars/' . $normalized);
+        if (Storage::disk('public')->exists('avatars/' . $normalized) && is_file(public_path('storage/avatars/' . $normalized))) {
+            $relativePath = 'storage/avatars/' . $normalized;
+            return asset($relativePath) . '?v=' . filemtime(public_path($relativePath));
         }
 
-        if (is_file(public_path($normalized))) {
-            return asset($normalized);
-        }
-
-        if (is_file(public_path('uploads/avatars/' . $normalized))) {
-            return asset('uploads/avatars/' . $normalized);
-        }
-
-        return asset('storage/' . $normalized);
+        return asset('images/default-avatar.png');
     }
 
 }

@@ -3816,10 +3816,11 @@ input {
 
 
 .auth-locked {
-    pointer-events: none;
-    cursor: not-allowed !important;
-    opacity: 0.6;
+    pointer-events: auto;
+    cursor: pointer !important;
+    opacity: 0.72;
     user-select: none;
+    text-decoration: none;
 }
 
 .auth-locked:focus,

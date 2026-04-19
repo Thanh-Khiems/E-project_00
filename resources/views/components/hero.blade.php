@@ -35,8 +35,8 @@
             </div>
 
             <div class="hero-actions reveal-up delay-6">
-                <a href="#" class="btn btn-primary">Book Appointment</a>
-                <a href="#" class="btn btn-outline">Watch Our Story</a>
+                <a href="{{ route('login', ['auth_required' => 1, 'redirect' => route('doctors.index')]) }}" class="btn btn-primary">Book Appointment</a>
+                <a href="{{ route('about') }}" class="btn btn-outline">Watch Our Story</a>
             </div>
 
             <div class="hotline-box reveal-up delay-7">

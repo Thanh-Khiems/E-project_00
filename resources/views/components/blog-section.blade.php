@@ -22,7 +22,7 @@
                             @auth
                                 <a href="{{ route('blog.show', $blog->slug) }}" class="news-btn">Read more</a>
                             @else
-                                <span class="news-btn auth-locked" aria-disabled="true" title="Please log in or register to continue">Read more</span>
+                                <a href="{{ route('login', ['auth_required' => 1, 'redirect' => route('blog.show', $blog->slug)]) }}" class="news-btn auth-locked" title="Please log in or register to continue">Read more</a>
                             @endauth
                         </div>
                     </article>
