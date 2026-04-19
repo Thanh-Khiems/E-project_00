@@ -14,7 +14,7 @@
 .tab-content.active { display: block; }
 .form-group { margin-bottom: 16px; }
 .form-group label { display:block; font-weight:700; margin-bottom:8px; }
-.form-group input, .form-group select, .form-group textarea { width:100%; border:1px solid #d1d5db; border-radius:8px; padding:12px; }
+.form-group input, .form-group select, .form-group textarea { width:100%; border:1px solid #d1d5db; border-radius:8px; padding:8px; }
 .form-group input[type="file"] { background:#fff; padding:10px; }
 .btn-primary { background:#1d4ed8; color:#fff; border:none; border-radius:8px; padding:12px 16px; font-weight:700; cursor:pointer; }
 .btn-primary:hover { background:#1e40af; }
