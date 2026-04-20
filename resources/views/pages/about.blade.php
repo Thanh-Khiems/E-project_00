@@ -9,9 +9,11 @@
         : 'Lê Hiếu Nghĩa';
 
     if (auth()->check()) {
-        $aboutEditUrl = auth()->user()->role === 'doctor'
-            ? route('doctor.dashboard')
-            : route('user.profile');
+        $aboutEditUrl = match (auth()->user()->role) {
+            'doctor' => route('doctor.dashboard'),
+            'admin' => route('admin.index'),
+            default => route('user.profile'),
+        };
     } else {
         $aboutEditUrl = route('login');
     }

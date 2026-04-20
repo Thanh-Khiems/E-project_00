@@ -1,3 +1,10 @@
+@php
+    $isAdminPublicView = auth()->check() && auth()->user()->role === 'admin';
+    $accountRoute = $isAdminPublicView ? route('admin.index') : route('user.profile');
+    $accountLabel = $isAdminPublicView ? 'Admin Panel' : 'Profile';
+    $accountActive = $isAdminPublicView ? request()->routeIs('admin.*') : request()->routeIs('user.profile');
+@endphp
+
 <header class="navbar reveal-up delay-1" data-mobile-nav>
     <div class="container navbar-inner">
         <a href="{{ route('home') }}" class="logo" aria-label="MediConnect">
@@ -28,9 +35,9 @@
             <div class="nav-menu-mobile-extra">
                 <span class="nav-mobile-label">Account</span>
 
-                <a href="{{ route('user.profile') }}"
-                   class="nav-mobile-action {{ request()->routeIs('user.profile') ? 'active' : '' }}">
-                    Profile
+                <a href="{{ $accountRoute }}"
+                   class="nav-mobile-action {{ $accountActive ? 'active' : '' }}">
+                    {{ $accountLabel }}
                 </a>
 
                 <form method="POST" action="{{ route('logout') }}" class="nav-mobile-form">

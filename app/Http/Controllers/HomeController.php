@@ -11,7 +11,15 @@ class HomeController extends Controller
     public function index()
     {
         if (Auth::check()) {
-            return redirect()->route('user.dashboard');
+            $user = Auth::user();
+
+            if ($user->role === 'doctor') {
+                return redirect()->route('doctor.dashboard');
+            }
+
+            if ($user->role === 'user') {
+                return redirect()->route('user.dashboard');
+            }
         }
 
         $featuredBlogs = Blog::featuredWithHardcoded(3);
