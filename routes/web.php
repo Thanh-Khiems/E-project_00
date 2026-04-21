@@ -174,6 +174,8 @@ Route::prefix('admin')
     Route::put('/medications/{medication}', [AdminMedicationController::class, 'update'])->name('medications.update');
     Route::delete('/medications/{medication}', [AdminMedicationController::class, 'destroy'])->name('medications.destroy');
     Route::post('/medicine-types', [MedicineTypeController::class, 'store'])->name('medicine-types.store');
+    Route::put('/medicine-types/{medicineType}', [MedicineTypeController::class, 'update'])->name('medicine-types.update');
+    Route::delete('/medicine-types/{medicineType}', [MedicineTypeController::class, 'destroy'])->name('medicine-types.destroy');
 
     Route::get('/blogs', [AdminBlogController::class, 'index'])->name('blogs.index');
     Route::post('/blogs', [AdminBlogController::class, 'store'])->name('blogs.store');

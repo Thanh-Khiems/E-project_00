@@ -12,8 +12,14 @@ class MedicationController extends Controller
 {
     public function index()
     {
-        $medications = Medication::with('medicineType')->latest()->paginate(12);
-        $medicineTypes = MedicineType::orderBy('name')->get();
+        $medications = Medication::with('medicineType')
+            ->withCount('prescriptionItems')
+            ->latest()
+            ->paginate(12);
+
+        $medicineTypes = MedicineType::withCount('medications')
+            ->orderBy('name')
+            ->get();
 
         return view('admin.medications.index', compact('medications', 'medicineTypes'));
     }
@@ -48,6 +54,10 @@ class MedicationController extends Controller
 
     public function destroy(Medication $medication): RedirectResponse
     {
+        if ($medication->prescriptionItems()->exists()) {
+            return back()->with('error', 'This medication has already been used in prescriptions, so it cannot be deleted.');
+        }
+
         $medication->delete();
 
         return back()->with('success', 'Medication removed from the catalog.');
