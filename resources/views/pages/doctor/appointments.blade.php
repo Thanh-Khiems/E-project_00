@@ -105,7 +105,7 @@
                                     {{ $appointment->diagnosis ? \Illuminate\Support\Str::limit($appointment->diagnosis, 90) : 'No diagnosis yet' }}
                                 </td>
                                 <td style="padding:12px;border-bottom:1px solid #e5e7eb;">
-                                    {{ $appointment->prescriptions->count() }} toa
+                                    {{ $appointment->prescriptions->count() }} prescription
                                 </td>
                                 <td style="padding:12px;border-bottom:1px solid #e5e7eb;max-width:240px;">
                                     @if($appointment->review)
