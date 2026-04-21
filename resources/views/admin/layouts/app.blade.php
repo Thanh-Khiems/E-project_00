@@ -3,7 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $pageTitle ?? 'Hospital Admin' }}</title>
+    <title>{{ isset($pageTitle) && $pageTitle ? $pageTitle . ' | MediConnect Admin' : 'MediConnect Admin' }}</title>
+    <link rel="icon" type="image/png" href="{{ asset('admin-ui/images/logo.png') }}">
+    <link rel="shortcut icon" href="{{ asset('admin-ui/images/logo.png') }}">
+    <link rel="apple-touch-icon" href="{{ asset('admin-ui/images/logo.png') }}">
+    <meta name="application-name" content="MediConnect Admin">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     <link href="{{ asset('admin-ui/css/admin-hospital.css') }}" rel="stylesheet">
