@@ -3,6 +3,35 @@
 @section('title', 'Contact - MediConnect')
 
 @section('content')
+<style>
+.contact-page-visual-top {
+    margin-bottom: 20px;
+}
+
+.contact-page-visual-label {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #2563eb;
+    margin-bottom: 8px;
+}
+
+.contact-page-visual-top h3 {
+    font-size: 24px;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 10px;
+}
+
+.contact-page-visual-top p {
+    font-size: 15px;
+    line-height: 1.7;
+    color: #64748b;
+    margin: 0;
+}
+</style>
 <section class="contact-page-hero">
     <div class="contact-page-bg contact-page-bg-one"></div>
     <div class="contact-page-bg contact-page-bg-two"></div>
@@ -29,10 +58,6 @@
                 user support, and collaboration with doctors or healthcare facilities.
             </p>
 
-            <div class="contact-page-actions reveal-up delay-6">
-                <a href="#contact-form" class="btn btn-primary">Send a support request</a>
-                <a href="{{ route('doctors.index') }}" class="btn btn-outline">Find a doctor now</a>
-            </div>
 
             <div class="contact-page-stats reveal-up delay-6">
                 <div class="contact-page-stat-card">
@@ -52,29 +77,33 @@
 
         <div class="contact-page-visual reveal-up delay-4">
             <div class="contact-page-visual-card">
-                <div class="contact-page-visual-top">
+    <div class="contact-page-visual-top">
+        <h3>We are here whenever you need support</h3>
+        <p>
+            Reach MediConnect through hotline, email, or office contact information below.
+            Our team is ready to assist you with appointments, account questions, and general support.
+        </p>
+    </div>
 
-                <div class="contact-page-quick-list">
-                    <div class="contact-page-quick-item">
-                        <strong>Priority hotline</strong>
-                        <p>1900 115 115</p>
-                    </div>
-                    <div class="contact-page-quick-item">
-                        <strong>Support email</strong>
-                        <p>mediconnect@gmail.com</p>
-                    </div>
-                    <div class="contact-page-quick-item">
-                        <strong>Working hours</strong>
-                        <p>Monday - Sunday, 7:00 - 22:00</p>
-                    </div>
-                    <div class="contact-page-quick-item">
-                        <strong>Address</strong>
-                        <p>123 Nguyen Van Cu, Ninh Kieu, Can Tho</p>
-                    </div>
-                </div>
-            </div>
+    <div class="contact-page-quick-list">
+        <div class="contact-page-quick-item">
+            <strong>Priority hotline</strong>
+            <p>1900 115 115</p>
+        </div>
+        <div class="contact-page-quick-item">
+            <strong>Support email</strong>
+            <p>mediconnect@gmail.com</p>
+        </div>
+        <div class="contact-page-quick-item">
+            <strong>Working hours</strong>
+            <p>Monday - Sunday, 7:00 - 22:00</p>
+        </div>
+        <div class="contact-page-quick-item">
+            <strong>Address</strong>
+            <p>123 Nguyen Van Cu, Ninh Kieu, Can Tho</p>
         </div>
     </div>
+</div>
 </section>
 
 <section class="contact-support">
@@ -168,66 +197,47 @@
         </div>
 
         <div class="contact-form-card reveal-up delay-3">
-            <div class="contact-form-card-head">
-                <small>Send a message</small>
-                <h2>Leave a request and we will <span>get back to you</span></h2>
+    <div class="contact-form-card-head">
+        <small>About MediConnect</small>
+        <h2>Connecting patients with <span>trusted healthcare</span></h2>
+        <p>
+            MediConnect is a modern healthcare platform built to make medical access simpler, faster, and more reliable.
+            We help patients connect with suitable doctors, manage appointments conveniently, and receive support whenever needed.
+        </p>
+    </div>
+
+    <div class="contact-benefit-list">
+        <div class="contact-benefit-item">
+            <span>01</span>
+            <div>
+                <h3>Easy appointment booking</h3>
                 <p>
-                    Fill in the information below so the MediConnect team can support you faster. For questions about appointments or doctors,
-                    please provide a short description so we can route it correctly.
+                    Patients can quickly find doctors, choose suitable specialties, and schedule appointments in just a few steps.
                 </p>
             </div>
+        </div>
 
-            @if(session('success'))
-                <div class="contact-flash-success">{{ session('success') }}</div>
-            @endif
+        <div class="contact-benefit-item">
+            <span>02</span>
+            <div>
+                <h3>Trusted medical connection</h3>
+                <p>
+                    MediConnect helps bridge patients with doctors and healthcare services through a clear and user-friendly experience.
+                </p>
+            </div>
+        </div>
 
-            <form action="{{ route('contact.submit') }}" method="POST">
-                @csrf
-                <div class="contact-form-grid">
-                    <div class="contact-form-field">
-                        <label for="name">Full name</label>
-                        <input type="text" id="name" name="name" value="{{ old('name') }}" placeholder="Enter your full name">
-                        @error('name')<span class="input-error">{{ $message }}</span>@enderror
-                    </div>
-
-                    <div class="contact-form-field">
-                        <label for="phone">Phone number</label>
-                        <input type="text" id="phone" name="phone" value="{{ old('phone') }}" placeholder="Example: 0901 234 567">
-                        @error('phone')<span class="input-error">{{ $message }}</span>@enderror
-                    </div>
-
-                    <div class="contact-form-field">
-                        <label for="email">Email</label>
-                        <input type="email" id="email" name="email" value="{{ old('email') }}" placeholder="Enter your email">
-                        @error('email')<span class="input-error">{{ $message }}</span>@enderror
-                    </div>
-
-                    <div class="contact-form-field">
-                        <label for="subject">Support topic</label>
-                        <select id="subject" name="subject">
-                            <option value="">Select a topic</option>
-                            <option value="Book an appointment" {{ old('subject') === 'Book an appointment' ? 'selected' : '' }}>Book an appointment</option>
-                            <option value="Account support" {{ old('subject') === 'Account support' ? 'selected' : '' }}>Account support</option>
-                            <option value="Service consultation" {{ old('subject') === 'Service consultation' ? 'selected' : '' }}>Service consultation</option>
-                            <option value="Doctor / partner collaboration" {{ old('subject') === 'Doctor / partner collaboration' ? 'selected' : '' }}>Doctor / partner collaboration</option>
-                        </select>
-                        @error('subject')<span class="input-error">{{ $message }}</span>@enderror
-                    </div>
-
-                    <div class="contact-form-field contact-form-field--full">
-                        <label for="message">Message</label>
-                        <textarea id="message" name="message" placeholder="Briefly describe your needs">{{ old('message') }}</textarea>
-                        @error('message')<span class="input-error">{{ $message }}</span>@enderror
-                    </div>
-                </div>
-
-                <div class="contact-form-submit">
-                    <button type="submit" class="btn btn-primary">Send request</button>
-                    <p class="contact-form-note">Your information will only be used to respond to support requests on MediConnect.</p>
-                </div>
-            </form>
+        <div class="contact-benefit-item">
+            <span>03</span>
+            <div>
+                <h3>Reliable support</h3>
+                <p>
+                    Our platform is designed to support users with accessible information, responsive assistance, and a reassuring care journey.
+                </p>
+            </div>
         </div>
     </div>
+</div>
 </section>
 
 <section class="contact-faq">
@@ -264,3 +274,5 @@
     </div>
 </section>
 @endsection
+
+
