@@ -32,7 +32,7 @@
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">Thumbnail image</label>
-                        <input type="file" name="thumbnail" class="form-control">
+                        <input type="file" name="thumbnail" class="form-control" accept="image/*">
                     </div>
                     <div class="col-md-3">
                         <label class="form-label">Status</label>
@@ -124,8 +124,12 @@
                                         <input type="text" name="slug" class="form-control" value="{{ $blog->slug }}">
                                     </div>
                                     <div class="col-12">
+                                        <label class="form-label">Current thumbnail image</label>
+                                        <div class="mb-2">
+                                            <img src="{{ $blog->thumbnail_url }}" alt="{{ $blog->title }}" class="img-fluid rounded-3 border" style="max-height: 180px; object-fit: cover; width: 100%;">
+                                        </div>
                                         <label class="form-label">New thumbnail image</label>
-                                        <input type="file" name="thumbnail" class="form-control">
+                                        <input type="file" name="thumbnail" class="form-control" accept="image/*">
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label">Status</label>

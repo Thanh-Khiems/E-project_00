@@ -5,10 +5,12 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Blog;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
-use Illuminate\Support\Carbon;
 
 class BlogController extends Controller
 {
@@ -44,7 +46,7 @@ class BlogController extends Controller
         $validated = $this->validateBlog($request);
 
         if ($request->hasFile('thumbnail')) {
-            $validated['thumbnail'] = $request->file('thumbnail')->store('blogs', 'public');
+            $validated['thumbnail'] = $this->storeThumbnail($request->file('thumbnail'));
         }
 
         $validated = $this->normalizePublishPayload($validated);
@@ -59,11 +61,8 @@ class BlogController extends Controller
         $validated = $this->validateBlog($request, $blog);
 
         if ($request->hasFile('thumbnail')) {
-            if ($blog->thumbnail && Storage::disk('public')->exists($blog->thumbnail)) {
-                Storage::disk('public')->delete($blog->thumbnail);
-            }
-
-            $validated['thumbnail'] = $request->file('thumbnail')->store('blogs', 'public');
+            $this->deleteThumbnail($blog->thumbnail);
+            $validated['thumbnail'] = $this->storeThumbnail($request->file('thumbnail'));
         }
 
         $validated = $this->normalizePublishPayload($validated, $blog);
@@ -75,9 +74,7 @@ class BlogController extends Controller
 
     public function destroy(Blog $blog)
     {
-        if ($blog->thumbnail && Storage::disk('public')->exists($blog->thumbnail)) {
-            Storage::disk('public')->delete($blog->thumbnail);
-        }
+        $this->deleteThumbnail($blog->thumbnail);
 
         $blog->delete();
 
@@ -127,5 +124,52 @@ class BlogController extends Controller
         $validated['published_at'] = $publishedAt;
 
         return $validated;
+    }
+
+    protected function storeThumbnail(UploadedFile $thumbnail): string
+    {
+        $directory = public_path('uploads/blogs');
+
+        if (! File::exists($directory)) {
+            File::makeDirectory($directory, 0755, true);
+        }
+
+        $filename = 'blog_' . now()->format('YmdHis') . '_' . Str::random(8) . '.' . $thumbnail->getClientOriginalExtension();
+
+        $thumbnail->move($directory, $filename);
+
+        return 'uploads/blogs/' . $filename;
+    }
+
+    protected function deleteThumbnail(?string $thumbnailPath): void
+    {
+        if (blank($thumbnailPath)) {
+            return;
+        }
+
+        $normalizedPath = ltrim($thumbnailPath, '/');
+
+        $publicCandidates = [
+            public_path($normalizedPath),
+            public_path(Str::startsWith($normalizedPath, 'storage/') ? $normalizedPath : 'storage/' . $normalizedPath),
+        ];
+
+        foreach ($publicCandidates as $candidate) {
+            if (File::exists($candidate) && File::isFile($candidate)) {
+                File::delete($candidate);
+            }
+        }
+
+        $storageCandidates = [$normalizedPath];
+
+        if (Str::startsWith($normalizedPath, 'storage/')) {
+            $storageCandidates[] = Str::after($normalizedPath, 'storage/');
+        }
+
+        foreach ($storageCandidates as $candidate) {
+            if (Storage::disk('public')->exists($candidate)) {
+                Storage::disk('public')->delete($candidate);
+            }
+        }
     }
 }

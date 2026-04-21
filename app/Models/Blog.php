@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Throwable;
 
@@ -147,23 +148,38 @@ class Blog extends Model
 
     public function getThumbnailUrlAttribute(): string
     {
-        if ($this->thumbnail) {
-            if (Str::startsWith($this->thumbnail, ['http://', 'https://'])) {
-                return $this->thumbnail;
-            }
-
-            if (Str::startsWith($this->thumbnail, ['images/', 'uploads/', 'storage/']) || file_exists(public_path($this->thumbnail))) {
-                return asset($this->thumbnail);
-            }
-
-            return asset('storage/' . ltrim($this->thumbnail, '/'));
+        if (! $this->thumbnail) {
+            return asset('images/news/news-1.webp');
         }
 
-        return asset('images/news/news-1.webp');
+        if (Str::startsWith($this->thumbnail, ['http://', 'https://'])) {
+            return $this->thumbnail;
+        }
+
+        $normalizedPath = ltrim($this->thumbnail, '/');
+
+        if (Str::startsWith($normalizedPath, ['images/', 'uploads/', 'storage/']) || file_exists(public_path($normalizedPath))) {
+            return $this->appendVersion(asset($normalizedPath));
+        }
+
+        if (Storage::disk('public')->exists($normalizedPath)) {
+            return $this->appendVersion(asset('storage/' . $normalizedPath));
+        }
+
+        return $this->appendVersion(asset('storage/' . $normalizedPath));
     }
 
     public function getExcerptTextAttribute(): string
     {
         return $this->excerpt ?: Str::limit(trim(strip_tags($this->content)), 140);
+    }
+
+    protected function appendVersion(string $url): string
+    {
+        if (! $this->updated_at) {
+            return $url;
+        }
+
+        return $url . (str_contains($url, '?') ? '&' : '?') . 'v=' . optional($this->updated_at)->timestamp;
     }
 }

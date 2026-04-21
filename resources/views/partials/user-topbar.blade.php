@@ -1,3 +1,10 @@
+@php
+    $isAdminPublicView = auth()->check() && auth()->user()->role === 'admin';
+    $accountRoute = $isAdminPublicView ? route('admin.index') : route('user.profile');
+    $accountLabel = $isAdminPublicView ? 'Admin Panel' : 'Profile';
+    $accountActive = $isAdminPublicView ? request()->routeIs('admin.*') : request()->routeIs('user.profile');
+@endphp
+
 <div class="topbar reveal-up">
     <div class="container topbar-inner">
         <div class="topbar-left">
@@ -20,11 +27,11 @@
         </div>
 
         <div class="topbar-right topbar-account-group">
-            <a href="{{ route('user.profile') }}" class="topbar-item topbar-link {{ request()->routeIs('user.profile') ? 'active' : '' }}">
+            <a href="{{ $accountRoute }}" class="topbar-item topbar-link {{ $accountActive ? 'active' : '' }}">
                 <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                     <path d="M12 12a4 4 0 1 0-4-4 4 4 0 0 0 4 4Zm0 2c-3.33 0-6 2.02-6 4.5 0 .28.22.5.5.5h11a.5.5 0 0 0 .5-.5C18 16.02 15.33 14 12 14Z"/>
                 </svg>
-                <span>Profile</span>
+                <span>{{ $accountLabel }}</span>
             </a>
 
             <form method="POST" action="{{ route('logout') }}" style="display: inline;">
