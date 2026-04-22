@@ -23,7 +23,6 @@
             <a href="{{ route('services') }}" class="{{ request()->routeIs('services') ? 'active' : '' }}">Services</a>
             <a href="{{ route('doctors.index') }}" class="{{ request()->routeIs('doctors.index', 'doctor-list') ? 'active' : '' }}">Doctor</a>
             <a href="{{ route('blog.index') }}" class="{{ request()->routeIs('blog.index', 'blog.show') ? 'active' : '' }}">Blog</a>
-            <a href="{{ route('contact') }}" class="{{ request()->routeIs('contact') ? 'active' : '' }}">Contact</a>
         </nav>
     </div>
 </header>

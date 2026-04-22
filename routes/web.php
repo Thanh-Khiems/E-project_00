@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
@@ -33,23 +32,6 @@ use App\Http\Controllers\Doctor\PrescriptionController;
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::view('/about', 'pages.about')->name('about');
 Route::view('/services', 'pages.services')->name('services');
-Route::get('/contact', function () {
-    return view('pages.contact');
-})->name('contact');
-
-Route::post('/contact', function (Request $request) {
-    $validated = $request->validate([
-        'name' => ['required', 'string', 'max:100'],
-        'phone' => ['nullable', 'string', 'max:30'],
-        'email' => ['required', 'email', 'max:120'],
-        'subject' => ['required', 'string', 'max:120'],
-        'message' => ['required', 'string', 'max:1500'],
-    ]);
-
-    return back()
-        ->with('success', 'Thank you for contacting MediConnect. We have received your request and will respond as soon as possible.')
-        ->withInput();
-})->name('contact.submit');
 Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');
 Route::get('/blog/{slug}', [BlogController::class, 'show'])->middleware('auth')->name('blog.show');
 

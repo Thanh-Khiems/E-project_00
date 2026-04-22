@@ -14,11 +14,13 @@
                 <h5>Staff list</h5>
                 <p>Manage receptionists, nurses, accountants, technicians, and administrators.</p>
             </div>
-            <button class="btn btn-primary">+ Add staff</button>
         </div>
 
         <form method="GET" class="row g-3 filter-bar">
-            <div class="col-md-5"><input type="text" name="keyword" value="{{ request('keyword') }}" class="form-control" placeholder="Name, email, phone number, department..."></div>
+            <div class="col-md-5">
+                <input type="text" name="keyword" value="{{ request('keyword') }}" class="form-control" placeholder="Name, email, phone number, department...">
+            </div>
+
             <div class="col-md-3">
                 <select name="status" class="form-select">
                     <option value="">All statuses</option>
@@ -27,8 +29,14 @@
                     <option value="inactive" @selected(request('status') == 'inactive')>Inactive</option>
                 </select>
             </div>
-            <div class="col-md-2 d-grid"><button class="btn btn-outline-primary">Filter</button></div>
-            <div class="col-md-2 d-grid"><button type="button" class="btn btn-light">Permissions</button></div>
+
+            <div class="col-md-2 d-grid">
+                <button class="btn btn-outline-primary">Filter</button>
+            </div>
+
+            <div class="col-md-2 d-grid">
+                <button type="button" class="btn btn-light">Permissions</button>
+            </div>
         </form>
 
         <div class="table-responsive mt-4">
@@ -40,7 +48,6 @@
                         <th>Department</th>
                         <th>Shift</th>
                         <th>Status</th>
-                        <th class="text-end">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -59,14 +66,11 @@
                             <td>{{ $staff->department ?? '—' }}</td>
                             <td>{{ $staff->shift ?? 'Office hours' }}</td>
                             <td><span class="status-badge {{ $staff->status }}">{{ $staff->status }}</span></td>
-                            <td class="text-end table-actions">
-                                <a href="#">Details</a>
-                                <a href="#">Update</a>
-                                <a href="#" class="text-danger">Disable</a>
-                            </td>
                         </tr>
                     @empty
-                        <tr><td colspan="6" class="text-center py-4">No staff data yet.</td></tr>
+                        <tr>
+                            <td colspan="6" class="text-center py-4">No staff data yet.</td>
+                        </tr>
                     @endforelse
                 </tbody>
             </table>

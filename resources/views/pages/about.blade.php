@@ -193,21 +193,14 @@
 
 <section class="about-cta">
     <div class="container">
-        <div class="about-cta-box reveal-up delay-2">
+        <div class="about-cta-box reveal-up delay-2" style="grid-template-columns: minmax(0, 1fr); justify-items: start;">
             <div class="about-cta-copy">
                 <small>MEDICONNECT</small>
                 <h2>Beyond Appointments<br>– We Connect You to<br>Peace of Mind</h2>
-                <p>
+                <p style="max-width: 720px;">
                     At MediConnect, we bridge the gap between technology and compassion, ensuring a seamless healthcare
                     experience for you and your loved ones.
                 </p>
-            </div>
-
-            <div class="about-cta-contact">
-                <span>Support Hotline</span>
-                <h3>1900 115 115</h3>
-                <p>Email: mediconnect@gmail.com</p>
-                <a href="{{ route('contact') }}" class="about-cta-button">Connect with Us</a>
             </div>
         </div>
     </div>
