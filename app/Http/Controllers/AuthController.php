@@ -62,11 +62,11 @@ class AuthController extends Controller
         return redirect()->route('user.dashboard')->with('success', 'Account registered successfully');
     }
 
-    public function showLogin(Request $request)
+    public function showLogin(Request $request, HomeController $homeController)
     {
         $this->storeIntendedUrl($request->query('redirect'));
 
-        return view('pages.home');
+        return $homeController->index();
     }
 
     public function login(Request $request)
