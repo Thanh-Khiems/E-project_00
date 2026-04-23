@@ -18,12 +18,5 @@
                 <span>1900 115 115</span>
             </div>
         </div>
-
-        <div class="topbar-right">
-            <a href="#" class="social-icon" aria-label="Facebook">f</a>
-            <a href="#" class="social-icon" aria-label="X">x</a>
-            <a href="#" class="social-icon" aria-label="Instagram">ig</a>
-            <a href="#" class="social-icon" aria-label="Google">g</a>
-        </div>
     </div>
 </div>

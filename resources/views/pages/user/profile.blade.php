@@ -173,7 +173,7 @@
                                             <select id="profile-rating-{{ $appointment->id }}" name="rating" style="width:100%;padding:12px 14px;border-radius:12px;border:1px solid #d1d5db;" required>
                                                 <option value="">-- Select stars --</option>
                                                 @for($star = 5; $star >= 1; $star--)
-                                                    <option value="{{ $star }}">{{ $star }} sao</option>
+                                                    <option value="{{ $star }}">{{ $star }} star</option>
                                                 @endfor
                                             </select>
                                         </div>
