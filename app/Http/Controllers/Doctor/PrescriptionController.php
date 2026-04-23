@@ -11,6 +11,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class PrescriptionController extends Controller
 {
@@ -28,6 +29,10 @@ class PrescriptionController extends Controller
 
         if (! in_array($appointment->status, ['confirmed', 'completed'], true)) {
             return redirect()->route('doctor.appointments')->with('error', 'You can only complete the visit and issue a prescription for a confirmed appointment.');
+        }
+
+        if ($appointment->prescriptions()->exists()) {
+            return redirect()->route('doctor.appointments')->with('error', 'A prescription has already been created for this appointment.');
         }
 
         $appointment->load([
@@ -53,12 +58,16 @@ class PrescriptionController extends Controller
             return back()->with('error', 'Cannot issue a prescription for a cancelled appointment.');
         }
 
+        if ($appointment->prescriptions()->exists()) {
+            return back()->with('error', 'A prescription has already been created for this appointment.');
+        }
+
         $validated = $request->validate([
             'diagnosis' => ['required', 'string', 'max:5000'],
             'doctor_advice' => ['nullable', 'string', 'max:5000'],
             'prescription_notes' => ['nullable', 'string', 'max:5000'],
             'items' => ['required', 'array', 'min:1'],
-            'items.*.medication_id' => ['required', 'exists:medications,id'],
+            'items.*.medication_id' => ['required', 'distinct', 'exists:medications,id'],
             'items.*.dosage' => ['required', 'string', 'max:255'],
             'items.*.frequency' => ['required', 'string', 'max:255'],
             'items.*.duration' => ['required', 'string', 'max:255'],
@@ -68,7 +77,18 @@ class PrescriptionController extends Controller
         ]);
 
         DB::transaction(function () use ($validated, $appointment, $doctor) {
-            $appointment->update([
+            $currentAppointment = Appointment::query()
+                ->whereKey($appointment->id)
+                ->lockForUpdate()
+                ->firstOrFail();
+
+            if ($currentAppointment->prescriptions()->exists()) {
+                throw ValidationException::withMessages([
+                    'prescription' => 'A prescription has already been created for this appointment.',
+                ]);
+            }
+
+            $currentAppointment->update([
                 'diagnosis' => $validated['diagnosis'],
                 'doctor_advice' => $validated['doctor_advice'] ?? null,
                 'status' => 'completed',
@@ -76,9 +96,9 @@ class PrescriptionController extends Controller
             ]);
 
             $prescription = Prescription::create([
-                'appointment_id' => $appointment->id,
+                'appointment_id' => $currentAppointment->id,
                 'doctor_id' => $doctor->id,
-                'patient_id' => $appointment->patient_id,
+                'patient_id' => $currentAppointment->patient_id,
                 'diagnosis' => $validated['diagnosis'],
                 'advice' => $validated['doctor_advice'] ?? null,
                 'notes' => $validated['prescription_notes'] ?? null,

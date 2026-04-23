@@ -16,31 +16,17 @@
     <section class="blog-page-section">
         <div class="container">
             @if($featuredBlog)
-                @auth
-                    <a href="{{ route('blog.show', $featuredBlog->slug) }}" class="featured-blog-card">
-                        <div class="featured-blog-content">
-                            <span class="featured-badge">Featured article</span>
-                            <h2>{{ $featuredBlog->title }}</h2>
-                            <p>{{ $featuredBlog->excerpt_text }}</p>
-                            <span class="featured-readmore">Read article</span>
-                        </div>
-                        <div class="featured-blog-image-wrap">
-                            <img src="{{ $featuredBlog->thumbnail_url }}" alt="{{ $featuredBlog->title }}" class="featured-blog-image">
-                        </div>
-                    </a>
-                @else
-                    <a href="{{ route('login', ['auth_required' => 1, 'redirect' => route('blog.show', $featuredBlog->slug)]) }}" class="featured-blog-card auth-locked" title="Please log in or register to continue">
-                        <div class="featured-blog-content">
-                            <span class="featured-badge">Featured article</span>
-                            <h2>{{ $featuredBlog->title }}</h2>
-                            <p>{{ $featuredBlog->excerpt_text }}</p>
-                            <span class="featured-readmore">Read article</span>
-                        </div>
-                        <div class="featured-blog-image-wrap">
-                            <img src="{{ $featuredBlog->thumbnail_url }}" alt="{{ $featuredBlog->title }}" class="featured-blog-image">
-                        </div>
-                    </a>
-                @endauth
+                <a href="{{ route('blog.show', $featuredBlog->slug) }}" class="featured-blog-card">
+                    <div class="featured-blog-content">
+                        <span class="featured-badge">Featured article</span>
+                        <h2>{{ $featuredBlog->title }}</h2>
+                        <p>{{ $featuredBlog->excerpt_text }}</p>
+                        <span class="featured-readmore">Read article</span>
+                    </div>
+                    <div class="featured-blog-image-wrap">
+                        <img src="{{ $featuredBlog->thumbnail_url }}" alt="{{ $featuredBlog->title }}" class="featured-blog-image">
+                    </div>
+                </a>
             @endif
 
            @if($featuredBlog || $blogs->count())
@@ -55,11 +41,7 @@
                         <div class="blog-meta">{{ $blog->published_at?->format('d/m/Y') ?? 'Recently updated' }}</div>
                         <h3>{{ $blog->title }}</h3>
                         <p>{{ $blog->excerpt_text }}</p>
-                        @auth
-                            <a href="{{ route('blog.show', $blog->slug) }}" class="news-btn">Read more</a>
-                        @else
-                            <a href="{{ route('login', ['auth_required' => 1, 'redirect' => route('blog.show', $blog->slug)]) }}" class="news-btn auth-locked" title="Please log in or register to continue">Read more</a>
-                        @endauth
+                        <a href="{{ route('blog.show', $blog->slug) }}" class="news-btn">Read more</a>
                     </div>
                 </article>
             @endforeach

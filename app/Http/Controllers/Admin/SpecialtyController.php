@@ -62,14 +62,31 @@ class SpecialtyController extends Controller
 
     protected function validateSpecialty(Request $request, ?Specialty $specialty = null): array
     {
+        $request->merge([
+            'name' => trim((string) $request->input('name')),
+            'description' => $request->filled('description') ? trim((string) $request->input('description')) : null,
+        ]);
+
         $validated = $request->validate([
             'name' => [
                 'required',
                 'string',
                 'max:255',
                 Rule::unique('specialties', 'name')->ignore($specialty?->id),
+                function (string $attribute, mixed $value, \Closure $fail) use ($specialty) {
+                    $normalized = $this->normalizeText((string) $value);
+
+                    $exists = Specialty::query()
+                        ->when($specialty, fn ($query) => $query->whereKeyNot($specialty->id))
+                        ->get()
+                        ->contains(fn (Specialty $item) => $this->normalizeText($item->name) === $normalized);
+
+                    if ($exists) {
+                        $fail('This specialty already exists.');
+                    }
+                },
             ],
-            'description' => 'nullable|string|max:1000',
+            'description' => ['nullable', 'string', 'max:1000'],
             'status' => ['required', Rule::in([Specialty::STATUS_ACTIVE, Specialty::STATUS_INACTIVE])],
             'is_featured' => 'nullable|boolean',
         ]);
@@ -81,5 +98,9 @@ class SpecialtyController extends Controller
             'is_featured' => (bool) ($validated['is_featured'] ?? false),
         ];
     }
-}
 
+    protected function normalizeText(string $value): string
+    {
+        return mb_strtolower(trim($value));
+    }
+}

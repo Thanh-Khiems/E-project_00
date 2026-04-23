@@ -70,19 +70,36 @@ class DegreeController extends Controller
 
     protected function validateDegree(Request $request, ?Degree $degree = null): array
     {
+        $request->merge([
+            'name' => trim((string) $request->input('name')),
+            'description' => $request->filled('description') ? trim((string) $request->input('description')) : null,
+        ]);
+
         $validated = $request->validate([
             'name' => [
                 'required',
                 'string',
                 'max:255',
                 Rule::unique('degrees', 'name')->ignore($degree?->id),
+                function (string $attribute, mixed $value, \Closure $fail) use ($degree) {
+                    $normalized = $this->normalizeText((string) $value);
+
+                    $exists = Degree::query()
+                        ->when($degree, fn ($query) => $query->whereKeyNot($degree->id))
+                        ->get()
+                        ->contains(fn (Degree $item) => $this->normalizeText($item->name) === $normalized);
+
+                    if ($exists) {
+                        $fail('This degree already exists.');
+                    }
+                },
             ],
             'description' => 'nullable|string|max:1000',
             'status' => ['required', Rule::in([Degree::STATUS_ACTIVE, Degree::STATUS_INACTIVE])],
         ]);
 
         return [
-            'name' => trim($validated['name']),
+            'name' => $validated['name'],
             'description' => $validated['description'] ?? null,
             'status' => $validated['status'],
         ];
@@ -124,5 +141,10 @@ class DegreeController extends Controller
                     'degree' => empty($updatedDegrees) ? null : implode(', ', $updatedDegrees),
                 ]);
             });
+    }
+
+    protected function normalizeText(string $value): string
+    {
+        return mb_strtolower(trim($value));
     }
 }

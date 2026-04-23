@@ -31,11 +31,7 @@
                             <h3>{{ $blog->title }}</h3>
                             <p>{{ $blog->excerpt_text }}</p>
 
-                            @auth
-                                <a href="{{ route('blog.show', $blog->slug) }}" class="news-btn">View article</a>
-                            @else
-                                <a href="{{ route('login', ['auth_required' => 1, 'redirect' => route('blog.show', $blog->slug)]) }}" class="news-btn auth-locked" title="Please log in or register to continue">View article</a>
-                            @endauth
+                            <a href="{{ route('blog.show', $blog->slug) }}" class="news-btn">View article</a>
                         </div>
                     </article>
                 @endforeach

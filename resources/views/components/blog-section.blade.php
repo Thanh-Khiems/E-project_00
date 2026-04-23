@@ -19,11 +19,7 @@
                             <div class="blog-meta">{{ $blog->published_at?->format('d/m/Y') ?? 'Recently updated' }}</div>
                             <h3>{{ $blog->title }}</h3>
                             <p>{{ $blog->excerpt_text }}</p>
-                            @auth
-                                <a href="{{ route('blog.show', $blog->slug) }}" class="news-btn">Read more</a>
-                            @else
-                                <a href="{{ route('login', ['auth_required' => 1, 'redirect' => route('blog.show', $blog->slug)]) }}" class="news-btn auth-locked" title="Please log in or register to continue">Read more</a>
-                            @endauth
+                            <a href="{{ route('blog.show', $blog->slug) }}" class="news-btn">Read more</a>
                         </div>
                     </article>
                 @endforeach

@@ -10,10 +10,7 @@ class MedicineTypeController extends Controller
 {
     public function store(Request $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'description' => ['nullable', 'string', 'max:1000'],
-        ]);
+        $validated = $this->validateMedicineType($request);
 
         MedicineType::create($validated);
 
@@ -22,10 +19,7 @@ class MedicineTypeController extends Controller
 
     public function update(Request $request, MedicineType $medicineType): RedirectResponse
     {
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'description' => ['nullable', 'string', 'max:1000'],
-        ]);
+        $validated = $this->validateMedicineType($request, $medicineType);
 
         $medicineType->update($validated);
 
@@ -41,5 +35,44 @@ class MedicineTypeController extends Controller
         $medicineType->delete();
 
         return back()->with('success', 'Medication group deleted.');
+    }
+
+    protected function validateMedicineType(Request $request, ?MedicineType $medicineType = null): array
+    {
+        $request->merge([
+            'name' => trim((string) $request->input('name')),
+            'description' => $request->filled('description') ? trim((string) $request->input('description')) : null,
+        ]);
+
+        $validated = $request->validate([
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+                function (string $attribute, mixed $value, \Closure $fail) use ($medicineType) {
+                    $normalized = $this->normalizeText((string) $value);
+
+                    $exists = MedicineType::query()
+                        ->when($medicineType, fn ($query) => $query->whereKeyNot($medicineType->id))
+                        ->get()
+                        ->contains(fn (MedicineType $type) => $this->normalizeText($type->name) === $normalized);
+
+                    if ($exists) {
+                        $fail('This medication group already exists.');
+                    }
+                },
+            ],
+            'description' => ['nullable', 'string', 'max:1000'],
+        ]);
+
+        return [
+            'name' => $validated['name'],
+            'description' => $validated['description'] ?? null,
+        ];
+    }
+
+    protected function normalizeText(string $value): string
+    {
+        return mb_strtolower(trim($value));
     }
 }
