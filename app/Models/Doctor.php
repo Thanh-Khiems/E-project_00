@@ -47,6 +47,22 @@ class Doctor extends Model
         'rejected_at' => 'datetime',
     ];
 
+    public function getDegreeListAttribute(): array
+    {
+        return collect(explode(',', (string) $this->degree))
+            ->map(fn ($value) => trim($value))
+            ->filter()
+            ->values()
+            ->all();
+    }
+
+    public function getDegreeDisplayAttribute(): ?string
+    {
+        $degrees = $this->degree_list;
+
+        return empty($degrees) ? null : implode(', ', $degrees);
+    }
+
     public function specialty()
     {
         return $this->belongsTo(Specialty::class);

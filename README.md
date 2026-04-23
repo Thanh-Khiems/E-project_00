@@ -1,692 +1,1314 @@
-# MediConnect System Documentation
+# MediConnect
 
-A complete system documentation file for the **MediConnect** medical appointment booking and management platform.
+> Comprehensive system documentation for the **MediConnect** medical appointment booking and management platform.  
+> This README is written to be readable on GitHub and detailed enough for onboarding, maintenance, and future development.
 
-## Contents
+---
 
-- [Overview](#overview)
-- [Technology Stack](#technology-stack)
-- [Important Directory Structure](#important-directory-structure)
-- [Architectural Components](#architectural-components)
-- [Authorization and Roles](#authorization-and-roles)
-- [Core Business Modules](#core-business-modules)
-- [Data Model Summary](#data-model-summary)
-- [Main Data Relationships](#main-data-relationships)
-- [Typical Business Flows](#typical-business-flows)
-- [Route Groups](#route-groups)
-- [Installation and Running the Project](#installation-and-running-the-project)
-- [Sample Accounts](#sample-accounts)
-- [File Uploads and Storage](#file-uploads-and-storage)
-- [Current Strengths of the System](#current-strengths-of-the-system)
-- [Limitations and Technical Notes](#limitations-and-technical-notes)
-- [Recommended Next Improvements](#recommended-next-improvements)
-- [Summary](#summary)
+## Table of Contents
 
-## Overview
+- [1. Project Overview](#1-project-overview)
+- [2. Business Goals](#2-business-goals)
+- [3. Technology Stack](#3-technology-stack)
+- [4. High-Level Architecture](#4-high-level-architecture)
+- [5. User Roles and Permissions](#5-user-roles-and-permissions)
+- [6. Main Functional Modules](#6-main-functional-modules)
+- [7. End-to-End Business Flows](#7-end-to-end-business-flows)
+- [8. Project Structure](#8-project-structure)
+- [9. Domain Model Summary](#9-domain-model-summary)
+- [10. Key Routes Overview](#10-key-routes-overview)
+- [11. Installation and Local Setup](#11-installation-and-local-setup)
+- [12. Demo and Seeded Accounts](#12-demo-and-seeded-accounts)
+- [13. File Upload and Storage Paths](#13-file-upload-and-storage-paths)
+- [14. Current Testing Status](#14-current-testing-status)
+- [15. Known Limitations and Technical Notes](#15-known-limitations-and-technical-notes)
+- [16. Recommended Next Improvements](#16-recommended-next-improvements)
+- [17. Maintenance Notes](#17-maintenance-notes)
+- [18. Summary](#18-summary)
 
-**Project name:** MediConnect
-**Project type:** Medical appointment booking and management web system
-**Platform:** Laravel 13 + PHP 8.3+ + Vite + Tailwind CSS 4
-**Application style:** Monolithic server-rendered web application using Blade templates
+---
 
-**System goals:**
-- Provide a public-facing healthcare website with service information and health blog content.
-- Allow users to register, log in, manage their profile, and book appointments with doctors.
-- Allow doctors to manage work schedules, review appointments, complete consultations, and issue prescriptions.
-- Allow administrators to approve doctors and manage core catalog and operational data across the system.
+## 1. Project Overview
 
-**Primary user groups:**
-- Guest visitors: browse the homepage, about page, services, doctor listings, and blog overview.
-- Patients / normal users: register, log in, manage profile, book appointments, view appointment history, and review doctors.
-- **Doctors:** manage schedules, review appointments, confirm/cancel visits, complete consultations, and issue prescriptions.
-- Administrators: approve doctors, manage specialties, degrees, patients, staff, locations, appointments, blogs, and medications.
+**MediConnect** is a Laravel-based medical appointment booking and healthcare management system.
 
-## Technology Stack
+It combines:
 
-**Backend:**
-- PHP 8.3 or above (composer.json requires ^8.3)
-- Laravel Framework 13
-- Eloquent ORM
-- Blade Template Engine
+- a public-facing healthcare website
+- patient account management
+- doctor verification and scheduling
+- appointment booking and lifecycle management
+- prescription issuance
+- doctor reviews
+- administrative management of operational data
 
-**Frontend:**
-- Vite 8
-- Tailwind CSS 4
-- Axios
-- Traditional server-rendered UI, not a SPA
+### Application type
 
-**Testing and developer tools:**
-- PHPUnit 12
-- Laravel Pint
-- Laravel Pail
-- concurrently
+- **Architecture style:** monolithic Laravel web application
+- **Rendering approach:** server-rendered Blade templates
+- **Frontend model:** not a SPA, no dedicated public API layer in the current codebase
+- **Primary focus:** web-based internal/public healthcare workflow management
 
-## Important Directory Structure
+### Snapshot facts from the current codebase
 
-app/
-- Http/Controllers/: request handling for each module
-- Models/: core domain models
-- Services/LocationService.php: logic for province/city, district, and ward/commune data handling
+| Item | Current value |
+|---|---:|
+| Controllers | 22 |
+| Models | 15 |
+| Migrations | 31 |
+| Blade view files | 59 |
+| Main route definitions in `routes/web.php` | ~86 |
+| Primary roles | 3 (`user`, `doctor`, `admin`) |
 
-config/
-- locations.php: fallback sample location data
+---
 
-database/
-- migrations/: schema creation and update scripts
-- seeders/: admin/demo accounts and sample data
+## 2. Business Goals
 
-resources/views/
-- admin/: admin UI
-- pages/: public, user, and doctor views
-- partials/, components/: reusable Blade parts
+The system is designed to support the following goals:
 
-routes/
-- web.php: main web route definitions
+1. **Provide public healthcare information**
+   - homepage
+   - about page
+   - services page
+   - blog listing and blog detail
 
-public/
-- images/: static images
-- uploads/: public uploads such as avatars and blog thumbnails
-- storage/: public storage symlink / public disk content if created
+2. **Support patient self-service**
+   - registration and login
+   - profile management
+   - avatar upload
+   - appointment booking
+   - appointment tracking
+   - doctor review submission
 
-tests/
-- currently only contains the default example tests for Feature and Unit
+3. **Support doctor workflow**
+   - doctor verification and approval
+   - schedule management
+   - appointment review and handling
+   - prescription creation
+   - consultation completion
 
-## Architectural Components
+4. **Support administrative control**
+   - doctor approval and status control
+   - specialty management
+   - patient and staff management
+   - appointment oversight
+   - medication catalog management
+   - blog management
+   - location data management
 
-4.1. Controller layer
-The project contains 22 controllers grouped into the following areas:
-- AuthController: registration, login, forgot password, reset password, logout
-- HomeController, BlogController: public-facing content
-- DashboardController: user and doctor dashboards
-- AppointmentController: booking, listing, confirmation, cancellation, review, and prescription entry navigation
-- ScheduleController: doctor schedule CRUD
-- User/ProfileController: profile, password, avatar, doctor verification submission
-- User/DoctorListController, User/DoctorBookingController: doctor search and booking pages
-- Admin/*Controller: admin management modules
-- Doctor/PrescriptionController: prescription creation and saving
+---
 
-4.2. Model layer
-**Main models in the system:**
-- User
-- Doctor
-- Patient
-- Staff
-- Specialty
-- Degree
-- Schedule
-- Appointment
-- AppointmentReview
-- Prescription
-- PrescriptionItem
-- Medication
-- MedicineType
-- Blog
-- LocationCity
+## 3. Technology Stack
 
-4.3. View layer
-- Around 59 Blade view files
-- Separate areas for admin, user, doctor, and public pages
-- No dedicated public JSON/API layer at the moment
+### Backend
 
-## Authorization And Roles
+- **PHP:** `^8.3`
+- **Framework:** Laravel `^13.0`
+- **ORM:** Eloquent
+- **Auth model:** built on Laravel authentication
+- **Template engine:** Blade
 
-**Roles are stored in users.role with 3 main values:**
-- user: patient / standard user
-- doctor: approved doctor
-- admin: administrator
+### Frontend
 
-Route protection:
-- Admin routes use auth + AdminMiddleware
-- Logged-in user and doctor routes use auth middleware
-- AdminMiddleware:
-  + redirects guests to login
-  + blocks non-admin users and redirects them to the user dashboard
+- **Build tool:** Vite `^8.0.0`
+- **CSS:** Tailwind CSS `^4.0.0`
+- **HTTP utility:** Axios
+- **UI style:** server-rendered pages with Blade views and static assets
 
-Business rule notes:
-- A user submitting a doctor verification request does not become a doctor immediately.
-- The role changes to doctor only after admin approval.
-- If the request is rejected, the user remains or returns to the user role.
+### Development and QA tools
 
-## Core Business Modules
+- **PHPUnit:** `^12.5.12`
+- **Laravel Pint**
+- **Laravel Pail**
+- **concurrently**
 
-6.1. Public pages module
-**Main routes:**
-- /
-- /about
-- /services
-- /blog
-- /blog/{slug}
+---
 
-**Behavior:**
-- The homepage displays featured blogs, featured doctors, and recent feedback.
-- If an authenticated user lands on the homepage:
-  + doctor role -> redirected to doctor dashboard
-  + user role -> redirected to user dashboard
-- Blog detail pages are currently protected by auth middleware, so users must log in to read blog detail pages.
+## 4. High-Level Architecture
 
-6.2. Authentication module
-Registration:
-- A new user account is created with full name, email, phone, gender, date of birth, address, and password.
-- Default role is user.
-- After registration, the system synchronizes the patient record through Patient::syncFromUser().
+```mermaid
+flowchart TD
+    A[Guest / Patient / Doctor / Admin] --> B[Laravel Web Routes]
+    B --> C[Controllers]
+    C --> D[Business Rules]
+    D --> E[Eloquent Models]
+    E --> F[(MySQL / SQLite)]
+    C --> G[Blade Views]
+    G --> A
 
-Login:
-- Successful login redirects by role:
-  + admin -> /admin
-  + doctor -> doctor dashboard
-  + user -> user dashboard
+    C --> H[File Upload Handling]
+    H --> I[public/uploads]
+    H --> J[storage/app/public]
+```
 
-Forgot password:
-- Current flow is 3 steps: email -> OTP -> reset password
-- OTP is currently generated and exposed through a flash/demo-style mechanism rather than being sent by real email
-- This is a demo/internal flow and should be upgraded before production use
+### Architectural notes
 
-6.3. User profile module
-**Features:**
-- View and update basic profile information
-- Change password
-- Upload avatar
-- View upcoming appointments
-- View completed appointments
-- Submit a doctor verification request
+- The application is organized around standard Laravel MVC patterns.
+- Most business logic currently lives in **controllers and models**.
+- There is **no dedicated API layer** yet.
+- Location validation is handled through a dedicated **`LocationService`**.
+- Authentication and role-based access are enforced through Laravel middleware and route grouping.
+- File storage is split between:
+  - `public/uploads/...`
+  - `storage/app/public/...`
 
-**Avatar handling:**
-- Files are stored in public/uploads/avatars
-- The system deletes the old avatar when replacing it if the old file exists
+---
 
-**Doctor verification request:**
-The user must provide:
-- doctor name
+## 5. User Roles and Permissions
+
+The system stores role information in `users.role`.
+
+### Roles
+
+| Role | Purpose |
+|---|---|
+| `user` | Standard patient-facing account |
+| `doctor` | Approved doctor account |
+| `admin` | Administrator account |
+
+### Permission summary
+
+| Capability | Guest | User | Doctor | Admin |
+|---|:---:|:---:|:---:|:---:|
+| View homepage/about/services | ✅ | ✅ | ✅ | ✅ |
+| View blog list | ✅ | ✅ | ✅ | ✅ |
+| View blog detail | ❌* | ✅ | ✅ | ✅ |
+| Register / log in | ✅ | ✅ | ✅ | ✅ |
+| Manage own profile | ❌ | ✅ | ✅** | ✅** |
+| Upload avatar | ❌ | ✅ | ✅** | ✅** |
+| Submit doctor verification | ❌ | ✅ | ❌ | ❌ |
+| Browse doctors | ✅ | ✅ | ✅ | ✅ |
+| Book appointment | ❌ | ✅ | ❌ | ❌ |
+| View own appointments | ❌ | ✅ | ❌ | ❌ |
+| Manage doctor schedules | ❌ | ❌ | ✅ | ❌ |
+| Confirm / cancel own doctor appointments | ❌ | ❌ | ✅ | ✅ |
+| Create prescriptions | ❌ | ❌ | ✅ | ❌ |
+| Approve doctors | ❌ | ❌ | ❌ | ✅ |
+| Manage specialties, patients, blogs, medications | ❌ | ❌ | ❌ | ✅ |
+
+\* Blog detail route is currently protected by `auth`.  
+\** Access depends on the authenticated account, but profile pages are primarily built for user-facing flows.
+
+### Middleware behavior
+
+- **Admin routes** use:
+  - `auth`
+  - `App\Http\Middleware\AdminMiddleware`
+
+- `AdminMiddleware`:
+  - redirects guests to login
+  - blocks non-admin users
+  - redirects blocked users to the user dashboard with an error message
+
+### Important role rule
+
+A user does **not** become a doctor immediately after submitting doctor verification documents.
+
+The sequence is:
+
+1. user submits doctor verification request
+2. system stores request as **pending**
+3. admin approves or rejects
+4. role changes to `doctor` **only after approval**
+
+---
+
+## 6. Main Functional Modules
+
+### 6.1 Public Pages
+
+#### Public routes
+
+- `/`
+- `/about`
+- `/services`
+- `/blog`
+- `/blog/{slug}`
+
+#### Current behavior
+
+- Homepage shows:
+  - featured blogs
+  - featured approved doctors
+  - recent doctor feedback
+- If the authenticated user lands on `/`:
+  - `doctor` is redirected to the doctor dashboard
+  - `user` is redirected to the user dashboard
+- Blog detail currently requires authentication.
+
+#### Blog data source
+
+The blog system supports:
+
+- database-backed blog posts
+- **3 hardcoded fallback blog posts** in `App\Models\Blog`
+
+This means the blog UI still has content even if the database is empty.
+
+---
+
+### 6.2 Authentication and Account Management
+
+#### Registration
+
+The registration flow creates a new `users` row with:
+
+- full name
+- email
+- phone
+- gender
+- province
+- district
+- ward
+- address detail
+- date of birth
+- password
+
+Then the system automatically synchronizes a patient profile using:
+
+```php
+Patient::syncFromUser($user);
+```
+
+#### Login
+
+Successful login redirects by role:
+
+| Role | Redirect |
+|---|---|
+| `admin` | `/admin` |
+| `doctor` | doctor dashboard |
+| `user` | user dashboard |
+
+#### Forgot password flow
+
+The current forgot password flow is:
+
+1. enter registered email
+2. receive a generated OTP
+3. verify OTP
+4. set a new password
+
+**Important:**  
+The OTP is currently a **demo/session-based implementation**. It is generated and flashed back to the UI, not sent through a real email service. This is acceptable for demo/development purposes, but should be upgraded before production release.
+
+---
+
+### 6.3 User Profile Module
+
+#### Main features
+
+- view profile information
+- update account information
+- change password
+- upload avatar
+- view current-week appointments
+- view completed appointments
+- submit doctor verification request
+
+#### Avatar upload behavior
+
+- accepted formats: `jpg`, `jpeg`, `png`, `gif`, `webp`
+- max size: `2 MB`
+- saved to: `public/uploads/avatars`
+- previous avatar file is deleted if present
+
+#### Profile update behavior
+
+When profile data changes, the system also runs:
+
+```php
+Patient::syncFromUser($user);
+```
+
+This keeps the patient table aligned with the user profile.
+
+---
+
+### 6.4 Doctor Verification Workflow
+
+#### Submission requirements
+
+A user requesting doctor verification must provide:
+
+- doctor full name
 - date of birth
 - citizen ID number
-- phone number
-- degree
+- doctor phone number
+- degree(s)
 - specialty
 - years of experience
-- city
+- city (optional)
 
-**Required uploads:**
+#### Required uploads
+
 - citizen ID front image
 - citizen ID back image
 - degree image
 
-**Storage and effects:**
-- Files are stored in storage/app/public/doctor-verifications
-- A Doctor record is created or updated with approval_status = pending
-- user.doctor_verification_status is set to pending
+#### Storage behavior
 
-6.4. Doctor management from the user side
-**Doctor list:**
-- Supports filtering by specialty, city, and keyword
-- Only shows doctors where:
-  + approval_status = approved
-  + status = active
-- Sorting prioritizes featured doctors, more experienced doctors, and newer entries
-- Includes review count and average rating
+Verification files are stored on the public disk under:
 
-**Doctor booking page:**
-- Loads active schedules for the selected doctor
-- Builds appointment slots only for the next 7 days
-- Excludes time slots that are already in the past
-- Computes booked_count, remaining_slots, and is_full
-- Booking form values follow the format: schedule_id|YYYY-MM-DD
+```text
+storage/app/public/doctor-verifications
+```
 
-6.5. Appointment booking and lifecycle
-**Booking rules:**
-- User must be authenticated
-- Booking submission receives doctor_id and selected_slot
-- The system validates:
-  + slot format is valid
-  + schedule belongs to the doctor
-  + booking is not in the past
-  + booking is within the next 7 days only
-  + no duplicate booking for the same patient on the same slot unless the prior booking was cancelled
-  + max_patients is not exceeded
-- On success, an appointment is created with status = pending
+#### Result of submission
 
-**Appointment statuses:**
-- pending
-- confirmed
-- completed
-- cancelled
+The system:
 
-**Important cleanup rule:**
-- Expired appointments are purged when:
-  + the appointment is not completed
-  + the date/time slot has already passed
-- The system calls Appointment::purgeExpired() from multiple screens to remove old expired records
+- creates or updates the `doctors` row
+- sets:
+  - `approval_status = pending`
+  - `verification_status = pending`
+  - `submitted_at = now()`
+- updates the user row:
+  - `doctor_verification_status = pending`
 
-**Confirming and cancelling appointments:**
-- Only the owning doctor or an admin can perform these actions
-- confirmed is allowed from pending or confirmed states
-- completed appointments cannot be cancelled
-- cancelled appointments cannot be completed
+#### Approval behavior
 
-Completing a consultation:
-- Clicking complete redirects the doctor to the prescription creation page
-- The appointment is actually finalized when the prescription is saved successfully
+When admin approves:
 
-**Doctor review rules:**
-- Only the patient who owns the appointment can review it
-- Only completed appointments can be reviewed
-- Each appointment can have at most one review
-- Rating range is 1 to 5
+- doctor approval status becomes `approved`
+- user role becomes `doctor`
+- user verification fields are updated to approved
+- doctor becomes active
 
-6.6. Doctor schedule module
-**Approved doctors can:**
-- create schedules
-- update schedules
-- delete schedules
+When admin rejects:
 
-**Schedule fields:**
-- doctor_id
-- start_date, end_date
-- type
-- days (stored as a string such as Mon,Tue,Fri)
-- start_time, end_time
-- max_patients
-- location
+- doctor approval status becomes `rejected`
+- user role reverts/remains `user`
+- rejection reason can be stored in `approval_note`
+
+---
+
+### 6.5 Doctor Discovery and Booking
+
+#### Doctor listing
+
+The doctor listing page supports:
+
+- specialty filter
+- city filter
+- keyword search
+
+#### Display rules
+
+Only doctors meeting both conditions are shown:
+
+- `approval_status = approved`
+- `status = active`
+
+#### Sorting behavior
+
+The list prioritizes doctors by:
+
+1. featured doctors
+2. higher experience
+3. newer records
+
+It also calculates:
+
+- review count
+- average rating
+
+#### Booking page behavior
+
+The booking page:
+
+- loads schedules for the selected doctor
+- builds slots only for the next **7 days**
+- excludes time slots already in the past
+- calculates:
+  - `booked_count`
+  - `remaining_slots`
+  - `is_full`
+
+Selected booking values use the format:
+
+```text
+schedule_id|YYYY-MM-DD
+```
+
+---
+
+### 6.6 Appointment Lifecycle
+
+#### Booking rules
+
+A user must be authenticated to book.
+
+On booking, the system validates:
+
+- `doctor_id` exists
+- selected slot format is valid
+- schedule belongs to the doctor
+- appointment is not in the past
+- appointment is within the next 7 days
+- same patient does not already have the same slot unless prior appointment was cancelled
+- schedule patient capacity is not exceeded
+
+#### Appointment statuses
+
+| Status | Meaning |
+|---|---|
+| `pending` | newly created booking |
+| `confirmed` | doctor/admin confirmed the appointment |
+| `completed` | consultation completed and prescription issued |
+| `cancelled` | appointment cancelled |
+
+#### Expired appointment cleanup
+
+The system contains a cleanup rule:
+
+- non-completed appointments that have already passed are considered expired
+- expired records are **deleted**, not archived
+
+This cleanup happens through:
+
+```php
+Appointment::purgeExpired();
+```
+
+It is called from multiple screens and flows.
+
+#### Confirm / cancel rules
+
+Only:
+
+- the owning doctor
+- or an admin
+
+can confirm or cancel appointments.
+
+Additional rules:
+
+- `pending` and `confirmed` can move to `confirmed`
+- `completed` cannot be cancelled
+- `cancelled` cannot be completed
+
+#### Review rules
+
+A patient can review only if:
+
+- they own the appointment
+- appointment status is `completed`
+- the appointment has not been reviewed before
+
+Review constraints:
+
+- rating range: `1` to `5`
+- one review per appointment
+
+---
+
+### 6.7 Schedule Management
+
+Approved doctors can manage schedules.
+
+#### Supported actions
+
+- create schedule
+- update schedule
+- delete schedule
+- view schedule dashboard information
+
+#### Main schedule fields
+
+- `doctor_id`
+- `start_date`
+- `end_date`
+- `type`
+- `days`
+- `start_time`
+- `end_time`
+- `max_patients`
+- `location`
+- `notes`
+
+#### Validation rules
+
+- `end_date >= start_date`
+- `end_time > start_time`
+- at least one day must be selected
+- `max_patients >= 1` when provided
+
+#### Technical note
+
+The selected days are stored as a **comma-separated string** such as:
+
+```text
+Mon,Tue,Fri
+```
+
+This is simple and works for current business logic, but may become limiting if more advanced schedule queries are needed later.
+
+---
+
+### 6.8 Prescription Module
+
+Doctors issue prescriptions for their own appointments.
+
+#### Access rules
+
+The appointment must:
+
+- belong to the logged-in doctor
+- not be cancelled
+- be in `confirmed` or `completed` state to open the prescription page
+
+#### Save behavior
+
+When a prescription is saved, a database transaction:
+
+1. updates appointment:
+   - `diagnosis`
+   - `doctor_advice`
+   - `status = completed`
+   - `completed_at = now()`
+2. creates a prescription with:
+   - `status = issued`
+   - `issued_at = now()`
+3. inserts prescription items
+
+#### Prescription item data
+
+Each item can contain:
+
+- medication
+- dosage
+- frequency
+- duration
+- quantity
+- instructions
 - notes
 
-**Validation rules:**
-- end_date >= start_date
-- end_time > start_time
-- at least one day must be selected
-- max_patients >= 1 when provided
+#### Important business note
 
-6.7. Prescription module
-Doctors create prescriptions for their own appointments.
-**Conditions:**
-- Appointment must belong to the logged-in doctor
-- Appointment must not be cancelled
-- Appointment must be confirmed or completed to access the prescription page
+In this project, **completing a consultation is effectively finalized when the prescription is successfully stored**.
 
-**When saving a prescription:**
-- A database transaction is used
-- Appointment is updated with:
-  + diagnosis
-  + doctor_advice
-  + status = completed
-  + completed_at = now
-- Prescription is created with status = issued
-- Prescription items are inserted
+---
 
-**Prescription data includes:**
-- diagnosis
-- doctor advice
-- prescription notes
-- medicine list, dosage, frequency, duration, quantity, instructions, and notes
+### 6.9 Blog Module
 
-6.8. Blog module
-**Public side:**
-- Displays blogs stored in the database plus 3 hardcoded fallback blog items
-- Supports featured blog and related blogs
-- If an admin saves a future publish date, it is normalized back to now
+#### Public side
 
-**Admin side:**
-- Create, edit, delete blogs
-- Upload thumbnail to public/uploads/blogs
-- Status values: draft / published
-- Supports slug, excerpt, content, is_featured, and published_at
+The blog module supports:
 
-6.9. Admin module
-6.9.1. Doctor management
-- Doctor list
-- Filtering by keyword, specialty, status, approval_status
-- Approve or reject doctor verification requests
-- Toggle doctor active/inactive status
-- View doctor details, reviews, and statistics
-- Delete doctor profiles
+- blog list
+- featured posts
+- blog detail
+- related blog suggestions
 
-6.9.2. Specialty management
-- Specialty CRUD
-- status: active / inactive
-- is_featured support
-- doctor count and appointment statistics by specialty
+#### Admin side
 
-6.9.3. Degree management
-- Degree CRUD
-- Default seeded values include Master and Doctorate
-- If a degree name changes, the system updates the degree string currently stored on doctors
-- A degree cannot be deleted if doctors are still using it
+Admin can:
 
-6.9.4. Patient management
-- Patient list with statistics
-- View, edit, delete patient records
-- Synchronizes user role = user to patient profile
-- If role changes to admin, the patient is converted into staff and the patient profile is removed
+- create blog
+- edit blog
+- delete blog
+- upload thumbnail
 
-6.9.5. Staff management
-- Staff is currently mainly synchronized from users with admin role
-- Includes search and statistics by status/role
+#### Blog fields
 
-6.9.6. Location management
-- Manages the location_cities table
-- Each city contains a name and districts JSON
-- Each district contains a list of wards/communes
-- If location_cities has not been migrated yet, the admin is warned to run migration first
+- title
+- slug
+- excerpt
+- content
+- thumbnail
+- status
+- `is_featured`
+- `published_at`
 
-6.9.7. Appointment management
-- Appointment list
-- Filtering by doctor, status, and keyword
-- View appointment details
-- View completed patient visit history
+#### Blog statuses
 
-6.9.8. Medication and medicine type management
-- Medication CRUD
-- MedicineType CRUD
-- Cannot delete a medicine type if medications still reference it
-- Cannot delete a medication if it has already been used in prescription_items
+- `draft`
+- `published`
 
-## Data Model Summary
+#### Publication rule
 
-users table:
-- id
-- full_name, email, phone, gender
-- province, district, ward, address_detail
-- dob, avatar
-- role
-- doctor_verification_status, doctor_verified_at, doctor_rejection_reason
-- password
+If a future `published_at` date is submitted, the controller normalizes it back to **now** instead of allowing future scheduling.
 
-doctors table:
-- id, user_id, specialty_id
-- name, email, phone
-- degree, doctor_dob
-- citizen_id, citizen_id_front, citizen_id_back, degree_image
-- license_number, experience_years
-- hospital, clinic_address, city, bio, consultation_fee, schedule_text
-- status, is_featured
-- approval_status, approval_note, verification_status
-- submitted_at, approved_at, rejected_at
+---
 
-patients table:
-- id, user_id, patient_code
-- name, date_of_birth, gender, phone, email, address
+### 6.10 Admin Management Modules
 
-staff table:
-- id, user_id
-- name, email, phone, role, department, shift, status
+The admin area includes the following management modules.
 
-specialties table:
-- id, name, description, status, is_featured
+#### Doctor Management
 
-degrees table:
-- id, name, description, status
+- doctor listing
+- filtering by keyword, specialty, status, approval status
+- doctor detail screen
+- doctor approval / rejection
+- toggle active or inactive
+- delete doctor profile
+- review statistics and recent reviews
 
-schedules table:
-- id, doctor_id
-- start_date, end_date
-- type, days
-- start_time, end_time
-- max_patients, location, notes
+#### Specialty Management
 
-appointments table:
-- id
-- patient_id (references users in the current implementation)
-- doctor_id, schedule_id
-- appointment_date, appointment_day
-- start_time, end_time
-- type, location, max_patients
-- status, notes
-- diagnosis, doctor_advice, completed_at
+- create, update, delete specialties
+- manage `active` / `inactive`
+- mark specialties as featured
+- view doctor and appointment counts per specialty
 
-appointment_reviews table:
-- appointment_id, patient_id, doctor_id, rating, review, reviewed_at
-- unique by appointment_id
+#### Degree Management
 
-prescriptions table:
-- appointment_id, doctor_id, patient_id
-- diagnosis, advice, notes, status, issued_at
+This is an important implementation detail:
 
-prescription_items table:
-- prescription_id, medication_id
-- dosage, frequency, duration, quantity, instructions, notes
+> The degree screen exists in the admin UI, but the actual degree list is currently **hard-coded** in `App\Models\Degree::FIXED_DEGREES`.
 
-medications table:
-- name, dosage, medicine_type_id, category
+That means:
 
-medicine_types table:
-- name, description
+- the admin degree module is effectively read-only
+- create/update/delete operations return an error message instructing developers to edit the code instead
 
-blogs table:
-- title, slug, excerpt, content, thumbnail
-- status, is_featured, published_at
+Current fixed degree list:
 
-location_cities table:
-- name, districts (JSON)
+- General Practitioner
+- Master
+- Doctorate
 
-## Main Data Relationships
+#### Patient Management
 
-- User 1 - 1 Patient (in many cases where user.role = user)
-- User 1 - 1 Doctor (when the user is approved as a doctor)
-- User 1 - 1 Staff (for admin users)
-- Specialty 1 - n Doctor
-- Doctor 1 - n Schedule
-- Doctor 1 - n Appointment
-- User(patient) 1 - n Appointment through patient_id
-- Appointment 1 - n Prescription
-- Prescription 1 - n PrescriptionItem
-- Appointment 1 - 1 AppointmentReview
-- Medication 1 - n PrescriptionItem
-- MedicineType 1 - n Medication
+- list patients
+- search by keyword
+- filter by gender
+- open detail page
+- edit linked user profile information
+- convert role between `user` and `admin`
+- synchronize patient/user/staff records
 
-## Typical Business Flows
+Important behavior:
 
-9.1. Registering and becoming a patient
-1. User registers an account.
-2. System creates user with role = user.
-3. System synchronizes a patient record.
-4. User logs in and can use patient-facing features.
+- if a patient-linked user is changed to role `admin`, a staff record is created or updated
+- patient profile can be removed from patient-facing classification logic
 
-9.2. User requests to become a doctor
-1. User logs in and opens the profile page.
-2. User submits the verify-doctor form with supporting documents.
-3. System creates or updates a Doctor record with pending status.
-4. Admin opens the doctor approvals area.
-5. Admin approves -> user.role becomes doctor.
-6. The doctor can start creating schedules and receiving appointments.
+#### Staff Management
 
-9.3. Booking an appointment
-1. User opens the doctor list.
-2. User selects a doctor and opens the doctor-booking page.
-3. User chooses a slot within the next 7 days.
-4. System validates overlap, expiration, and full-slot rules.
-5. System creates a pending appointment.
+- mainly reflects users with admin role
+- shows search and statistics
+- used as administrative personnel data
 
-9.4. Consultation and prescription
-1. Doctor opens doctor appointments.
-2. Doctor confirms the appointment.
-3. During or after the visit, doctor clicks complete.
-4. System opens the prescription form.
-5. Doctor enters diagnosis and medicines.
-6. System saves the prescription and updates appointment to completed.
-7. Patient can view the result and leave a review.
+#### Location Management
 
-## Route Groups
+- manages `location_cities`
+- each city stores a `districts` JSON structure
+- `LocationService` uses this table if available
+- falls back to `config/locations.php` if the table is missing or inaccessible
 
-10.1. Public
-- GET /
-- GET /about
-- GET /services
-- GET /blog
-- GET /blog/{slug} (currently requires auth)
+#### Appointment Management
 
-10.2. Auth
-- GET/POST /register
-- GET/POST /login
-- GET/POST /forgot-password
-- GET/POST /forgot-password/otp
-- GET /forgot-password/reset
-- POST /forgot-password/reset
-- POST /logout
+- list appointments
+- filter by doctor, status, keyword
+- open appointment detail
+- inspect patient history and prescriptions
 
-10.3. User/Profile
-- GET /user/profile
-- PUT /user/profile
-- POST /user/profile/password
-- POST /user/profile/avatar
-- POST /user/profile/verify-doctor
-- GET /user/dashboard
+#### Medication and Medicine Type Management
 
-10.4. Doctor list and booking
-- GET /doctor
-- GET /doctor-list
-- GET /user/doctor-list
-- GET /doctor-booking/{doctor}
+- medication CRUD
+- medicine type CRUD
+- prevent deleting medicine types if they still have medications
+- prevent deleting medications that are already referenced in prescription items
 
-10.5. Schedule
-- GET /schedule
-- POST /schedule
-- PUT /schedule/{id}
-- DELETE /schedule/{id}
+---
 
-10.6. Appointments
-- POST /appointments
-- GET /my-appointments
-- GET /doctor-appointments
-- PATCH /appointments/{appointment}/confirm
-- PATCH /appointments/{appointment}/cancel
-- PATCH /appointments/{appointment}/complete
-- POST /appointments/{appointment}/review
-- GET /appointments/{appointment}/prescriptions/create
-- POST /appointments/{appointment}/prescriptions
+## 7. End-to-End Business Flows
 
-10.7. Admin
-- /admin/doctors
-- /admin/doctor-approvals
-- /admin/specialties
-- /admin/degrees
-- /admin/patients
-- /admin/staffs
-- /admin/locations
-- /admin/appointments
-- /admin/medications
-- /admin/medicine-types
-- /admin/blogs
+### 7.1 User Registration and Patient Creation
 
-## Installation And Running The Project
+```mermaid
+flowchart LR
+    A[Visitor registers] --> B[Create User with role=user]
+    B --> C[Patient::syncFromUser]
+    C --> D[Patient profile created or updated]
+    D --> E[User logged in]
+```
 
-11.1. Environment requirements
-- PHP 8.3+
+### 7.2 Doctor Verification Flow
+
+```mermaid
+flowchart LR
+    A[User submits verification form] --> B[Doctor record marked pending]
+    B --> C[Admin reviews request]
+    C -->|Approve| D[User role becomes doctor]
+    C -->|Reject| E[User stays or returns to user]
+```
+
+### 7.3 Appointment Booking Flow
+
+```mermaid
+flowchart LR
+    A[User opens doctor booking page] --> B[Select slot]
+    B --> C[Validate slot/date/capacity]
+    C --> D[Create pending appointment]
+    D --> E[Doctor confirms]
+    E --> F[Doctor issues prescription]
+    F --> G[Appointment becomes completed]
+    G --> H[Patient can leave a review]
+```
+
+---
+
+## 8. Project Structure
+
+```text
+app/
+├── Http/Controllers/
+│   ├── Admin/
+│   ├── Doctor/
+│   └── User/
+├── Models/
+├── Providers/
+└── Services/
+    └── LocationService.php
+
+config/
+├── locations.php
+└── ...
+
+database/
+├── migrations/
+├── seeders/
+└── factories/
+
+public/
+├── images/
+├── uploads/
+└── storage/
+
+resources/
+├── css/
+├── js/
+└── views/
+    ├── admin/
+    ├── components/
+    ├── layouts/
+    ├── pages/
+    └── partials/
+
+routes/
+└── web.php
+
+tests/
+├── Feature/
+├── Unit/
+└── TestCase.php
+```
+
+### Important folders
+
+| Path | Purpose |
+|---|---|
+| `app/Http/Controllers` | request handling and module-level business flow |
+| `app/Models` | domain models and relationships |
+| `app/Services/LocationService.php` | location normalization and validation |
+| `database/migrations` | schema history |
+| `database/seeders` | demo accounts and initial data |
+| `resources/views` | Blade UI |
+| `routes/web.php` | main route file |
+| `public/uploads` | public uploads |
+| `storage/app/public` | storage-backed public files |
+
+---
+
+## 9. Domain Model Summary
+
+### Core models
+
+| Model | Role in system |
+|---|---|
+| `User` | master authentication entity |
+| `Doctor` | doctor profile and approval data |
+| `Patient` | patient profile synchronized from user |
+| `Staff` | administrative staff profile |
+| `Specialty` | doctor specialty catalog |
+| `Degree` | fixed degree definitions used during doctor verification |
+| `Schedule` | doctor working schedule |
+| `Appointment` | booking and consultation record |
+| `AppointmentReview` | patient review after completed appointment |
+| `Prescription` | issued prescription |
+| `PrescriptionItem` | medication rows inside a prescription |
+| `Medication` | medication catalog |
+| `MedicineType` | medication grouping |
+| `Blog` | blog article content |
+| `LocationCity` | province/city and district/ward structure |
+
+### Important database design note
+
+In the **current implementation**, `appointments.patient_id` points to the **`users` table**, not the `patients` table.
+
+That means:
+
+- appointment ownership is user-centric
+- the patient profile table acts more like a synchronized profile extension
+- this should be kept in mind when adding reports or analytics later
+
+### Main relationships
+
+| Relationship | Type |
+|---|---|
+| User → Patient | one-to-one |
+| User → Doctor | one-to-one |
+| User → Staff | one-to-one |
+| Specialty → Doctor | one-to-many |
+| Doctor → Schedule | one-to-many |
+| Doctor → Appointment | one-to-many |
+| User(patient) → Appointment | one-to-many |
+| Appointment → Prescription | one-to-many |
+| Prescription → PrescriptionItem | one-to-many |
+| Appointment → AppointmentReview | one-to-one |
+| MedicineType → Medication | one-to-many |
+| Medication → PrescriptionItem | one-to-many |
+
+### Key tables and notable fields
+
+#### `users`
+
+- `full_name`
+- `email`
+- `phone`
+- `gender`
+- `province`
+- `district`
+- `ward`
+- `address_detail`
+- `dob`
+- `avatar`
+- `role`
+- `doctor_verification_status`
+- `doctor_verified_at`
+- `doctor_rejection_reason`
+- `password`
+
+#### `doctors`
+
+- `user_id`
+- `specialty_id`
+- `name`
+- `email`
+- `phone`
+- `degree`
+- `doctor_dob`
+- `citizen_id`
+- `citizen_id_front`
+- `citizen_id_back`
+- `degree_image`
+- `license_number`
+- `experience_years`
+- `hospital`
+- `clinic_address`
+- `city`
+- `bio`
+- `consultation_fee`
+- `schedule_text`
+- `status`
+- `is_featured`
+- `approval_status`
+- `approval_note`
+- `verification_status`
+- `submitted_at`
+- `approved_at`
+- `rejected_at`
+
+#### `appointments`
+
+- `patient_id`
+- `doctor_id`
+- `schedule_id`
+- `appointment_date`
+- `appointment_day`
+- `start_time`
+- `end_time`
+- `type`
+- `location`
+- `max_patients`
+- `status`
+- `notes`
+- `diagnosis`
+- `doctor_advice`
+- `completed_at`
+
+#### `prescriptions`
+
+- `appointment_id`
+- `doctor_id`
+- `patient_id`
+- `diagnosis`
+- `advice`
+- `notes`
+- `status`
+- `issued_at`
+
+#### `appointment_reviews`
+
+- `appointment_id`
+- `patient_id`
+- `doctor_id`
+- `rating`
+- `review`
+- `reviewed_at`
+
+#### `location_cities`
+
+- `name`
+- `districts` (JSON)
+
+---
+
+## 10. Key Routes Overview
+
+### Public
+
+| Method | Route | Purpose |
+|---|---|---|
+| GET | `/` | homepage |
+| GET | `/about` | about page |
+| GET | `/services` | services page |
+| GET | `/blog` | blog listing |
+| GET | `/blog/{slug}` | blog detail |
+
+### Authentication
+
+| Method | Route |
+|---|---|
+| GET / POST | `/register` |
+| GET / POST | `/login` |
+| GET / POST | `/forgot-password` |
+| GET / POST | `/forgot-password/otp` |
+| GET | `/forgot-password/reset` |
+| POST | `/forgot-password/reset` |
+| POST | `/logout` |
+
+### User and profile
+
+| Method | Route |
+|---|---|
+| GET | `/user/dashboard` |
+| GET | `/user/profile` |
+| PUT | `/user/profile` |
+| POST | `/user/profile/password` |
+| POST | `/user/profile/avatar` |
+| POST | `/user/profile/verify-doctor` |
+
+### Doctor browsing and booking
+
+| Method | Route |
+|---|---|
+| GET | `/doctor` |
+| GET | `/doctor-list` |
+| GET | `/user/doctor-list` |
+| GET | `/doctor-booking/{doctor}` |
+| POST | `/appointments` |
+
+### Schedule
+
+| Method | Route |
+|---|---|
+| GET | `/schedule` |
+| POST | `/schedule` |
+| PUT | `/schedule/{id}` |
+| DELETE | `/schedule/{id}` |
+
+### Appointment lifecycle
+
+| Method | Route |
+|---|---|
+| GET | `/my-appointments` |
+| GET | `/doctor-appointments` |
+| PATCH | `/appointments/{appointment}/confirm` |
+| PATCH | `/appointments/{appointment}/cancel` |
+| PATCH | `/appointments/{appointment}/complete` |
+| POST | `/appointments/{appointment}/review` |
+| GET | `/appointments/{appointment}/prescriptions/create` |
+| POST | `/appointments/{appointment}/prescriptions` |
+
+### Admin
+
+Main admin route groups include:
+
+- `/admin/doctors`
+- `/admin/doctor-approvals`
+- `/admin/specialties`
+- `/admin/degrees`
+- `/admin/patients`
+- `/admin/staffs`
+- `/admin/locations`
+- `/admin/appointments`
+- `/admin/medications`
+- `/admin/medicine-types`
+- `/admin/blogs`
+
+---
+
+## 11. Installation and Local Setup
+
+### 11.1 Requirements
+
+- PHP `8.3+`
 - Composer
 - Node.js + npm
 - MySQL or SQLite
-- Required PHP extensions for Laravel/PHPUnit, especially mbstring, dom, xml, and xmlwriter
+- PHP extensions required for Laravel/PHPUnit, especially:
+  - `mbstring`
+  - `dom`
+  - `xml`
+  - `xmlwriter`
+  - `json`
+  - `tokenizer`
+  - `libxml`
 
-11.2. Quick setup
-1. Extract the source code archive.
-2. Install backend dependencies
+### 11.2 Setup steps
+
 ```bash
 composer install
-```
-
-3. Install frontend dependencies
-```bash
 npm install
-```
-
-4. Create the environment file if needed
-```bash
-copy .env.example .env
-```
-
-5. Generate APP_KEY
-```bash
+cp .env.example .env
 php artisan key:generate
-```
-
-6. Configure the database in .env
-7. Run migrations and seeders
-```bash
 php artisan migrate --seed
-```
-
-8. Build the frontend or run dev mode
-```bash
 npm run build
-```
-
-   or npm run dev
-9. Run the application
-```bash
 php artisan serve
 ```
 
-11.3. Available composer scripts
-- composer run setup
-  -> install dependencies, create .env, generate key, migrate, install npm packages, build assets
-- composer run dev
-  -> run server + queue + pail + vite together
-- composer run test
-  -> clear config and run php artisan test
+For frontend development instead of a production build:
 
-11.4. Current database configuration in the source snapshot
-- .env.example defaults to DB_CONNECTION=sqlite
-- The .env included in the zip snapshot is configured for MySQL with database name mediconnect
-=> The team should align on whether local/dev onboarding uses SQLite or MySQL.
+```bash
+npm run dev
+```
 
-## Sample Accounts
+### 11.3 Useful composer scripts
 
-| Role | Email | Password |
-|---|---|---|
-| Admin | admin@gmail.com | Admin@123456 |
-| Doctor | doctor1@gmail.com | Doctor@123456 |
-| Doctor | doctor2@gmail.com | Doctor@123456 |
-| Doctor | doctor3@gmail.com | Doctor@123456 |
-| User | customer1@gmail.com | User@123456 |
-| User | customer2@gmail.com | User@123456 |
+```bash
+composer run setup
+composer run dev
+composer run test
+```
 
-Seeder commands:
-- php artisan migrate --seed
-or
-- php artisan db:seed --class=AdminUserSeeder
-- php artisan db:seed --class=DefaultDemoAccountsSeeder
+### What these scripts do
 
-## File Uploads And Storage
+- `composer run setup`
+  - installs dependencies
+  - creates `.env` if missing
+  - generates app key
+  - runs migrations
+  - installs npm packages
+  - builds frontend assets
 
-Avatar uploads:
-- public/uploads/avatars
+- `composer run dev`
+  - runs Laravel server, queue listener, logs, and Vite together
 
-Blog thumbnails:
-- public/uploads/blogs
+- `composer run test`
+  - clears config
+  - runs `php artisan test`
 
-Doctor verification files:
-- storage/app/public/doctor-verifications
+### 11.4 Database note in this source snapshot
 
-Recommendations:
-- For production deployment, configure storage:link if files on the public disk must be web-accessible.
-- Apply a clear backup policy, naming convention, and permission strategy for uploaded files.
+There is a small environment mismatch in the analyzed project snapshot:
 
-## Current Strengths Of The System
+| File | DB connection |
+|---|---|
+| `.env.example` | `sqlite` |
+| `.env` in the uploaded snapshot | `mysql` with database `mediconnect` |
 
-- The booking -> consultation -> prescription -> review flow is connected end to end.
-- Clear role separation between admin, doctor, and user.
-- Includes a doctor verification workflow.
-- Hardcoded fallback blog data prevents empty public blog UI.
-- Synchronization exists between users and patients/staff records.
-- Supporting catalog modules already exist for specialty, degree, medication, medicine type, and location.
+The team should standardize this for onboarding to avoid confusion.
 
-## Limitations And Technical Notes
+---
 
-- There are currently no meaningful automated business tests; tests/ still contains only the example tests.
-- Forgot-password OTP is a demo implementation and does not send a real email.
-- Blog detail route currently requires authentication; this should be reviewed against product requirements.
-- Expired appointments are hard-deleted rather than archived.
-- Schedule days are stored as a comma-separated string, which may be limiting for more advanced querying later.
-- There are two migrations that add user_id to the staff table, although hasColumn guards reduce migration risk.
-- User profile updates synchronize patient data, but location validation is not as strict there as it is during registration/admin editing.
+## 12. Demo and Seeded Accounts
 
-## Recommended Next Improvements
+### Default admin
 
-- Add Feature tests for all critical business modules.
-- Extract service/business logic for booking, doctor approval, and prescriptions.
-- Add real notifications or emails for OTP and doctor approval.
-- Add audit logs for admin actions.
-- Archive expired appointments instead of hard-deleting them.
-- Build an API layer if a mobile app or decoupled frontend is needed.
-- Add pagination and stronger search/filtering for the doctor list and blog module.
+| Email | Password |
+|---|---|
+| `admin@gmail.com` | `Admin@123456` |
 
-## Summary
+### Seeded doctors
 
-MediConnect is a Laravel-based medical appointment management system with three primary roles: user, doctor, and admin. The current codebase already covers the core workflow for a simplified medical service process: account registration, doctor verification request, schedule creation, appointment booking, consultation completion, prescription issuance, and doctor review. It is a solid foundation for continuing with test coverage, business logic refinement, and production hardening.
+| Email | Password |
+|---|---|
+| `doctor1@gmail.com` | `Doctor@123456` |
+| `doctor2@gmail.com` | `Doctor@123456` |
+| `doctor3@gmail.com` | `Doctor@123456` |
+| `doctor4@gmail.com` | `Doctor@123456` |
+
+### Seeded users
+
+| Email | Password |
+|---|---|
+| `customer1@gmail.com` | `User@123456` |
+| `customer2@gmail.com` | `User@123456` |
+
+### Seeded supporting data
+
+- **3 specialties**
+  - Cardiology
+  - Dermatology
+  - Pediatrics
+- **3 fixed degree definitions**
+  - General Practitioner
+  - Master
+  - Doctorate
+- **3 medicine types**
+  - Analgesic
+  - Antibiotic
+  - Antihistamine
+- **3 medications**
+  - Paracetamol
+  - Amoxicillin
+  - Cetirizine
+
+---
+
+## 13. File Upload and Storage Paths
+
+| Feature | Path |
+|---|---|
+| User avatars | `public/uploads/avatars` |
+| Blog thumbnails | `public/uploads/blogs` |
+| Doctor verification documents | `storage/app/public/doctor-verifications` |
+
+### Deployment note
+
+If files stored on the public disk need to be web-accessible, make sure to run:
+
+```bash
+php artisan storage:link
+```
+
+---
+
+## 14. Current Testing Status
+
+The `tests/` directory currently contains only the default Laravel example tests:
+
+- `tests/Feature/ExampleTest.php`
+- `tests/Unit/ExampleTest.php`
+
+That means the project currently has **no real automated coverage** for:
+
+- booking flow
+- doctor approval flow
+- schedule management
+- prescriptions
+- blog admin flow
+- medication CRUD
+- permissions and role separation
+
+For the detailed QA checklist, see:
+
+- [`TESTING_GUIDE.md`](./TESTING_GUIDE.md)
+
+---
+
+## 15. Known Limitations and Technical Notes
+
+1. **Forgot password is demo-only**
+   - OTP is generated in session/flash flow
+   - no real email delivery is implemented yet
+
+2. **Blog detail requires authentication**
+   - route `/blog/{slug}` currently uses `auth`
+   - this should be validated against product requirements
+
+3. **Expired appointments are deleted**
+   - they are not archived
+   - this may cause historical reporting gaps
+
+4. **Schedule days are stored as CSV text**
+   - simple now, but less flexible for future analytics
+
+5. **Degree management is code-driven**
+   - admin degree screen exists
+   - but actual degree data is hard-coded in `App\Models\Degree::FIXED_DEGREES`
+
+6. **Appointments reference `users.id` as patient**
+   - not `patients.id`
+   - developers should keep this in mind when extending the schema
+
+7. **There are duplicate-looking staff `user_id` migrations**
+   - `2026_04_14_090000_add_user_id_to_staff_table.php`
+   - `2026_04_14_100000_add_user_id_to_staff_table.php`
+   - this should be reviewed and cleaned up over time
+
+8. **The uploaded snapshot already includes `vendor/` and `node_modules/`**
+   - that is convenient for local inspection
+   - but not ideal for a clean Git repository in the long term
+
+9. **Local CLI commands can fail if PHP extensions are missing**
+   - in the inspection environment, `php artisan route:list` failed because `mbstring` was unavailable
+   - `php artisan test` also failed because `dom`, `mbstring`, `xml`, and `xmlwriter` were not enabled
+
+---
+
+## 16. Recommended Next Improvements
+
+### High priority
+
+- add real Feature tests for appointment booking and prescription flows
+- move more business logic from controllers into services/actions
+- replace demo OTP with real email or notification delivery
+- review whether blog detail should be public
+
+### Medium priority
+
+- archive expired appointments instead of deleting them
+- add audit logs for admin actions
+- add more complete seed data for realistic demos
+- improve doctor search with pagination and richer filtering
+
+### Long term
+
+- create a dedicated API layer for mobile app or decoupled frontend use
+- normalize schedule day storage
+- add event/notification pipeline
+- add dashboard analytics and reporting
+- introduce policy classes for authorization consistency
+
+---
+
+## 17. Maintenance Notes
+
+This README should be updated whenever any of the following changes:
+
+- new modules are added
+- role behavior changes
+- appointment states or booking rules change
+- database schema changes materially
+- admin modules are added or removed
+- setup requirements change
+- seed accounts or credentials change
+- file storage paths change
+
+### Suggested ownership
+
+- **Backend developers:** update business rules, routes, schema notes
+- **Frontend developers:** update page/module descriptions when UI scope changes
+- **QA:** update testing references and known limitations
+- **Project lead:** keep onboarding and deployment notes accurate
+
+---
+
+## 18. Summary
+
+MediConnect is a solid Laravel-based healthcare management system that already covers the full core workflow for a simplified clinic platform:
+
+- user registration
+- patient profile synchronization
+- doctor verification
+- doctor schedule management
+- appointment booking
+- appointment confirmation
+- prescription issuance
+- appointment completion
+- patient review
+- admin catalog and content management
+
+The project is a strong foundation for further development, but it still needs:
+
+- production hardening
+- better automated test coverage
+- cleaner separation of business logic
+- more robust notification and reporting support
+
+If maintained carefully, the current codebase can serve both as a team onboarding reference and as a good base for future expansion.

@@ -108,6 +108,28 @@ class DefaultDemoAccountsSeeder extends Seeder
                 'schedule_text' => 'Mon - Sat | 07:30 - 15:30',
                 'is_featured' => false,
             ],
+            [
+                'full_name' => 'Dr. Le Quoc Tuan',
+                'email' => 'doctor4@gmail.com',
+                'phone' => '0901000004',
+                'gender' => 'male',
+                'province' => 'Can Tho',
+                'district' => 'Ninh Kieu',
+                'ward' => 'Ninh Kieu',
+                'address_detail' => 'Default Doctor Account 3',
+                'dob' => '1990-11-09',
+                'specialty' => 'Pediatrics',
+                'degree' => 'MD, Pediatrics',
+                'license_number' => 'DOC-PED-0004',
+                'experience_years' => 14,
+                'hospital' => 'MediConnect Children Hospital',
+                'clinic_address' => '88 Nguyen Thi Thap, District 7',
+                'city' => 'Ho Chi Minh',
+                'bio' => 'Pediatric doctor supporting general child health, nutrition consultation, and regular follow-up care.',
+                'consultation_fee' => 280000,
+                'schedule_text' => 'Mon - Sun | 09:30 - 15:30',
+                'is_featured' => false,
+            ],
         ];
 
         foreach ($doctorAccounts as $account) {

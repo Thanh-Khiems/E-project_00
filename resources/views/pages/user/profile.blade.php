@@ -14,8 +14,20 @@
 .tab-content.active { display: block; }
 .form-group { margin-bottom: 16px; }
 .form-group label { display:block; font-weight:700; margin-bottom:8px; }
-.form-group input, .form-group select, .form-group textarea { width:100%; border:1px solid #d1d5db; border-radius:8px; padding:8px; }
+.form-group input:not([type="checkbox"]):not([type="radio"]), .form-group select, .form-group textarea { width:100%; border:1px solid #d1d5db; border-radius:8px; padding:8px; }
 .form-group input[type="file"] { background:#fff; padding:10px; }
+.form-group input[type="checkbox"], .form-group input[type="radio"] { width:auto; margin:0; }
+.multi-select { position:relative; }
+.multi-select-button { width:100%; display:flex; align-items:center; justify-content:space-between; gap:12px; border:1px solid #d1d5db; border-radius:8px; padding:10px 12px; background:#fff; cursor:pointer; text-align:left; }
+.multi-select-button-text { color:#111827; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.multi-select-button.placeholder .multi-select-button-text { color:#6b7280; }
+.multi-select-arrow { font-size:12px; color:#6b7280; transition:transform .2s ease; }
+.multi-select.open .multi-select-arrow { transform:rotate(180deg); }
+.multi-select-menu { display:none; position:absolute; top:calc(100% + 6px); left:0; right:0; z-index:30; background:#fff; border:1px solid #d1d5db; border-radius:10px; box-shadow:0 10px 25px rgba(0,0,0,0.08); padding:8px; }
+.multi-select.open .multi-select-menu { display:block; }
+.multi-select-option { display:flex !important; align-items:center; gap:10px; padding:10px 12px; margin:0; border-radius:8px; cursor:pointer; font-weight:500 !important; }
+.multi-select-option:hover { background:#eff6ff; }
+.multi-select-option span { display:block; color:#111827; }
 .btn-primary { background:#1d4ed8; color:#fff; border:none; border-radius:8px; padding:12px 16px; font-weight:700; cursor:pointer; }
 .btn-primary:hover { background:#1e40af; }
 .alert-success { margin-bottom:16px; padding:12px 16px; background:#ecfdf5; color:#065f46; border-radius:10px; }
@@ -72,6 +84,16 @@
                 </div>
             @endif
 
+            @if($errors->any())
+                <div class="alert-success" style="background:#fef2f2;color:#991b1b;">
+                    <ul style="margin:0;padding-left:18px;">
+                        @foreach($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
             <form action="{{ route('user.profile.update') }}" method="POST">
                 @csrf
                 @method('PUT')
@@ -89,7 +111,7 @@
                 </div>
                 <div class="form-group">
                     <label>Province / City</label>
-                    <select name="province">
+                    <select id="account-province" name="province">
                         <option value="">-- Select province/city --</option>
                         @foreach($provinces as $province)
                             <option value="{{ $province }}" {{ old('province', $user->province) == $province ? 'selected' : '' }}>{{ $province }}</option>
@@ -98,11 +120,15 @@
                 </div>
                 <div class="form-group">
                     <label>District</label>
-                    <input type="text" name="district" value="{{ old('district', $user->district ?? '') }}">
+                    <select id="account-district" name="district">
+                        <option value="">-- Select district --</option>
+                    </select>
                 </div>
                 <div class="form-group">
                     <label>Ward / Commune</label>
-                    <input type="text" name="ward" value="{{ old('ward', $user->ward ?? '') }}">
+                    <select id="account-ward" name="ward">
+                        <option value="">-- Select ward/commune --</option>
+                    </select>
                 </div>
                 <div class="form-group">
                     <label>Detailed address</label>
@@ -328,16 +354,31 @@
 
                 <div class="form-group">
                     <label>Degree</label>
-                    <select name="degree" required>
-                        <option value="">-- Select degree --</option>
-                        @forelse($degrees as $degree)
-                            <option value="{{ $degree->name }}" {{ old('degree') == $degree->name ? 'selected' : '' }}>{{ $degree->name }}</option>
-                        @empty
-                            <option value="General Practitioner">General Practitioner</option>
-                            <option value="Master">Master</option>
-                            <option value="Doctorate">Doctorate</option>
-                        @endforelse
-                    </select>
+                    @php
+                        $selectedDegrees = old('degree');
+
+                        if (is_null($selectedDegrees)) {
+                            $selectedDegrees = optional($user->doctorProfile)->degree_list ?? [];
+                        }
+
+                        $selectedDegrees = is_array($selectedDegrees) ? $selectedDegrees : [$selectedDegrees];
+                        $selectedDegrees = array_values(array_filter(array_map('trim', $selectedDegrees)));
+                    @endphp
+                    <div class="multi-select" data-multi-select>
+                        <button type="button" class="multi-select-button {{ empty($selectedDegrees) ? 'placeholder' : '' }}" data-multi-select-toggle>
+                            <span class="multi-select-button-text" data-multi-select-label>-- Select degree --</span>
+                            <span class="multi-select-arrow">&#9662;</span>
+                        </button>
+                        <div class="multi-select-menu">
+                            @foreach($degrees as $degree)
+                                <label class="multi-select-option">
+                                    <input type="checkbox" name="degree[]" value="{{ $degree }}" data-multi-select-input {{ in_array($degree, $selectedDegrees, true) ? 'checked' : '' }}>
+                                    <span>{{ $degree }}</span>
+                                </label>
+                            @endforeach
+                        </div>
+                    </div>
+                    <small style="color:#6b7280; display:block; margin-top:8px;">You can choose multiple degrees.</small>
                 </div>
 
                 <div class="form-group">
@@ -381,10 +422,83 @@
 <script>
     const links = document.querySelectorAll('.tab-link');
     const tabs = document.querySelectorAll('.tab-content');
+    const locations = @json($locations);
 
     function activateTab(hash) {
         links.forEach(link => link.classList.toggle('active', link.getAttribute('href') === hash));
         tabs.forEach(tab => tab.classList.toggle('active', '#' + tab.id === hash));
+    }
+
+    function resetSelect(select, placeholder) {
+        if (!select) return;
+
+        select.innerHTML = '';
+
+        const option = document.createElement('option');
+        option.value = '';
+        option.textContent = placeholder;
+        select.appendChild(option);
+    }
+
+    function populateDistricts(province, districtSelect, wardSelect, selectedDistrict = '', selectedWard = '') {
+        resetSelect(districtSelect, '-- Select district --');
+        resetSelect(wardSelect, '-- Select ward/commune --');
+
+        if (!province || !locations[province]) {
+            return;
+        }
+
+        Object.keys(locations[province]).forEach(function (district) {
+            const option = document.createElement('option');
+            option.value = district;
+            option.textContent = district;
+            option.selected = district === selectedDistrict;
+            districtSelect.appendChild(option);
+        });
+
+        if (selectedDistrict && locations[province][selectedDistrict]) {
+            populateWards(province, selectedDistrict, wardSelect, selectedWard);
+        }
+    }
+
+    function populateWards(province, district, wardSelect, selectedWard = '') {
+        resetSelect(wardSelect, '-- Select ward/commune --');
+
+        if (!province || !district || !locations[province] || !locations[province][district]) {
+            return;
+        }
+
+        locations[province][district].forEach(function (ward) {
+            const option = document.createElement('option');
+            option.value = ward;
+            option.textContent = ward;
+            option.selected = ward === selectedWard;
+            wardSelect.appendChild(option);
+        });
+    }
+
+    function setupLocationSelects(config) {
+        const provinceSelect = document.getElementById(config.provinceId);
+        const districtSelect = document.getElementById(config.districtId);
+        const wardSelect = document.getElementById(config.wardId);
+
+        if (!provinceSelect || !districtSelect || !wardSelect) {
+            return;
+        }
+
+        const initialProvince = config.initialProvince || provinceSelect.value || '';
+        const initialDistrict = config.initialDistrict || '';
+        const initialWard = config.initialWard || '';
+
+        populateDistricts(initialProvince, districtSelect, wardSelect, initialDistrict, initialWard);
+
+        provinceSelect.addEventListener('change', function () {
+            populateDistricts(this.value, districtSelect, wardSelect);
+        });
+
+        districtSelect.addEventListener('change', function () {
+            populateWards(provinceSelect.value, this.value, wardSelect);
+        });
     }
 
     links.forEach(link => {
@@ -399,5 +513,57 @@
     const queryTab = new URLSearchParams(window.location.search).get('tab');
     const initialHash = window.location.hash || (queryTab ? '#' + queryTab : '#account-settings');
     activateTab(initialHash);
+
+    setupLocationSelects({
+        provinceId: 'account-province',
+        districtId: 'account-district',
+        wardId: 'account-ward',
+        initialProvince: @json(old('province', $user->province)),
+        initialDistrict: @json(old('district', $user->district)),
+        initialWard: @json(old('ward', $user->ward)),
+    });
+
+    document.querySelectorAll('[data-multi-select]').forEach(function (wrapper) {
+        const button = wrapper.querySelector('[data-multi-select-toggle]');
+        const label = wrapper.querySelector('[data-multi-select-label]');
+        const inputs = Array.from(wrapper.querySelectorAll('[data-multi-select-input]'));
+
+        function updateLabel() {
+            const selected = inputs.filter(input => input.checked).map(input => input.value);
+
+            if (!selected.length) {
+                label.textContent = '-- Select degree --';
+                button.classList.add('placeholder');
+                return;
+            }
+
+            label.textContent = selected.join(', ');
+            button.classList.remove('placeholder');
+        }
+
+        button.addEventListener('click', function () {
+            document.querySelectorAll('[data-multi-select].open').forEach(function (item) {
+                if (item !== wrapper) {
+                    item.classList.remove('open');
+                }
+            });
+
+            wrapper.classList.toggle('open');
+        });
+
+        inputs.forEach(function (input) {
+            input.addEventListener('change', updateLabel);
+        });
+
+        updateLabel();
+    });
+
+    document.addEventListener('click', function (event) {
+        document.querySelectorAll('[data-multi-select].open').forEach(function (wrapper) {
+            if (!wrapper.contains(event.target)) {
+                wrapper.classList.remove('open');
+            }
+        });
+    });
 </script>
 @endsection

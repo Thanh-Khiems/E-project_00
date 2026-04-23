@@ -8,21 +8,23 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 use App\Models\Doctor;
 use App\Models\Patient;
 use App\Models\Specialty;
 use App\Models\Appointment;
 use App\Models\Degree;
+use App\Services\LocationService;
 
 class ProfileController extends Controller
 {
-    public function index()
+    public function index(LocationService $locationService)
     {
         Appointment::purgeExpired();
 
         $user = Auth::user();
 
-        $locations = config('locations');
+        $locations = $locationService->getStructuredLocations();
         $provinces = array_keys($locations);
 
         $appointments = Appointment::with(['doctor.user', 'doctor.specialty', 'prescriptions.items.medication.medicineType', 'review.patient'])
@@ -40,7 +42,7 @@ class ProfileController extends Controller
             ->get();
 
         $specialties = Specialty::query()->active()->orderBy('name')->get();
-        $degrees = Degree::query()->active()->orderBy('name')->get();
+        $degrees = Degree::fixedNames();
 
         return view('pages.user.profile', compact(
             'user',
@@ -53,7 +55,7 @@ class ProfileController extends Controller
         ));
     }
 
-    public function update(Request $request)
+    public function update(Request $request, LocationService $locationService)
     {
         $user = Auth::user();
 
@@ -66,6 +68,20 @@ class ProfileController extends Controller
             'ward' => 'nullable|string|max:255',
             'address_detail' => 'nullable|string|max:255',
         ]);
+
+        if (($validated['province'] ?? null) || ($validated['district'] ?? null) || ($validated['ward'] ?? null)) {
+            if (! ($validated['province'] ?? null) || ! ($validated['district'] ?? null) || ! ($validated['ward'] ?? null)) {
+                return back()->withErrors([
+                    'province' => 'Please select the full province/city, district, and ward/commune.',
+                ])->withInput();
+            }
+
+            if (! $locationService->isValidSelection($validated['province'], $validated['district'], $validated['ward'])) {
+                return back()->withErrors([
+                    'province' => 'The selected location is invalid or has changed. Please choose again.',
+                ])->withInput();
+            }
+        }
 
         $user->update($validated);
         Patient::syncFromUser($user);
@@ -154,7 +170,8 @@ class ProfileController extends Controller
             'citizen_id_front'   => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
             'citizen_id_back'    => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
             'doctor_phone'       => 'required|string|max:20',
-            'degree'             => 'required|string|max:100',
+            'degree'             => 'required|array|min:1',
+            'degree.*'           => ['required', 'string', Rule::in(Degree::fixedNames())],
             'degree_image'       => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
             'specialty'          => 'required|string|max:255',
             'experience_years'   => 'required|integer|min:0|max:100',
@@ -192,7 +209,7 @@ class ProfileController extends Controller
             'name' => $validated['doctor_full_name'],
             'email' => $user->email,
             'phone' => $validated['doctor_phone'],
-            'degree' => $validated['degree'],
+            'degree' => implode(', ', Degree::normalizeSelected($validated['degree'])),
             'doctor_dob' => $validated['doctor_dob'],
             'citizen_id' => $validated['citizen_id'],
             'citizen_id_front' => $citizenFrontPath,

@@ -50,7 +50,7 @@
                     </div>
 
                     <div class="mb-2"><strong>Specialty:</strong> {{ $doctor->specialty->name ?? '—' }}</div>
-                    <div class="mb-2"><strong>Degree:</strong> {{ $doctor->degree ?? '—' }}</div>
+                    <div class="mb-2"><strong>Degree:</strong> {{ $doctor->degree_display ?? '—' }}</div>
                     <div class="mb-2"><strong>Experience:</strong> {{ $doctor->experience_years ?? 0 }} years</div>
                     <div class="mb-2"><strong>City:</strong> {{ $doctor->city ?? '—' }}</div>
                     <div class="mb-2"><strong>Working schedule:</strong> {{ $doctor->schedule_text ?? 'Not updated' }}</div>

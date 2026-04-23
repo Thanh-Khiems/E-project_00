@@ -285,7 +285,7 @@
                     <img src="{{ $avatar }}" alt="{{ $doctor->name }}" class="doctor-avatar">
 
                     <div class="doctor-name">{{ $doctor->name ?? 'Name not updated' }}</div>
-                    <div class="doctor-meta">{{ $doctor->degree ?? 'Doctor' }}</div>
+                    <div class="doctor-meta">{{ $doctor->degree_display ?? 'Doctor' }}</div>
                     <div class="doctor-meta">{{ optional($doctor->specialty)->name ?? 'Specialty not updated' }}</div>
                 </div>
 
