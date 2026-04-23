@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Schema;
 
 class Degree extends Model
 {
@@ -13,7 +13,7 @@ class Degree extends Model
     public const STATUS_ACTIVE = 'active';
     public const STATUS_INACTIVE = 'inactive';
 
-    public const FIXED_DEGREES = [
+    public const DEFAULT_DEGREES = [
         [
             'name' => 'General Practitioner',
             'description' => 'General medical degree for primary care practice.',
@@ -42,31 +42,38 @@ class Degree extends Model
         return $query->where('status', self::STATUS_ACTIVE);
     }
 
-    public static function fixedDefinitions(): array
+    public static function defaultDefinitions(): array
     {
-        return self::FIXED_DEGREES;
+        return self::DEFAULT_DEGREES;
     }
 
-    public static function fixedNames(): array
+    public static function allNames(bool $onlyActive = false): array
     {
-        return array_column(self::FIXED_DEGREES, 'name');
+        if (! Schema::hasTable('degrees')) {
+            return array_column(
+                array_filter(self::defaultDefinitions(), fn (array $degree) => ! $onlyActive || $degree['status'] === self::STATUS_ACTIVE),
+                'name'
+            );
+        }
+
+        $query = self::query()->orderBy('name');
+
+        if ($onlyActive) {
+            $query->active();
+        }
+
+        return $query->pluck('name')->filter()->values()->all();
     }
 
-    public static function fixedCollection(): Collection
+    public static function normalizeSelected(array $selected, bool $onlyActive = true): array
     {
-        return collect(self::fixedDefinitions())->values()->map(function (array $degree, int $index) {
-            return (object) array_merge(['id' => $index + 1], $degree);
-        });
-    }
-
-    public static function normalizeSelected(array $selected): array
-    {
+        $availableNames = collect(self::allNames($onlyActive));
         $selectedLookup = collect($selected)
             ->map(fn ($value) => trim((string) $value))
             ->filter()
             ->unique();
 
-        return collect(self::fixedNames())
+        return $availableNames
             ->filter(fn (string $name) => $selectedLookup->contains($name))
             ->values()
             ->all();

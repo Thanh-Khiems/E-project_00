@@ -42,7 +42,7 @@ class ProfileController extends Controller
             ->get();
 
         $specialties = Specialty::query()->active()->orderBy('name')->get();
-        $degrees = Degree::fixedNames();
+        $degrees = Degree::allNames(true);
 
         return view('pages.user.profile', compact(
             'user',
@@ -171,7 +171,7 @@ class ProfileController extends Controller
             'citizen_id_back'    => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
             'doctor_phone'       => 'required|string|max:20',
             'degree'             => 'required|array|min:1',
-            'degree.*'           => ['required', 'string', Rule::in(Degree::fixedNames())],
+            'degree.*'           => ['required', 'string', Rule::in(Degree::allNames(true))],
             'degree_image'       => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
             'specialty'          => 'required|string|max:255',
             'experience_years'   => 'required|integer|min:0|max:100',
