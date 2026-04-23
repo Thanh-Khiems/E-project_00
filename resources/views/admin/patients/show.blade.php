@@ -8,7 +8,6 @@
                 <p>View the patient account information and profile data.</p>
             </div>
             <div class="d-flex gap-2">
-                <a href="{{ route('admin.patients.edit', $patient) }}" class="btn btn-primary">Edit information</a>
                 <a href="{{ route('admin.patients.index') }}" class="btn btn-outline-primary">Back</a>
             </div>
         </div>

@@ -123,6 +123,8 @@ Route::prefix('admin')
     Route::post('/doctors/{doctor}/approve', [DoctorController::class, 'approve'])->name('doctors.approve');
     Route::post('/doctors/{doctor}/reject', [DoctorController::class, 'reject'])->name('doctors.reject');
 
+    Route::delete('/reviews/{review}', [DoctorController::class, 'destroyReview'])->name('reviews.destroy');
+    Route::get('/doctors/{doctor}/documents/{document}', [DoctorController::class, 'document'])->name('doctors.document');
     Route::get('/doctors/{doctor}', [DoctorController::class, 'show'])->name('doctors.show');
     Route::post('/doctors/{doctor}/toggle-status', [DoctorController::class, 'toggleStatus'])->name('doctors.toggleStatus');
     Route::delete('/doctors/{doctor}', [DoctorController::class, 'destroy'])->name('doctors.destroy');

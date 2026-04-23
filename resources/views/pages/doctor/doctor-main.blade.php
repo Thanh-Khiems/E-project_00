@@ -15,12 +15,12 @@
                         <span>Verified Doctor</span>
                     </div>
 
-                    <div class="user-hero-badge">
+                    <a href="{{ url('/doctor-manage?tab=schedule') }}" class="user-hero-badge">
                         <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                             <path d="M12 1.75A10.25 10.25 0 1 0 22.25 12 10.26 10.26 0 0 0 12 1.75Zm0 18.5A8.25 8.25 0 1 1 20.25 12 8.26 8.26 0 0 1 12 20.25Zm.75-13h-1.5v5.06l4.2 2.52.77-1.28-3.47-2.08Z"/>
                         </svg>
                         <span>Manage Schedule</span>
-                    </div>
+                    </a>
 
                     <div class="user-hero-badge">
                         <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -62,7 +62,7 @@
 
                 <div class="user-hero-actions">
                     <a href="{{ route('doctor.manage') }}" class="user-btn-primary">Manage Appointments</a>
-                    <a href="#" class="user-btn-outline">
+                    <a href="{{ url('/doctor-manage?tab=schedule') }}" class="user-btn-outline">
                         <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                             <path d="M7 2a1 1 0 0 1 1 1v1h8V3a1 1 0 1 1 2 0v1h1a2 2 0 0 1 2 2v12a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3V6a2 2 0 0 1 2-2h1V3a1 1 0 0 1 1-1Zm12 8H5v8a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-8ZM6 6a1 1 0 0 0-1 1v1h14V7a1 1 0 0 0-1-1H6Z"/>
                         </svg>

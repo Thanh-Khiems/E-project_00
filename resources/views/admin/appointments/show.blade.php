@@ -10,6 +10,18 @@
         <a href="{{ route('admin.appointments.index') }}" class="btn btn-outline-primary">Back to list</a>
     </div>
 
+    @if(session('success'))
+        <div class="alert alert-success mt-3">
+            {{ session('success') }}
+        </div>
+    @endif
+
+    @if(session('error'))
+        <div class="alert alert-danger mt-3">
+            {{ session('error') }}
+        </div>
+    @endif
+
     <div class="row g-4 mt-1">
         <div class="col-lg-6">
             <div class="border rounded-4 p-4 h-100 bg-white">
@@ -120,6 +132,11 @@
                 <div class="mt-3"><strong>Rating:</strong> {{ $appointment->review->rating }}/5</div>
                 <div class="mt-2"><strong>Comment:</strong> {{ $appointment->review->review ?: 'No additional comments.' }}</div>
                 <div class="mt-2 text-muted small">Reviewed at: {{ optional($appointment->review->reviewed_at)->format('d/m/Y H:i') ?? '—' }}</div>
+                <form method="POST" action="{{ route('admin.reviews.destroy', $appointment->review) }}" class="mt-3" onsubmit="return confirm('Are you sure you want to delete this patient review?');">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn btn-outline-danger btn-sm">Delete review</button>
+                </form>
             </div>
         @else
             <p class="text-muted mb-0">The patient has not submitted a review for this visit yet.</p>

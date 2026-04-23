@@ -5,7 +5,10 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Specialty;
 use Illuminate\Http\Request;
+use App\Models\AppointmentReview;
 use App\Models\Doctor;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class DoctorController extends Controller
 {
@@ -134,7 +137,7 @@ class DoctorController extends Controller
         ];
     }
 
-        public function show(Doctor $doctor)
+    public function show(Doctor $doctor)
     {
         $doctor->load([
             'specialty',
@@ -162,7 +165,57 @@ class DoctorController extends Controller
         ]);
     }
 
-        public function toggleStatus(Doctor $doctor)
+    public function destroyReview(AppointmentReview $review)
+    {
+        $doctorName = $review->doctor->name ?? 'this doctor';
+
+        $review->delete();
+
+        return back()->with('success', "Patient review for {$doctorName} was deleted successfully.");
+    }
+
+    public function document(Doctor $doctor, string $document)
+    {
+        $relativePath = match ($document) {
+            'citizen-front' => $doctor->citizen_id_front,
+            'citizen-back' => $doctor->citizen_id_back,
+            'degree' => $doctor->degree_image,
+            default => null,
+        };
+
+        abort_if(blank($relativePath), 404);
+
+        $normalizedPath = str_replace('\\', '/', ltrim((string) $relativePath, '/'));
+        $storageRelativePath = ltrim(Str::after($normalizedPath, 'storage/'), '/');
+
+        $candidates = array_filter(array_unique([
+            public_path($normalizedPath),
+            public_path('storage/' . $storageRelativePath),
+            storage_path('app/public/' . $storageRelativePath),
+        ]));
+
+        foreach ($candidates as $absolutePath) {
+            if (is_file($absolutePath)) {
+                $mimeType = mime_content_type($absolutePath) ?: 'application/octet-stream';
+
+                return response()->file($absolutePath, [
+                    'Content-Type' => $mimeType,
+                    'Cache-Control' => 'private, max-age=86400',
+                ]);
+            }
+        }
+
+        if ($storageRelativePath !== '' && Storage::disk('public')->exists($storageRelativePath)) {
+            return response(Storage::disk('public')->get($storageRelativePath), 200, [
+                'Content-Type' => Storage::disk('public')->mimeType($storageRelativePath) ?: 'application/octet-stream',
+                'Cache-Control' => 'private, max-age=86400',
+            ]);
+        }
+
+        abort(404);
+    }
+
+    public function toggleStatus(Doctor $doctor)
     {
         $newStatus = $doctor->status === 'active' ? 'inactive' : 'active';
 
@@ -178,7 +231,7 @@ class DoctorController extends Controller
         );
     }
 
-        public function destroy(Doctor $doctor)
+    public function destroy(Doctor $doctor)
     {
         if ($doctor->user) {
             $doctor->user->update([

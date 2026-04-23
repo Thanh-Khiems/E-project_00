@@ -12,7 +12,7 @@
         <div class="panel-head">
             <div>
                 <h5>Doctor verification / approval</h5>
-                <p>When doctors submit registration information, admins can come here to approve or reject it.</p>
+                <p>When doctors submit registration information, admins can come here to review all submitted details before approving or rejecting.</p>
             </div>
         </div>
 
@@ -42,18 +42,25 @@
                             <div class="text-muted small">{{ $doctor->email ?: 'No email yet' }} · {{ $doctor->phone ?: 'No phone number yet' }}</div>
                             <div class="mt-2 small">
                                 <strong>Specialty:</strong> {{ $doctor->specialty->name ?? '—' }}<br>
+                                <strong>Degree(s):</strong> {{ $doctor->degree_display ?? '—' }}<br>
+                                <strong>Citizen ID:</strong> {{ $doctor->citizen_id ?? '—' }}<br>
+                                <strong>Date of birth:</strong> {{ $doctor->doctor_dob ? $doctor->doctor_dob->format('d/m/Y') : '—' }}<br>
                                 <strong>Experience:</strong> {{ $doctor->experience_years ?? 0 }} years<br>
-                                <strong>Working schedule:</strong> {{ $doctor->schedule_text ?? 'Not updated' }}
+                                <strong>City:</strong> {{ $doctor->city ?? '—' }}<br>
+                                <strong>Submitted at:</strong> {{ optional($doctor->submitted_at)->format('d/m/Y H:i') ?? '—' }}
                             </div>
                         </div>
-                        <div>
-                            @if($doctor->approval_status === 'approved')
-                                <span class="badge text-bg-success">Approved</span>
-                            @elseif($doctor->approval_status === 'rejected')
-                                <span class="badge text-bg-danger">Decline</span>
-                            @else
-                                <span class="badge text-bg-warning">Pending approval</span>
-                            @endif
+                        <div class="text-end">
+                            <div class="mb-2">
+                                @if($doctor->approval_status === 'approved')
+                                    <span class="badge text-bg-success">Approved</span>
+                                @elseif($doctor->approval_status === 'rejected')
+                                    <span class="badge text-bg-danger">Decline</span>
+                                @else
+                                    <span class="badge text-bg-warning">Pending approval</span>
+                                @endif
+                            </div>
+                            <a href="{{ route('admin.doctors.show', $doctor) }}" class="btn btn-outline-primary btn-sm">View submitted info</a>
                         </div>
                     </div>
 
@@ -74,11 +81,13 @@
                                 </div>
                             </form>
                         </div>
-                        <div class="col-lg-4 text-lg-end">
-                            <form method="POST" action="{{ route('admin.doctors.approve', $doctor) }}">
-                                @csrf
-                                <button type="submit" class="btn btn-success">Approve</button>
-                            </form>
+                        <div class="col-lg-4 text-lg-end d-flex justify-content-lg-end gap-2 flex-wrap">
+                            @if($doctor->approval_status === 'pending')
+                                <form method="POST" action="{{ route('admin.doctors.approve', $doctor) }}">
+                                    @csrf
+                                    <button type="submit" class="btn btn-success">Approve</button>
+                                </form>
+                            @endif
                         </div>
                     </div>
                 </div>
